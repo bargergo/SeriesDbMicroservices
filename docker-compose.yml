@@ -19,11 +19,6 @@ services:
           - "27017:27017"
         volumes:
           - mongodb_data_container:/data/db
-    ubuntu:
-        image: ubuntu
-        entrypoint: /bin/sh
-        stdin_open: true
-        tty: true
 
 volumes:
     mongodb_data_container:
