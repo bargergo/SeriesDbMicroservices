@@ -1,14 +1,31 @@
 version: '3.7'
+networks:
+    bridge:
+        driver: bridge
 services:
-  mongodb_container:
-    image: mongo:latest
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: rootpassword
-    ports:
-      - 27017:27017
-    volumes:
-      - mongodb_data_container:/data/db
+    web:
+        build:
+            context: .
+            dockerfile: SeriesAndEpisodes/Dockerfile
+        ports:
+            - "3000:80"
+        depends_on:
+            - mongodb_container
+        networks:
+            - bridge
+    mongodb_container:
+        image: mongo:latest
+        environment:
+          MONGO_INITDB_ROOT_USERNAME: root
+          MONGO_INITDB_ROOT_PASSWORD: rootpassword
+        expose: 
+            - 27017
+        networks:
+            - bridge
+        ports:
+          - "27017:27017"
+        volumes:
+          - mongodb_data_container:/data/db
 
 volumes:
-  mongodb_data_container:
+    mongodb_data_container:
