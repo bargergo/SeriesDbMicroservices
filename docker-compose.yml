@@ -2,7 +2,6 @@ version: '3.4'
 
 services:
   seriesandepisodes:
-    image: ${DOCKER_REGISTRY-}seriesandepisodes
     build:
       context: .
       dockerfile: SeriesAndEpisodes/Dockerfile
@@ -12,16 +11,14 @@ services:
       - mongodb_container
 
   mongodb_container:
-    image: mongo:latest
+    image: mongo:4.2.3
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: rootpassword
-    expose:
-      - 27017
     ports:
       - "27017:27017"
     volumes:
       - mongodb_data_container:/data/db
 
 volumes:
-    mongodb_data_container:
+  mongodb_data_container:
