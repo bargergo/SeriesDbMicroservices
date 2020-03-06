@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SeriesAndEpisodes.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/Books")]
     [ApiController]
     public class BooksController : ControllerBase
     {
