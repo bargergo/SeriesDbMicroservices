@@ -9,7 +9,7 @@ services:
         depends_on:
             - mongodb_container
     mongodb_container:
-        image: mongo:latest
+        image: mongo:4.2.3
         environment:
           MONGO_INITDB_ROOT_USERNAME: root
           MONGO_INITDB_ROOT_PASSWORD: rootpassword
