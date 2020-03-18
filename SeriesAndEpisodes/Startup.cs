@@ -33,7 +33,14 @@ namespace SeriesAndEpisodes
             services.AddSingleton<IBookstoreDatabaseSettings>(sp =>
                 sp.GetRequiredService<IOptions<BookstoreDatabaseSettings>>().Value);
 
+            services.Configure<SeriesDbSettings>(
+                Configuration.GetSection(nameof(SeriesDbSettings)));
+
+            services.AddSingleton<ISeriesDbSettings>(sp =>
+                sp.GetRequiredService<IOptions<SeriesDbSettings>>().Value);
+
             services.AddSingleton<BookService>();
+            services.AddSingleton<SeriesService>();
 
             services.AddControllers();
         }
