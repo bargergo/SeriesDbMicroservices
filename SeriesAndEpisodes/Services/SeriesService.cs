@@ -1,4 +1,5 @@
-﻿using MongoDB.Driver;
+﻿using Microsoft.AspNetCore.Http;
+using MongoDB.Driver;
 using SeriesAndEpisodes.Models;
 using System;
 using System.Collections.Generic;
@@ -28,5 +29,11 @@ namespace SeriesAndEpisodes.Services
             _collection.InsertOne(series);
             return series;
         }
+
+        public void Update(string id, Series seriesIn) =>
+            _collection.ReplaceOne(series => series.Id == id, seriesIn);
+
+        public void Remove(string id) =>
+            _collection.DeleteOne(series => series.Id == id);
     }
 }

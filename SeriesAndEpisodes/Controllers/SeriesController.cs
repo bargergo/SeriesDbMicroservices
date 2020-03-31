@@ -43,5 +43,35 @@ namespace SeriesAndEpisodes.Controllers
 
             return CreatedAtRoute("GetSeries", new { id = series.Id.ToString() }, series);
         }
+
+        [HttpPut("{id:length(24)}")]
+        public IActionResult Update(string id, Series seriesIn)
+        {
+            var series = _seriesService.Get(id);
+
+            if (series == null)
+            {
+                return NotFound();
+            }
+
+            _seriesService.Update(id, seriesIn);
+
+            return NoContent();
+        }
+
+        [HttpDelete("{id:length(24)}")]
+        public IActionResult Delete(string id)
+        {
+            var series = _seriesService.Get(id);
+
+            if (series == null)
+            {
+                return NotFound();
+            }
+
+            _seriesService.Remove(series.Id);
+
+            return NoContent();
+        }
     }
 }
