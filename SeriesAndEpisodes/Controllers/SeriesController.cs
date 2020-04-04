@@ -86,12 +86,12 @@ namespace SeriesAndEpisodes.Controllers
         [HttpGet("{id:length(24)}/image")]
         public async Task<IActionResult> DownloadImage(string id)
         {
-            var stream = await _seriesService.DownloadImage(id);
+            var file = await _seriesService.DownloadImage(id);
 
-            if (stream == null)
+            if (file == null)
                 return NotFound();
 
-            return File(stream, "application/octet-stream", "image.jpg");
+            return File(file.Stream, "application/octet-stream", file.Name);
         }
     }
 }
