@@ -20,13 +20,13 @@ namespace SeriesAndEpisodes.Controllers
         }
 
         [HttpGet]
-        public ActionResult<List<Series>> Get() =>
-            _seriesService.Get();
+        public async Task<ActionResult<List<Series>>> GetAsync() =>
+            await _seriesService.GetAsync();
 
         [HttpGet("{id:length(24)}", Name = "GetSeries")]
-        public ActionResult<Series> Get(string id)
+        public async Task<ActionResult<Series>> GetAsync(string id)
         {
-            var series = _seriesService.Get(id);
+            var series = await _seriesService.GetAsync(id);
 
             if (series == null)
             {
@@ -37,39 +37,39 @@ namespace SeriesAndEpisodes.Controllers
         }
 
         [HttpPost]
-        public ActionResult<Series> Create(Series series)
+        public async Task<ActionResult<Series>> CreateAsync(Series series)
         {
-            _seriesService.Create(series);
+            await _seriesService.CreateAsync(series);
 
             return CreatedAtRoute("GetSeries", new { id = series.Id.ToString() }, series);
         }
 
         [HttpPut("{id:length(24)}")]
-        public IActionResult Update(string id, Series seriesIn)
+        public async Task<IActionResult> UpdateAsync(string id, Series seriesIn)
         {
-            var series = _seriesService.Get(id);
+            var series = _seriesService.GetAsync(id);
 
             if (series == null)
             {
                 return NotFound();
             }
 
-            _seriesService.Update(id, seriesIn);
+            await _seriesService.UpdateAsync(id, seriesIn);
 
             return NoContent();
         }
 
         [HttpDelete("{id:length(24)}")]
-        public IActionResult Delete(string id)
+        public async Task<IActionResult> DeleteAsync(string id)
         {
-            var series = _seriesService.Get(id);
+            var series = await _seriesService.GetAsync(id);
 
             if (series == null)
             {
                 return NotFound();
             }
 
-            _seriesService.Remove(series.Id);
+            await _seriesService.RemoveAsync(series.Id);
 
             return NoContent();
         }
