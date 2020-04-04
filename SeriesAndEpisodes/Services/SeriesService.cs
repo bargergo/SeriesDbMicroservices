@@ -44,6 +44,10 @@ namespace SeriesAndEpisodes.Services
         public async Task UploadImage(string id, IFormFile image)
         {
             var series = (await _collection.FindAsync(series => series.Id == id)).FirstOrDefault();
+            if (series.ImageId != null)
+            {
+                await _gridFsBucket.DeleteAsync(ObjectId.Parse(series.ImageId));
+            }
             var imageId = await _gridFsBucket.UploadFromStreamAsync(image.FileName, image.OpenReadStream());
             series.ImageId = imageId.ToString();
             await _collection.ReplaceOneAsync(series => series.Id == id, series);
