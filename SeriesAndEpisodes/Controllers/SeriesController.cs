@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using SeriesAndEpisodes.Models;
 using SeriesAndEpisodes.Services;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -72,6 +74,24 @@ namespace SeriesAndEpisodes.Controllers
             await _seriesService.RemoveAsync(series.Id);
 
             return NoContent();
+        }
+
+        [HttpPost("{id:length(24)}/image")]
+        public async Task<IActionResult> UploadImage(string id, IFormFile image)
+        {
+            await _seriesService.UploadImage(id, image);
+            return NoContent();
+        }
+
+        [HttpGet("{id:length(24)}/image")]
+        public async Task<IActionResult> DownloadImage(string id)
+        {
+            var stream = await _seriesService.DownloadImage(id);
+
+            if (stream == null)
+                return NotFound();
+
+            return File(stream, "application/octet-stream", "image.jpg");
         }
     }
 }

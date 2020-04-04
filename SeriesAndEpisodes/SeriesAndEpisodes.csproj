@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.9.10" />
     <PackageReference Include="MongoDB.Driver" Version="2.10.2" />
+    <PackageReference Include="MongoDB.Driver.GridFS" Version="2.10.2" />
   </ItemGroup>
 
 

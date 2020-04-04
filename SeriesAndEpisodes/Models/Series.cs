@@ -20,5 +20,7 @@ namespace SeriesAndEpisodes.Models
         public DateTimeOffset FirstAired { get; set; }
 
         public DateTimeOffset LastUpdated { get; set; }
+
+        public string ImageId { get; set; }
     }
 }
