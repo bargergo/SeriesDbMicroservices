@@ -53,15 +53,13 @@ namespace SeriesAndEpisodes.Services
             await _collection.ReplaceOneAsync(series => series.Id == id, series);
         }
 
-        public async Task<FileModel> DownloadImage(string id)
+        public async Task<byte[]> DownloadImage(string id)
         {
             var series = (await _collection.FindAsync(series => series.Id == id)).FirstOrDefault();
-            var stream = await _gridFsBucket.OpenDownloadStreamAsync(ObjectId.Parse(series.ImageId));
-            return new FileModel
-            {
-                Stream = stream,
-                Name = stream.FileInfo.Filename
-            };
+            if (series == null || series?.ImageId == null)
+                return null;
+            var objectId = ObjectId.Parse(series.ImageId);
+            return await _gridFsBucket.DownloadAsBytesAsync(objectId);
         }
     }
 }
