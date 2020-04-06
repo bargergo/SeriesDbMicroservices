@@ -84,20 +84,6 @@ namespace SeriesAndEpisodes.Controllers
             return NoContent();
         }
 
-        [HttpPost("{id:length(24)}/Season")]
-        public async Task<IActionResult> AddSeason(string id, CreateSeasonRequest request)
-        {
-            await _seriesService.AddSeason(id, request);
-            return NoContent();
-        }
-
-        [HttpDelete("{id:length(24)}/Season/{seasonId:int}")]
-        public async Task<IActionResult> DeleteSeason(string id, int seasonId)
-        {
-            await _seriesService.DeleteSeason(id, seasonId);
-            return NoContent();
-        }
-
         [HttpPost("{id:length(24)}/Season/{seasonId:int}")]
         public async Task<IActionResult> AddEpisode(string id, int seasonId, CreateEpisodeRequest request)
         {

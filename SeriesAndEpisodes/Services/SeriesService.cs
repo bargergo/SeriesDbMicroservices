@@ -105,15 +105,16 @@ namespace SeriesAndEpisodes.Services
         public async Task DeleteEpisode(string id, int seasonId, int episodeId)
         {
             var series = (await _collection.FindAsync(series => series.Id == id)).FirstOrDefault();
-            var filter = Builders<Series>.Filter.Eq(s => s.Id, id);
-            var update = Builders<Series>.Update.Set(s => s.Seasons, series.Seasons.Select(s => {
+            var updatedSeasons = series.Seasons.Select(s => {
                 var episodes = s.Episodes.Where(e => s.Id != seasonId || e.Id != episodeId).Select(e => e).ToList();
                 return new Season
                 {
                     Id = s.Id,
                     Episodes = episodes
                 };
-                }).ToList());
+            }).Where(s => s.Episodes.Count > 0).Select(s => s).ToList();
+            var filter = Builders<Series>.Filter.Eq(s => s.Id, id);
+            var update = Builders<Series>.Update.Set(s => s.Seasons, updatedSeasons);
             await _collection.UpdateOneAsync(filter, update);
         }
 
@@ -121,52 +122,34 @@ namespace SeriesAndEpisodes.Services
         {
             var series = (await _collection.FindAsync(series => series.Id == id)).FirstOrDefault();
             var season = series.Seasons.FirstOrDefault(s => s.Id == seasonId);
-            var episode = season?.Episodes.FirstOrDefault(e => e.Id == request.Id);
+            if (season == null)
+            {
+                season = new Season
+                {
+                    Id = seasonId,
+                    Episodes = new List<Episode>()
+                };
+                series.Seasons.Add(season);
+            }
+            var episode = season.Episodes.FirstOrDefault(e => e.Id == request.Id);
+            var newEpisode = new Episode
+            {
+                Id = request.Id,
+                Title = request.Title,
+                Description = request.Description,
+                FirstAired = request.FirstAired,
+                LastUpdated = DateTime.UtcNow
+            };
             if (episode == null)
             {
-                season?.Episodes.Add(new Episode
-                {
-                    Id = request.Id,
-                    Title = request.Title,
-                    Description = request.Description,
-                    FirstAired = request.FirstAired,
-                    LastUpdated = DateTime.UtcNow
-                });
+                season.Episodes.Add(newEpisode);
             } else
             {
-                episode.Title = request.Title;
-                episode.Description = request.Description;
-                episode.FirstAired = request.FirstAired;
-                episode.LastUpdated = DateTime.UtcNow;
+                season.Episodes = season.Episodes.Select(e => e.Id == request.Id ? newEpisode : e).ToList();
             }
             
             var filter = Builders<Series>.Filter.Eq(s => s.Id, id);
             var update = Builders<Series>.Update.Set(s => s.Seasons, series.Seasons);
-            await _collection.UpdateOneAsync(filter, update);
-        }
-
-        public async Task DeleteSeason(string id, int seasonId)
-        {
-            var series = (await _collection.FindAsync(series => series.Id == id)).FirstOrDefault();
-            var filter = Builders<Series>.Filter.Eq(s => s.Id, id);
-            var update = Builders<Series>.Update.Set(s => s.Seasons, series.Seasons.Where(s => s.Id != seasonId).Select(s => s).ToList());
-            await _collection.UpdateOneAsync(filter, update);
-        }
-
-        public async Task AddSeason(string id, CreateSeasonRequest request)
-        {
-            var series = (await _collection.FindAsync(series => series.Id == id)).FirstOrDefault();
-            var season = series.Seasons.Where(s => s.Id != request.Id).Select(s => s).FirstOrDefault();
-            if (season != null)
-            {
-
-            }
-            var filter = Builders<Series>.Filter.Eq(s => s.Id, id);
-            var update = Builders<Series>.Update.AddToSet(s => s.Seasons, new Season
-            {
-                Id = request.Id,
-                Episodes = new List<Episode>()
-            });
             await _collection.UpdateOneAsync(filter, update);
         }
 
