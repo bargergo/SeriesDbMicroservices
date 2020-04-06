@@ -1,12 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
-using MongoDB.Bson;
 using MongoDB.Driver;
-using MongoDB.Driver.GridFS;
 using SeriesAndEpisodes.DTOs;
 using SeriesAndEpisodes.Models;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading.Tasks;
 using System.Linq;
 
@@ -26,7 +23,13 @@ namespace SeriesAndEpisodes.Services
         }
 
         public async Task<List<SeriesInfo>> GetAsync() {
-            var series = await _collection.FindAsync(series => true);
+
+            var options = new FindOptions<Series>()
+            {
+                Projection = Builders<Series>.Projection
+                    .Exclude(s => s.Seasons)
+            };
+            var series = await _collection.FindAsync(series => true, options);
             return series.ToList().Select(s => new SeriesInfo
             {
                 Id = s.Id,
@@ -54,13 +57,11 @@ namespace SeriesAndEpisodes.Services
                     Episodes = s.Episodes.Select(e => new EpisodeDetail
                     {
                         Id = e.Id,
-                        Number = e.Number,
                         Title = e.Title,
                         Description = e.Description,
                         FirstAired = e.FirstAired,
                         LastUpdated = e.LastUpdated
                     }).ToList(),
-                    Number = s.Number
                 }).ToList(),
                 ImageId = series.ImageId
             };
@@ -90,26 +91,92 @@ namespace SeriesAndEpisodes.Services
                     Episodes = s.Episodes.Select(e => new EpisodeDetail
                     {
                         Id = e.Id,
-                        Number = e.Number,
                         Title = e.Title,
                         Description = e.Description,
                         FirstAired = e.FirstAired,
                         LastUpdated = e.LastUpdated
                     }).ToList(),
-                    Number = s.Number
                 }).ToList(),
                 ImageId = newSeries.ImageId,
 
             }; 
         }
 
+        public async Task DeleteEpisode(string id, int seasonId, int episodeId)
+        {
+            var series = (await _collection.FindAsync(series => series.Id == id)).FirstOrDefault();
+            var filter = Builders<Series>.Filter.Eq(s => s.Id, id);
+            var update = Builders<Series>.Update.Set(s => s.Seasons, series.Seasons.Select(s => {
+                var episodes = s.Episodes.Where(e => s.Id != seasonId || e.Id != episodeId).Select(e => e).ToList();
+                return new Season
+                {
+                    Id = s.Id,
+                    Episodes = episodes
+                };
+                }).ToList());
+            await _collection.UpdateOneAsync(filter, update);
+        }
+
+        public async Task AddEpisode(string id, int seasonId, CreateEpisodeRequest request)
+        {
+            var series = (await _collection.FindAsync(series => series.Id == id)).FirstOrDefault();
+            var season = series.Seasons.FirstOrDefault(s => s.Id == seasonId);
+            var episode = season?.Episodes.FirstOrDefault(e => e.Id == request.Id);
+            if (episode == null)
+            {
+                season?.Episodes.Add(new Episode
+                {
+                    Id = request.Id,
+                    Title = request.Title,
+                    Description = request.Description,
+                    FirstAired = request.FirstAired,
+                    LastUpdated = DateTime.UtcNow
+                });
+            } else
+            {
+                episode.Title = request.Title;
+                episode.Description = request.Description;
+                episode.FirstAired = request.FirstAired;
+                episode.LastUpdated = DateTime.UtcNow;
+            }
+            
+            var filter = Builders<Series>.Filter.Eq(s => s.Id, id);
+            var update = Builders<Series>.Update.Set(s => s.Seasons, series.Seasons);
+            await _collection.UpdateOneAsync(filter, update);
+        }
+
+        public async Task DeleteSeason(string id, int seasonId)
+        {
+            var series = (await _collection.FindAsync(series => series.Id == id)).FirstOrDefault();
+            var filter = Builders<Series>.Filter.Eq(s => s.Id, id);
+            var update = Builders<Series>.Update.Set(s => s.Seasons, series.Seasons.Where(s => s.Id != seasonId).Select(s => s).ToList());
+            await _collection.UpdateOneAsync(filter, update);
+        }
+
+        public async Task AddSeason(string id, CreateSeasonRequest request)
+        {
+            var series = (await _collection.FindAsync(series => series.Id == id)).FirstOrDefault();
+            var season = series.Seasons.Where(s => s.Id != request.Id).Select(s => s).FirstOrDefault();
+            if (season != null)
+            {
+
+            }
+            var filter = Builders<Series>.Filter.Eq(s => s.Id, id);
+            var update = Builders<Series>.Update.AddToSet(s => s.Seasons, new Season
+            {
+                Id = request.Id,
+                Episodes = new List<Episode>()
+            });
+            await _collection.UpdateOneAsync(filter, update);
+        }
+
         public async Task UpdateAsync(string id, UpsertSeriesRequest seriesIn) {
-            var filter = Builders<Series>.Filter.Eq("Id", id);
+            var filter = Builders<Series>.Filter.Eq(s => s.Id, id);
             var update = Builders<Series>.Update
-                .Set("Title", seriesIn.Title)
-                .Set("Description", seriesIn.Description)
-                .Set("FirstAired", seriesIn.FirstAired)
-                .Set("LastUpdated", DateTime.UtcNow);
+                .Set(s => s.Title, seriesIn.Title)
+                .Set(s => s.Description, seriesIn.Description)
+                .Set(s => s.FirstAired, seriesIn.FirstAired)
+                .Set(s => s.LastUpdated, DateTime.UtcNow);
             await _collection.UpdateOneAsync(filter, update);
         }
 
@@ -132,8 +199,8 @@ namespace SeriesAndEpisodes.Services
                 await _fileService.DeleteImage(series.ImageId);
             }
             var imageId = await _fileService.UploadImage(image);
-            var filter = Builders<Series>.Filter.Eq("Id", id);
-            var update = Builders<Series>.Update.Set("ImageId", imageId);
+            var filter = Builders<Series>.Filter.Eq(s => s.Id, id);
+            var update = Builders<Series>.Update.Set(s => s.ImageId, imageId);
             await _collection.UpdateOneAsync(filter, update);
         }
     }

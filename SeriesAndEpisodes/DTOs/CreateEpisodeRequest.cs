@@ -5,10 +5,14 @@ using System.Threading.Tasks;
 
 namespace SeriesAndEpisodes.DTOs
 {
-    public class SeasonDetail
+    public class CreateEpisodeRequest
     {
         public int Id { get; set; }
 
-        public List<EpisodeDetail> Episodes { get; set; }
+        public string Title { get; set; }
+
+        public string Description { get; set; }
+
+        public DateTime FirstAired { get; set; }
     }
 }

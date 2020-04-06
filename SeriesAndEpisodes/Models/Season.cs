@@ -9,12 +9,8 @@ namespace SeriesAndEpisodes.Models
 {
     public class Season
     {
-        [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
-        public string Id { get; set; }
+        public int Id { get; set; }
 
         public List<Episode> Episodes { get; set; }
-
-        public int Number { get; set; }
     }
 }

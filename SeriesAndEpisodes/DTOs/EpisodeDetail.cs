@@ -4,9 +4,7 @@ namespace SeriesAndEpisodes.DTOs
 {
     public class EpisodeDetail
     {
-        public string Id { get; set; }
-
-        public int Number { get; set; }
+        public int Id { get; set; }
 
         public string Title { get; set; }
 
