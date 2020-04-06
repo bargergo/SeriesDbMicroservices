@@ -1,16 +1,12 @@
-﻿using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SeriesAndEpisodes.Models
+namespace SeriesAndEpisodes.DTOs
 {
-    public class Series
+    public class SeriesInfo
     {
-        [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
 
         public string Title { get; set; }
@@ -21,9 +17,6 @@ namespace SeriesAndEpisodes.Models
 
         public DateTime LastUpdated { get; set; }
 
-        public List<Season> Seasons { get; set; }
-
-        [BsonRepresentation(BsonType.ObjectId)]
         public string ImageId { get; set; }
     }
 }

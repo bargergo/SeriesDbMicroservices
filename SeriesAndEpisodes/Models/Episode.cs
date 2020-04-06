@@ -7,11 +7,13 @@ using System.Threading.Tasks;
 
 namespace SeriesAndEpisodes.Models
 {
-    public class Series
+    public class Episode
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
+
+        public int Number { get; set; }
 
         public string Title { get; set; }
 
@@ -20,10 +22,5 @@ namespace SeriesAndEpisodes.Models
         public DateTime FirstAired { get; set; }
 
         public DateTime LastUpdated { get; set; }
-
-        public List<Season> Seasons { get; set; }
-
-        [BsonRepresentation(BsonType.ObjectId)]
-        public string ImageId { get; set; }
     }
 }

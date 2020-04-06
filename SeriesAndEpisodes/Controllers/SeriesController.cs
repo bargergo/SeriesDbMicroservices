@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SeriesAndEpisodes.DTOs;
 using SeriesAndEpisodes.Models;
 using SeriesAndEpisodes.Services;
 using System;
@@ -22,11 +23,11 @@ namespace SeriesAndEpisodes.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Series>>> GetAsync() =>
+        public async Task<ActionResult<List<SeriesInfo>>> GetAsync() =>
             await _seriesService.GetAsync();
 
         [HttpGet("{id:length(24)}", Name = "GetSeries")]
-        public async Task<ActionResult<Series>> GetAsync(string id)
+        public async Task<ActionResult<SeriesDetail>> GetAsync(string id)
         {
             var series = await _seriesService.GetAsync(id);
 
@@ -39,15 +40,15 @@ namespace SeriesAndEpisodes.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Series>> CreateAsync(Series series)
+        public async Task<ActionResult<SeriesDetail>> CreateAsync(UpsertSeriesRequest series)
         {
-            await _seriesService.CreateAsync(series);
+            var createdSeries = await _seriesService.CreateAsync(series);
 
-            return CreatedAtRoute("GetSeries", new { id = series.Id.ToString() }, series);
+            return CreatedAtRoute("GetSeries", new { id = createdSeries.Id.ToString() }, createdSeries);
         }
 
         [HttpPut("{id:length(24)}")]
-        public async Task<IActionResult> UpdateAsync(string id, Series seriesIn)
+        public async Task<IActionResult> UpdateAsync(string id, UpsertSeriesRequest seriesIn)
         {
             var series = _seriesService.GetAsync(id);
 
@@ -81,17 +82,6 @@ namespace SeriesAndEpisodes.Controllers
         {
             await _seriesService.UploadImage(id, image);
             return NoContent();
-        }
-
-        [HttpGet("{id:length(24)}/image")]
-        public async Task<IActionResult> DownloadImage(string id)
-        {
-            var bytes = await _seriesService.DownloadImage(id);
-
-            if (bytes == null)
-                return NotFound();
-
-            return File(bytes, "image/jpeg");
         }
     }
 }

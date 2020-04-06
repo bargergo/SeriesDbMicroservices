@@ -34,6 +34,7 @@ namespace SeriesAndEpisodes
                 sp.GetRequiredService<IOptions<SeriesDbSettings>>().Value);
 
             services.AddSingleton<SeriesService>();
+            services.AddSingleton<FileService>(); 
 
             services.AddControllers();
         }
