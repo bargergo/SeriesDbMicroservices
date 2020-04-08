@@ -87,15 +87,44 @@ namespace SeriesAndEpisodes.Controllers
         [HttpPost("{id:length(24)}/Season/{seasonId:int}")]
         public async Task<IActionResult> AddEpisode(string id, int seasonId, CreateEpisodeRequest request)
         {
+            var episode = await _seriesService.GetEpisode(id, seasonId, request.Id);
+            if (episode != null)
+            {
+                return Conflict();
+            }
             await _seriesService.AddEpisode(id, seasonId, request);
             return NoContent();
         }
 
         [HttpDelete("{id:length(24)}/Season/{seasonId:int}/Episode/{episodeId:int}")]
-        public async Task<IActionResult> AddEpisode(string id, int seasonId, int episodeId)
+        public async Task<IActionResult> DeleteEpisode(string id, int seasonId, int episodeId)
         {
             await _seriesService.DeleteEpisode(id, seasonId, episodeId);
             return NoContent();
+        }
+
+        [HttpPut("{id:length(24)}/Season/{seasonId:int}")]
+        public async Task<IActionResult> EditEpisode(string id, int seasonId, CreateEpisodeRequest request)
+        {
+            var episode = await _seriesService.GetEpisode(id, seasonId, request.Id);
+            if (episode == null)
+            {
+                return NotFound();
+            }
+            await _seriesService.EditEpisode(id, seasonId, request);
+            return NoContent();
+        }
+
+        [HttpGet("{id:length(24)}/Season/{seasonId:int}/Episode/{episodeId:int}")]
+        public async Task<ActionResult<EpisodeDetail>> GetEpisode(string id, int seasonId, int episodeId)
+        {
+            var episode = await _seriesService.GetEpisode(id, seasonId, episodeId);
+            if (episode == null)
+            {
+                return NotFound();
+            }
+
+            return episode;
         }
     }
 }

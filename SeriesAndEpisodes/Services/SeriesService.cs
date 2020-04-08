@@ -102,6 +102,42 @@ namespace SeriesAndEpisodes.Services
             }; 
         }
 
+        public async Task EditEpisode(string id, int seasonId, CreateEpisodeRequest request)
+        {
+            var series = (await _collection.FindAsync(series => series.Id == id)).FirstOrDefault();
+            var season = series.Seasons.FirstOrDefault(s => s.Id == seasonId);
+            var episode = season.Episodes.FirstOrDefault(e => e.Id == request.Id);
+            var updatedEpisode = new Episode
+            {
+                Id = request.Id,
+                Title = request.Title,
+                Description = request.Description,
+                FirstAired = request.FirstAired,
+                LastUpdated = DateTime.UtcNow
+            };
+            season.Episodes = season.Episodes.Select(e => e.Id == request.Id ? updatedEpisode : e).ToList();
+            var filter = Builders<Series>.Filter.Eq(s => s.Id, id);
+            var update = Builders<Series>.Update.Set(s => s.Seasons, series.Seasons);
+            await _collection.UpdateOneAsync(filter, update);
+        }
+
+        public async Task<EpisodeDetail> GetEpisode(string id, int seasonId, int episodeId)
+        {
+            var series = (await _collection.FindAsync(series => series.Id == id)).FirstOrDefault();
+            var episode = series.Seasons.FirstOrDefault(s => s.Id == seasonId).Episodes.FirstOrDefault(e => e.Id == episodeId);
+            if (episode == null)
+                return null;
+            return new EpisodeDetail
+            {
+                Id = episode.Id,
+                Title = episode.Title,
+                Description = episode.Description,
+                FirstAired = episode.FirstAired,
+                LastUpdated = episode.LastUpdated
+            };
+
+        }
+
         public async Task DeleteEpisode(string id, int seasonId, int episodeId)
         {
             var series = (await _collection.FindAsync(series => series.Id == id)).FirstOrDefault();
@@ -131,7 +167,7 @@ namespace SeriesAndEpisodes.Services
                 };
                 series.Seasons.Add(season);
             }
-            var episode = season.Episodes.FirstOrDefault(e => e.Id == request.Id);
+
             var newEpisode = new Episode
             {
                 Id = request.Id,
@@ -140,13 +176,7 @@ namespace SeriesAndEpisodes.Services
                 FirstAired = request.FirstAired,
                 LastUpdated = DateTime.UtcNow
             };
-            if (episode == null)
-            {
-                season.Episodes.Add(newEpisode);
-            } else
-            {
-                season.Episodes = season.Episodes.Select(e => e.Id == request.Id ? newEpisode : e).ToList();
-            }
+            season.Episodes.Add(newEpisode);
             
             var filter = Builders<Series>.Filter.Eq(s => s.Id, id);
             var update = Builders<Series>.Update.Set(s => s.Seasons, series.Seasons);
