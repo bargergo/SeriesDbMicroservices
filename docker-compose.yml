@@ -12,6 +12,7 @@ services:
 
   mongodb_container:
     image: mongo:4.2.3
+    container_name: mongodb_container
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: rootpassword
@@ -31,6 +32,7 @@ services:
 
   mysql-ratingdb:
     image: mysql:8.0.19
+    container_name: mysql-ratingdb
     environment:
       MYSQL_ROOT_PASSWORD: helloworld
       MYSQL_DATABASE: testapp
