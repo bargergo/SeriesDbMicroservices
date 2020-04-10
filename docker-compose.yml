@@ -12,12 +12,11 @@ services:
 
   mongodb_container:
     image: mongo:4.2.3
-    container_name: mongodb_container
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: rootpassword
     ports:
-      - "27017:27017"
+      - "27018:27017"
     volumes:
       - mongodb_data_container:/data/db
 
@@ -32,12 +31,11 @@ services:
 
   mysql-ratingdb:
     image: mysql:8.0.19
-    container_name: mysql-ratingdb
     environment:
       MYSQL_ROOT_PASSWORD: helloworld
       MYSQL_DATABASE: testapp
     ports:
-      - "3306:3306"
+      - "3307:3306"
 
 volumes:
   mongodb_data_container:
