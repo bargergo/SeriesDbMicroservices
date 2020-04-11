@@ -50,6 +50,7 @@ class SeriesRatingService {
             it[userId] = data.userId
             it[seriesId] = data.seriesId
             it[rating] = data.rating
+            it[opinion] = data.opinion
         }
     }
 
@@ -58,6 +59,7 @@ class SeriesRatingService {
             it[userId] = data.userId
             it[seriesId] = data.seriesId
             it[rating] = data.rating
+            it[opinion] = data.opinion
         }
     }
 
