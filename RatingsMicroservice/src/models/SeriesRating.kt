@@ -1,7 +1,7 @@
 package hu.bme.aut.model
 
 import org.jetbrains.exposed.dao.id.IntIdTable
-import org.jetbrains.exposed.sql.ReferenceOption
+import org.jetbrains.exposed.sql.ResultRow
 
 object SeriesRatings : IntIdTable("SeriesRatings") {
     val userId = integer("User_Id")
@@ -14,4 +14,11 @@ data class SeriesRating(
     val userId: Int,
     val seriesId: String,
     val rating: Int
+)
+
+fun ResultRow.toSeriesRating() = SeriesRating(
+    id = this[SeriesRatings.id].value,
+    userId = this[SeriesRatings.userId],
+    seriesId = this[SeriesRatings.seriesId],
+    rating = this[SeriesRatings.rating]
 )
