@@ -1,6 +1,7 @@
 FROM gradle:5.6.2-jdk8 AS build
 COPY --chown=gradle:gradle ./RatingsMicroservice /home/gradle/src
 WORKDIR /home/gradle/src
+ENV GRADLE_OPTS "-XX:MaxMetaspaceSize=256m -XX:+HeapDumpOnOutOfMemoryError -Xmx512m"
 RUN gradle build --no-daemon
 
 FROM openjdk:8-jre-alpine
