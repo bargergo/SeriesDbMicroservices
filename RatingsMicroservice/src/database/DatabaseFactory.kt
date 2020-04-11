@@ -30,14 +30,7 @@ object DatabaseFactory {
     }
 
     private fun hikari(): HikariDataSource {
-        val config = HikariConfig()
-        config.jdbcUrl="jdbc:mysql://mysql-ratingdb:3306/testapp"
-        config.username="root"
-        config.password="helloworld"
-        /*config.jdbcUrl = "jdbc:oracle:thin:@localhost:1521:xe"
-        config.username = "pizza_delivery"
-        config.password = "pizza"
-        config.maximumPoolSize = 10*/
+        val config = HikariConfig("/hikari.properties")
         config.validate()
         return HikariDataSource(config)
     }
