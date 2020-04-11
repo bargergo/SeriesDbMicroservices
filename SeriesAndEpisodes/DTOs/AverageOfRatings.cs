@@ -5,9 +5,8 @@ using System.Threading.Tasks;
 
 namespace SeriesAndEpisodes.DTOs
 {
-    public class SeriesDetail : SeriesInfo
+    public class AverageOfRatings
     {
-        public List<SeasonDetail> Seasons { get; set; }
-        public float AverageRating { get; set; }
+        public float average { get; set; }
     }
 }

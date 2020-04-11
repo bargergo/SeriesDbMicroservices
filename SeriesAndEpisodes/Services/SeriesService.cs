@@ -6,6 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
+using System.Net.Http;
+using System.Text.Json;
 
 namespace SeriesAndEpisodes.Services
 {
@@ -13,13 +15,15 @@ namespace SeriesAndEpisodes.Services
     {
         private readonly IMongoCollection<Series> _collection;
         private readonly FileService _fileService;
+        private readonly HttpClient _httpClient;
 
-        public SeriesService(ISeriesDbSettings settings, FileService fileService)
+        public SeriesService(ISeriesDbSettings settings, FileService fileService, IHttpClientFactory factory)
         {
             var client = new MongoClient(settings.ConnectionString);
             var database = client.GetDatabase(settings.DatabaseName);
             _collection = database.GetCollection<Series>(settings.SeriesCollectionName);
             _fileService = fileService;
+            _httpClient = factory.CreateClient("ratingsClient");
         }
 
         public async Task<List<SeriesInfo>> GetAsync() {
@@ -44,6 +48,10 @@ namespace SeriesAndEpisodes.Services
 
         public async Task<SeriesDetail> GetAsync(string id) {
             var series = (await _collection.FindAsync(series => series.Id == id)).FirstOrDefault();
+            var response = await _httpClient.GetAsync($"/SeriesRatings/average/{id}");
+            response.EnsureSuccessStatusCode();
+            using var responseStream = await response.Content.ReadAsStreamAsync();
+            var averageRating = (await JsonSerializer.DeserializeAsync<AverageOfRatings>(responseStream)).average;
             return new SeriesDetail
             {
                 Id = series.Id,
@@ -63,7 +71,8 @@ namespace SeriesAndEpisodes.Services
                         LastUpdated = e.LastUpdated
                     }).ToList(),
                 }).ToList(),
-                ImageId = series.ImageId
+                ImageId = series.ImageId,
+                AverageRating = averageRating
             };
         }
 
