@@ -19,13 +19,6 @@ object DatabaseFactory {
             SchemaUtils.createMissingTablesAndColumns(
                 SeriesRatings
             )
-            if (SeriesRatings.selectAll().empty()) {
-                SeriesRatings.insert {
-                    it[userId] = 1
-                    it[seriesId] = "5e8b3f30e605c002df7c498a"
-                    it[rating] = 5
-                }
-            }
         }
     }
 
