@@ -1,5 +1,6 @@
 package hu.bme.aut.controllers
 
+import hu.bme.aut.dtos.AverageOfRatingsResponse
 import hu.bme.aut.model.SeriesRating
 import hu.bme.aut.services.SeriesRatingService
 import io.ktor.application.call
@@ -26,6 +27,13 @@ fun Route.seriesRatings(service: SeriesRatingService) {
                 call.respond(NotFound)
             else
                 call.respond(OK, rating)
+        }
+
+        get("/average/{seriesId}") {
+            val seriesId = call.parameters["seriesId"]
+            checkNotNull(seriesId)
+            val averageOfRatings: Float = service.getAverage(seriesId)
+            call.respond(OK, AverageOfRatingsResponse(averageOfRatings))
         }
 
         get("/find") {

@@ -28,13 +28,21 @@ class SeriesRatingService {
         SeriesRatings.select { SeriesRatings.userId eq userId }.map { it.toSeriesRating() }
     }
 
+    suspend fun getAverage(seriesId: String): Float = dbQuery {
+        val avgColumn = SeriesRatings.rating.avg()
+        val result = SeriesRatings.slice(
+            avgColumn
+        ).select { SeriesRatings.seriesId eq seriesId }.first()
+        result[avgColumn]?.toFloat() ?: 0f
+    }
+
     suspend fun findByUserIdOrSeriesId(userId: Int?, seriesId: String?) = dbQuery {
-        var query: Op<Boolean> = Op.TRUE
+        var query = SeriesRatings.selectAll()
         if (userId != null)
-            query = query.and(SeriesRatings.userId eq userId )
+            query = query.andWhere {SeriesRatings.userId eq userId }
         if (seriesId != null)
-            query = query.and ( SeriesRatings.seriesId eq seriesId )
-        SeriesRatings.select(query).map { it.toSeriesRating() }
+            query = query.andWhere { SeriesRatings.seriesId eq seriesId }
+        query.map { it.toSeriesRating() }
     }
 
     suspend fun insert(data: SeriesRating) = dbQuery {
