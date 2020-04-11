@@ -1,16 +1,16 @@
 version: '3.4'
 
 services:
-  seriesandepisodes:
+  series-and-episodes:
     build:
       context: .
       dockerfile: SeriesAndEpisodes/Dockerfile
     ports:
       - "3000:80"
     depends_on:
-      - mongodb_container
+      - mongodb-seriesdb
 
-  mongodb_container:
+  mongodb-seriesdb:
     image: mongo:4.2.3
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
@@ -18,12 +18,12 @@ services:
     ports:
       - "27018:27017"
     volumes:
-      - mongodb_data_container:/data/db
+      - mongodb-data:/data/db
 
   ratings:
     build:
       context: .
-      dockerfile: RatingsMicroservice/Dockerfile-Compose
+      dockerfile: RatingsMicroservice/compose.Dockerfile
     ports:
       - "3001:8080"
     depends_on:
@@ -40,5 +40,5 @@ services:
       - mysql-data:/var/lib/mysql
 
 volumes:
-  mongodb_data_container:
+  mongodb-data:
   mysql-data:

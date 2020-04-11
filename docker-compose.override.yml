@@ -1,6 +1,6 @@
 version: '3.4'
 
 services:
-  seriesandepisodes:
+  series-and-episodes:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development

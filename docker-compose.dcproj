@@ -6,7 +6,7 @@
     <ProjectGuid>47fc7aee-3b7a-4411-aba6-0027fc4b633a</ProjectGuid>
     <DockerLaunchAction>LaunchBrowser</DockerLaunchAction>
     <DockerServiceUrl>{Scheme}://localhost:{ServicePort}/Series</DockerServiceUrl>
-    <DockerServiceName>seriesandepisodes</DockerServiceName>
+    <DockerServiceName>series-and-episodes</DockerServiceName>
   </PropertyGroup>
   <ItemGroup>
     <None Include="docker-compose.override.yml">
