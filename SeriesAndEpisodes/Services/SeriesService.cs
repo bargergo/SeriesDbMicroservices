@@ -111,11 +111,11 @@ namespace SeriesAndEpisodes.Services
             }; 
         }
 
-        public async Task EditEpisode(string id, int seasonId, CreateEpisodeRequest request)
+        public async Task EditEpisode(string id, int seasonId, int episodeId, CreateEpisodeRequest request)
         {
             var series = (await _collection.FindAsync(series => series.Id == id)).FirstOrDefault();
             var season = series.Seasons.FirstOrDefault(s => s.Id == seasonId);
-            var episode = season.Episodes.FirstOrDefault(e => e.Id == request.Id);
+            var episode = season.Episodes.FirstOrDefault(e => e.Id == episodeId);
             var updatedEpisode = new Episode
             {
                 Id = request.Id,
@@ -124,7 +124,7 @@ namespace SeriesAndEpisodes.Services
                 FirstAired = request.FirstAired,
                 LastUpdated = DateTime.UtcNow
             };
-            season.Episodes = season.Episodes.Select(e => e.Id == request.Id ? updatedEpisode : e).ToList();
+            season.Episodes = season.Episodes.Select(e => e.Id == episodeId ? updatedEpisode : e).ToList();
             var filter = Builders<Series>.Filter.Eq(s => s.Id, id);
             var update = Builders<Series>.Update.Set(s => s.Seasons, series.Seasons);
             await _collection.UpdateOneAsync(filter, update);
@@ -133,7 +133,7 @@ namespace SeriesAndEpisodes.Services
         public async Task<EpisodeDetail> GetEpisode(string id, int seasonId, int episodeId)
         {
             var series = (await _collection.FindAsync(series => series.Id == id)).FirstOrDefault();
-            var episode = series.Seasons.FirstOrDefault(s => s.Id == seasonId).Episodes.FirstOrDefault(e => e.Id == episodeId);
+            var episode = series.Seasons.FirstOrDefault(s => s.Id == seasonId)?.Episodes.FirstOrDefault(e => e.Id == episodeId);
             if (episode == null)
                 return null;
             return new EpisodeDetail

@@ -103,15 +103,23 @@ namespace SeriesAndEpisodes.Controllers
             return NoContent();
         }
 
-        [HttpPut("{id:length(24)}/Season/{seasonId:int}")]
-        public async Task<IActionResult> EditEpisode(string id, int seasonId, CreateEpisodeRequest request)
+        [HttpPut("{id:length(24)}/Season/{seasonId:int}/Episode/{episodeId:int}")]
+        public async Task<IActionResult> EditEpisode(string id, int seasonId, int episodeId, CreateEpisodeRequest request)
         {
-            var episode = await _seriesService.GetEpisode(id, seasonId, request.Id);
-            if (episode == null)
+            var episodeToUpdate = await _seriesService.GetEpisode(id, seasonId, episodeId);
+            if (episodeToUpdate == null)
             {
                 return NotFound();
             }
-            await _seriesService.EditEpisode(id, seasonId, request);
+            if (episodeId != request.Id)
+            {
+                var episodeWithTheNewId = await _seriesService.GetEpisode(id, seasonId, request.Id);
+                if (episodeWithTheNewId != null)
+                {
+                    return Conflict();
+                }
+            }
+            await _seriesService.EditEpisode(id, seasonId, episodeId, request);
             return NoContent();
         }
 
