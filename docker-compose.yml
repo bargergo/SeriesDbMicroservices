@@ -5,6 +5,10 @@ services:
     build:
       context: .
       dockerfile: SeriesAndEpisodes/Dockerfile
+    environment:
+      SeriesDbSettings__SeriesCollectionName: "Series"
+      SeriesDbSettings__ConnectionString: "mongodb://root:rootpassword@mongodb-seriesdb:27017"
+      SeriesDbSettings__DatabaseName: "SeriesDb"
     ports:
       - "3000:80"
     depends_on:
