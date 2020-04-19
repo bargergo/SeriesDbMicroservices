@@ -24,6 +24,9 @@ object DatabaseFactory {
 
     private fun hikari(): HikariDataSource {
         val config = HikariConfig("/hikari.properties")
+        config.jdbcUrl = System.getenv("db__jdbcUrl")!!
+        config.username = System.getenv("db__username")!!
+        config.password = System.getenv("db__password")!!
         config.validate()
         return HikariDataSource(config)
     }

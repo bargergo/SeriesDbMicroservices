@@ -28,6 +28,10 @@ services:
     build:
       context: .
       dockerfile: RatingsMicroservice/compose.Dockerfile
+    environment:
+      db__jdbcUrl: jdbc:mysql://mysql-ratingdb:3306/ratings
+      db__username: root
+      db__password: helloworld
     ports:
       - "3001:8080"
     depends_on:
