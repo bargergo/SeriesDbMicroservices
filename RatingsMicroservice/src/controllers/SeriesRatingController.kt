@@ -16,7 +16,10 @@ fun Route.seriesRatings(service: SeriesRatingService) {
     route("/SeriesRatings") {
 
         get("/") {
-            call.respond(OK, service.findAll())
+            val userId = call.request.queryParameters["userId"]?.toIntOrNull()
+            val seriesId = call.request.queryParameters["seriesId"]
+            val ratings = service.findByUserIdAndSeriesId(userId, seriesId)
+            call.respond(OK, ratings)
         }
 
         get("/{id}") {
@@ -34,13 +37,6 @@ fun Route.seriesRatings(service: SeriesRatingService) {
             checkNotNull(seriesId)
             val averageOfRatings: Float = service.getAverage(seriesId)
             call.respond(OK, AverageOfRatingsResponse(averageOfRatings))
-        }
-
-        get("/find") {
-            val userId = call.request.queryParameters["userId"]?.toIntOrNull()
-            val seriesId = call.request.queryParameters["seriesId"]
-            val ratings = service.findByUserIdOrSeriesId(userId, seriesId)
-            call.respond(OK, ratings)
         }
 
         post("/") {
