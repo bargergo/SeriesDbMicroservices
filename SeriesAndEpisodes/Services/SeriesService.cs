@@ -15,15 +15,15 @@ namespace SeriesAndEpisodes.Services
     {
         private readonly IMongoCollection<Series> _collection;
         private readonly FileService _fileService;
-        private readonly HttpClient _httpClient;
+        private readonly RatingsService _ratingsService;
 
-        public SeriesService(ISeriesDbSettings settings, FileService fileService, IHttpClientFactory factory)
+        public SeriesService(ISeriesDbSettings settings, FileService fileService, RatingsService ratingsService)
         {
             var client = new MongoClient(settings.ConnectionString);
             var database = client.GetDatabase(settings.DatabaseName);
             _collection = database.GetCollection<Series>(settings.SeriesCollectionName);
             _fileService = fileService;
-            _httpClient = factory.CreateClient("ratingsClient");
+            _ratingsService = ratingsService;
         }
 
         public async Task<List<SeriesInfo>> GetAsync() {
@@ -48,10 +48,7 @@ namespace SeriesAndEpisodes.Services
 
         public async Task<SeriesDetail> GetAsync(string id) {
             var series = (await _collection.FindAsync(series => series.Id == id)).FirstOrDefault();
-            var response = await _httpClient.GetAsync($"/SeriesRatings/Series/{id}/Average");
-            response.EnsureSuccessStatusCode();
-            using var responseStream = await response.Content.ReadAsStreamAsync();
-            var ratingStats = (await JsonSerializer.DeserializeAsync<AverageOfRatings>(responseStream));
+            var ratingStats = await _ratingsService.GetSeriesRatingStatsForSeries(series.Id);
             return new SeriesDetail
             {
                 Id = series.Id,

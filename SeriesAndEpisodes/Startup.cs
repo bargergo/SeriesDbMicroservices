@@ -27,10 +27,14 @@ namespace SeriesAndEpisodes
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddHttpClient("ratingsClient", c => c.BaseAddress = new System.Uri("http://ratings:8080/"));
+            services.Configure<RatingsServiceSettings>(
+                Configuration.GetSection(nameof(RatingsServiceSettings)));
+            services.AddSingleton<IRatingsServiceSettings>(sp =>
+                sp.GetRequiredService<IOptions<RatingsServiceSettings>>().Value);
+            services.AddHttpClient<RatingsService>();
+
             services.Configure<SeriesDbSettings>(
                 Configuration.GetSection(nameof(SeriesDbSettings)));
-
             services.AddSingleton<ISeriesDbSettings>(sp =>
                 sp.GetRequiredService<IOptions<SeriesDbSettings>>().Value);
 
