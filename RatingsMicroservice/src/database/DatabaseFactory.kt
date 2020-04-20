@@ -24,9 +24,9 @@ object DatabaseFactory {
 
     private fun hikari(): HikariDataSource {
         val config = HikariConfig("/hikari.properties")
-        config.jdbcUrl = System.getenv("db__jdbcUrl")!!
-        config.username = System.getenv("db__username")!!
-        config.password = System.getenv("db__password")!!
+        config.jdbcUrl = getenvCheckNotNull("db__jdbcUrl")
+        config.username = getenvCheckNotNull("db__username")
+        config.password = getenvCheckNotNull("db__password")
         config.validate()
         return HikariDataSource(config)
     }
@@ -35,4 +35,8 @@ object DatabaseFactory {
         withContext(Dispatchers.IO) {
             transaction { block() }
         }
+}
+
+fun getenvCheckNotNull(param: String): String {
+    return checkNotNull(System.getenv(param)) { "Environment variable '${param}' must be set." }
 }
