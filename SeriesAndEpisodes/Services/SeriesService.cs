@@ -48,7 +48,18 @@ namespace SeriesAndEpisodes.Services
 
         public async Task<SeriesDetail> GetAsync(string id) {
             var series = (await _collection.FindAsync(series => series.Id == id)).FirstOrDefault();
-            var ratingStats = await _ratingsService.GetSeriesRatingStatsForSeries(series.Id);
+            var ratingStats = new AverageOfRatings {
+                average = -1,
+                count = -1
+            };
+            try
+            {
+                ratingStats = await _ratingsService.GetSeriesRatingStatsForSeries(series.Id);
+            } catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            
             return new SeriesDetail
             {
                 Id = series.Id,
