@@ -1,10 +1,10 @@
-package hu.bme.aut.services
+package hu.bme.aut.ratings.services
 
-import hu.bme.aut.database.DatabaseFactory.dbQuery
-import hu.bme.aut.dtos.AverageOfRatingsResponse
-import hu.bme.aut.models.EpisodeRating
-import hu.bme.aut.models.EpisodeRatings
-import hu.bme.aut.models.toEpisodeRating
+import hu.bme.aut.ratings.database.DatabaseFactory.dbQuery
+import hu.bme.aut.ratings.dtos.AverageOfRatingsResponse
+import hu.bme.aut.ratings.models.EpisodeRating
+import hu.bme.aut.ratings.models.EpisodeRatings
+import hu.bme.aut.ratings.models.toEpisodeRating
 import org.jetbrains.exposed.sql.*
 
 class EpisodeRatingService {

@@ -1,4 +1,4 @@
-package hu.bme.aut.models
+package hu.bme.aut.ratings.models
 
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.ResultRow

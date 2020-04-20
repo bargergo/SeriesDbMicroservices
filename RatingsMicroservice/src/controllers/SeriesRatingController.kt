@@ -1,8 +1,8 @@
-package hu.bme.aut.controllers
+package hu.bme.aut.ratings.controllers
 
-import hu.bme.aut.dtos.AverageOfRatingsResponse
-import hu.bme.aut.model.SeriesRating
-import hu.bme.aut.services.SeriesRatingService
+import hu.bme.aut.ratings.dtos.AverageOfRatingsResponse
+import hu.bme.aut.ratings.model.SeriesRating
+import hu.bme.aut.ratings.services.SeriesRatingService
 import io.ktor.application.call
 import io.ktor.http.HttpStatusCode.Companion.Created
 import io.ktor.http.HttpStatusCode.Companion.NoContent

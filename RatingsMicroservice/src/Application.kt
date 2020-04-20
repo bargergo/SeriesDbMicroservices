@@ -1,11 +1,11 @@
-package hu.bme.aut
+package hu.bme.aut.ratings
 
 import com.fasterxml.jackson.databind.SerializationFeature
-import hu.bme.aut.controllers.episodeRatings
-import hu.bme.aut.controllers.seriesRatings
-import hu.bme.aut.database.DatabaseFactory
-import hu.bme.aut.services.EpisodeRatingService
-import hu.bme.aut.services.SeriesRatingService
+import hu.bme.aut.ratings.controllers.episodeRatings
+import hu.bme.aut.ratings.controllers.seriesRatings
+import hu.bme.aut.ratings.database.DatabaseFactory
+import hu.bme.aut.ratings.services.EpisodeRatingService
+import hu.bme.aut.ratings.services.SeriesRatingService
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install

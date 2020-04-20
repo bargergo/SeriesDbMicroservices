@@ -1,8 +1,8 @@
-package hu.bme.aut.controllers
+package hu.bme.aut.ratings.controllers
 
-import hu.bme.aut.dtos.AverageOfRatingsResponse
-import hu.bme.aut.models.EpisodeRating
-import hu.bme.aut.services.EpisodeRatingService
+import hu.bme.aut.ratings.dtos.AverageOfRatingsResponse
+import hu.bme.aut.ratings.models.EpisodeRating
+import hu.bme.aut.ratings.services.EpisodeRatingService
 import io.ktor.application.call
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.HttpStatusCode.Companion.NotFound

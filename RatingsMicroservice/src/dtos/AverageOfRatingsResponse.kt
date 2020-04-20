@@ -1,4 +1,4 @@
-package hu.bme.aut.dtos
+package hu.bme.aut.ratings.dtos
 
 class AverageOfRatingsResponse (
     val average: Float,

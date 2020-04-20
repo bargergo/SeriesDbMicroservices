@@ -1,11 +1,11 @@
-package hu.bme.aut.services
+package hu.bme.aut.ratings.services
 
-import hu.bme.aut.database.DatabaseFactory
-import hu.bme.aut.database.DatabaseFactory.dbQuery
-import hu.bme.aut.dtos.AverageOfRatingsResponse
-import hu.bme.aut.model.SeriesRating
-import hu.bme.aut.model.SeriesRatings
-import hu.bme.aut.model.toSeriesRating
+import hu.bme.aut.ratings.database.DatabaseFactory
+import hu.bme.aut.ratings.database.DatabaseFactory.dbQuery
+import hu.bme.aut.ratings.dtos.AverageOfRatingsResponse
+import hu.bme.aut.ratings.model.SeriesRating
+import hu.bme.aut.ratings.model.SeriesRatings
+import hu.bme.aut.ratings.model.toSeriesRating
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
