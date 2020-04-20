@@ -1,6 +1,8 @@
 package hu.bme.aut.ratings.controllers
 
 import hu.bme.aut.ratings.dtos.AverageOfRatingsResponse
+import hu.bme.aut.ratings.dtos.SeriesRatingData
+import hu.bme.aut.ratings.dtos.SeriesRatingInfo
 import hu.bme.aut.ratings.model.SeriesRating
 import hu.bme.aut.ratings.services.SeriesRatingService
 import io.ktor.application.call
@@ -18,14 +20,15 @@ fun Route.seriesRatings(service: SeriesRatingService) {
         get("/") {
             val userId = call.request.queryParameters["userId"]?.toIntOrNull()
             val seriesId = call.request.queryParameters["seriesId"]
-            val ratings = service.findByUserIdAndSeriesId(userId, seriesId)
+            val ratings: List<SeriesRatingInfo> = service.findByUserIdAndSeriesId(userId, seriesId)
+                .map { it.toSeriesRatingInfo() }
             call.respond(OK, ratings)
         }
 
         get("/{id}") {
             val id = call.parameters["id"]?.toIntOrNull()
             checkNotNull(id) { "The id parameter must be an integer" }
-            val rating = service.findById(id)
+            val rating: SeriesRatingInfo? = service.findById(id)?.toSeriesRatingInfo()
             if (rating == null)
                 call.respond(NotFound)
             else
@@ -40,7 +43,7 @@ fun Route.seriesRatings(service: SeriesRatingService) {
         }
 
         post("/") {
-            val seriesData = call.receive<SeriesRating>()
+            val seriesData = call.receive<SeriesRatingData>()
             service.insert(seriesData)
             call.respond(Created)
         }
@@ -48,7 +51,7 @@ fun Route.seriesRatings(service: SeriesRatingService) {
         put("/{id}") {
             val id = call.parameters["id"]?.toIntOrNull()
             checkNotNull(id) { "The id parameter must be an integer" }
-            val seriesData = call.receive<SeriesRating>()
+            val seriesData = call.receive<SeriesRatingData>()
             service.update(id, seriesData)
             call.respond(NoContent)
         }
@@ -61,3 +64,11 @@ fun Route.seriesRatings(service: SeriesRatingService) {
         }
     }
 }
+
+fun SeriesRating.toSeriesRatingInfo() = SeriesRatingInfo(
+    this.id,
+    this.userId,
+    this.seriesId,
+    this.rating,
+    this.opinion
+)

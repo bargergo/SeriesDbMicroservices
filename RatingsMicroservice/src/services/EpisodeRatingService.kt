@@ -2,6 +2,7 @@ package hu.bme.aut.ratings.services
 
 import hu.bme.aut.ratings.database.DatabaseFactory.dbQuery
 import hu.bme.aut.ratings.dtos.AverageOfRatingsResponse
+import hu.bme.aut.ratings.dtos.EpisodeRatingData
 import hu.bme.aut.ratings.models.EpisodeRating
 import hu.bme.aut.ratings.models.EpisodeRatings
 import hu.bme.aut.ratings.models.toEpisodeRating
@@ -9,7 +10,7 @@ import org.jetbrains.exposed.sql.*
 
 class EpisodeRatingService {
 
-    suspend fun findByUserIdAndSeriesIdAndSeasonIdAndEpisodeId(userId: Int?, seriesId: String?, seasonId: Int?, episodeId: Int?) = dbQuery {
+    suspend fun findByUserIdAndSeriesIdAndSeasonIdAndEpisodeId(userId: Int?, seriesId: String?, seasonId: Int?, episodeId: Int?): List<EpisodeRating> = dbQuery {
         var query = EpisodeRatings.selectAll()
         if (userId != null)
             query = query.andWhere { EpisodeRatings.userId eq userId }
@@ -25,7 +26,7 @@ class EpisodeRatingService {
         query.map { it.toEpisodeRating() }
     }
 
-    suspend fun findById(id: Int) = dbQuery {
+    suspend fun findById(id: Int): EpisodeRating? = dbQuery {
         EpisodeRatings.select { EpisodeRatings.id eq id }
             .map { it.toEpisodeRating() }
             .firstOrNull()
@@ -73,19 +74,23 @@ class EpisodeRatingService {
         )
     }
 
-    suspend fun insert(data: EpisodeRating) = dbQuery {
+    suspend fun insert(data: EpisodeRatingData) = dbQuery {
         EpisodeRatings.insert {
             it[userId] = data.userId
             it[seriesId] = data.seriesId
+            it[seasonId] = data.seasonId
+            it[episodeId] = data.episodeId
             it[rating] = data.rating
             it[opinion] = data.opinion
         }
     }
 
-    suspend fun update(id: Int, data: EpisodeRating) = dbQuery {
+    suspend fun update(id: Int, data: EpisodeRatingData) = dbQuery {
         EpisodeRatings.update({ EpisodeRatings.id eq id }) {
             it[userId] = data.userId
             it[seriesId] = data.seriesId
+            it[seasonId] = data.seasonId
+            it[episodeId] = data.episodeId
             it[rating] = data.rating
             it[opinion] = data.opinion
         }

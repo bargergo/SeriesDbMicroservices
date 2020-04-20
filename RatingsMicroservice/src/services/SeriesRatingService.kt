@@ -1,17 +1,16 @@
 package hu.bme.aut.ratings.services
 
-import hu.bme.aut.ratings.database.DatabaseFactory
 import hu.bme.aut.ratings.database.DatabaseFactory.dbQuery
 import hu.bme.aut.ratings.dtos.AverageOfRatingsResponse
+import hu.bme.aut.ratings.dtos.SeriesRatingData
 import hu.bme.aut.ratings.model.SeriesRating
 import hu.bme.aut.ratings.model.SeriesRatings
 import hu.bme.aut.ratings.model.toSeriesRating
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 class SeriesRatingService {
 
-    suspend fun findByUserIdAndSeriesId(userId: Int?, seriesId: String?) = dbQuery {
+    suspend fun findByUserIdAndSeriesId(userId: Int?, seriesId: String?): List<SeriesRating> = dbQuery {
         var query = SeriesRatings.selectAll()
         if (userId != null)
             query = query.andWhere {SeriesRatings.userId eq userId }
@@ -20,7 +19,7 @@ class SeriesRatingService {
         query.map { it.toSeriesRating() }
     }
 
-    suspend fun findById(id: Int) = dbQuery {
+    suspend fun findById(id: Int): SeriesRating? = dbQuery {
         SeriesRatings.select { SeriesRatings.id eq id }
             .map { it.toSeriesRating() }
             .firstOrNull()
@@ -41,7 +40,7 @@ class SeriesRatingService {
 
 
 
-    suspend fun insert(data: SeriesRating) = dbQuery {
+    suspend fun insert(data: SeriesRatingData) = dbQuery {
         SeriesRatings.insert {
             it[userId] = data.userId
             it[seriesId] = data.seriesId
@@ -50,7 +49,7 @@ class SeriesRatingService {
         }
     }
 
-    suspend fun update(id: Int, data: SeriesRating) = dbQuery {
+    suspend fun update(id: Int, data: SeriesRatingData) = dbQuery {
         SeriesRatings.update({ SeriesRatings.id eq id }) {
             it[userId] = data.userId
             it[seriesId] = data.seriesId

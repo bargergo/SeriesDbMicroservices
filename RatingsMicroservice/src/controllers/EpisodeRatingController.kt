@@ -1,6 +1,8 @@
 package hu.bme.aut.ratings.controllers
 
 import hu.bme.aut.ratings.dtos.AverageOfRatingsResponse
+import hu.bme.aut.ratings.dtos.EpisodeRatingData
+import hu.bme.aut.ratings.dtos.EpisodeRatingInfo
 import hu.bme.aut.ratings.models.EpisodeRating
 import hu.bme.aut.ratings.services.EpisodeRatingService
 import io.ktor.application.call
@@ -19,14 +21,15 @@ fun Route.episodeRatings(service: EpisodeRatingService) {
             val seriesId = call.request.queryParameters["seriesId"]
             val seasonId = call.request.queryParameters["seasonId"]?.toIntOrNull()
             val episodeId = call.request.queryParameters["episodeId"]?.toIntOrNull()
-            val ratings = service.findByUserIdAndSeriesIdAndSeasonIdAndEpisodeId(userId, seriesId, seasonId, episodeId)
+            val ratings: List<EpisodeRatingInfo> = service.findByUserIdAndSeriesIdAndSeasonIdAndEpisodeId(userId, seriesId, seasonId, episodeId)
+                .map { it.toEpisodeRatingInfo() }
             call.respond(OK, ratings)
         }
 
         get("/{id}") {
             val id = call.parameters["id"]?.toIntOrNull()
             checkNotNull(id) { "The id parameter must be an integer" }
-            val rating = service.findById(id)
+            val rating: EpisodeRatingInfo? = service.findById(id)?.toEpisodeRatingInfo()
             if (rating == null)
                 call.respond(NotFound)
             else
@@ -61,7 +64,7 @@ fun Route.episodeRatings(service: EpisodeRatingService) {
         }
 
         post("/") {
-            val ratingData = call.receive<EpisodeRating>()
+            val ratingData = call.receive<EpisodeRatingData>()
             service.insert(ratingData)
             call.respond(HttpStatusCode.Created)
         }
@@ -69,7 +72,7 @@ fun Route.episodeRatings(service: EpisodeRatingService) {
         put("/{id}") {
             val id = call.parameters["id"]?.toIntOrNull()
             checkNotNull(id) { "The id parameter must be an integer" }
-            val ratingData = call.receive<EpisodeRating>()
+            val ratingData = call.receive<EpisodeRatingData>()
             service.update(id, ratingData)
             call.respond(HttpStatusCode.NoContent)
         }
@@ -82,3 +85,13 @@ fun Route.episodeRatings(service: EpisodeRatingService) {
         }
     }
 }
+
+fun EpisodeRating.toEpisodeRatingInfo() = EpisodeRatingInfo(
+    this.id,
+    this.userId,
+    this.seriesId,
+    this.seasonId,
+    this.episodeId,
+    this.rating,
+    this.opinion
+)
