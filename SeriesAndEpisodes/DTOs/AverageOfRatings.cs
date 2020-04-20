@@ -8,5 +8,6 @@ namespace SeriesAndEpisodes.DTOs
     public class AverageOfRatings
     {
         public float average { get; set; }
+        public long count { get; set; }
     }
 }

@@ -2,6 +2,7 @@ package hu.bme.aut.services
 
 import hu.bme.aut.database.DatabaseFactory
 import hu.bme.aut.database.DatabaseFactory.dbQuery
+import hu.bme.aut.dtos.AverageOfRatingsResponse
 import hu.bme.aut.model.SeriesRating
 import hu.bme.aut.model.SeriesRatings
 import hu.bme.aut.model.toSeriesRating
@@ -25,12 +26,17 @@ class SeriesRatingService {
             .firstOrNull()
     }
 
-    suspend fun getAverage(seriesId: String): Float = dbQuery {
+    suspend fun getAverage(seriesId: String): AverageOfRatingsResponse = dbQuery {
         val avgColumn = SeriesRatings.rating.avg()
+        val countColumn = SeriesRatings.id.count()
         val result = SeriesRatings.slice(
-            avgColumn
+            avgColumn,
+            countColumn
         ).select { SeriesRatings.seriesId eq seriesId }.first()
-        result[avgColumn]?.toFloat() ?: 0f
+        AverageOfRatingsResponse(
+            result[avgColumn]?.toFloat() ?: 0f,
+            result[countColumn]
+        )
     }
 
 

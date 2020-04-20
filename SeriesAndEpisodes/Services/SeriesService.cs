@@ -51,7 +51,7 @@ namespace SeriesAndEpisodes.Services
             var response = await _httpClient.GetAsync($"/SeriesRatings/Series/{id}/Average");
             response.EnsureSuccessStatusCode();
             using var responseStream = await response.Content.ReadAsStreamAsync();
-            var averageRating = (await JsonSerializer.DeserializeAsync<AverageOfRatings>(responseStream)).average;
+            var ratingStats = (await JsonSerializer.DeserializeAsync<AverageOfRatings>(responseStream));
             return new SeriesDetail
             {
                 Id = series.Id,
@@ -72,7 +72,8 @@ namespace SeriesAndEpisodes.Services
                     }).ToList(),
                 }).ToList(),
                 ImageId = series.ImageId,
-                AverageRating = averageRating
+                AverageRating = ratingStats.average,
+                NumberOfRatings = ratingStats.count
             };
         }
 

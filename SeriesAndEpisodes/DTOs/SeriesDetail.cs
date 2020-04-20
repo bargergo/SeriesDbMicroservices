@@ -9,5 +9,6 @@ namespace SeriesAndEpisodes.DTOs
     {
         public List<SeasonDetail> Seasons { get; set; }
         public float AverageRating { get; set; }
+        public long NumberOfRatings { get; set; }
     }
 }

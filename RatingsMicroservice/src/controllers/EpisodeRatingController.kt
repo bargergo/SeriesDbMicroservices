@@ -36,8 +36,8 @@ fun Route.episodeRatings(service: EpisodeRatingService) {
         get("/Series/{seriesId}/Average") {
             val seriesId = call.parameters["seriesId"]
             checkNotNull(seriesId)
-            val averageOfRatings: Float = service.getAverageForSeries(seriesId)
-            call.respond(OK, AverageOfRatingsResponse(averageOfRatings))
+            val result: AverageOfRatingsResponse = service.getAverageForSeries(seriesId)
+            call.respond(OK, result)
         }
 
         get("/Series/{seriesId}/Season/{seasonId}/Average") {
@@ -45,8 +45,8 @@ fun Route.episodeRatings(service: EpisodeRatingService) {
             val seasonId = call.parameters["seasonId"]?.toIntOrNull()
             checkNotNull(seriesId)
             checkNotNull(seasonId)
-            val averageOfRatings: Float = service.getAverageForSeason(seriesId, seasonId)
-            call.respond(OK, AverageOfRatingsResponse(averageOfRatings))
+            val result: AverageOfRatingsResponse = service.getAverageForSeason(seriesId, seasonId)
+            call.respond(OK, result)
         }
 
         get("/Series/{seriesId}/Season/{seasonId}/Episode/{episodeId}/Average") {
@@ -56,8 +56,8 @@ fun Route.episodeRatings(service: EpisodeRatingService) {
             checkNotNull(seriesId)
             checkNotNull(seasonId)
             checkNotNull(episodeId)
-            val averageOfRatings: Float = service.getAverageForEpisode(seriesId, seasonId, episodeId)
-            call.respond(OK, AverageOfRatingsResponse(averageOfRatings))
+            val result: AverageOfRatingsResponse = service.getAverageForEpisode(seriesId, seasonId, episodeId)
+            call.respond(OK, result)
         }
 
         post("/") {
