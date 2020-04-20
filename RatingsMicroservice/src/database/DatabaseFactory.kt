@@ -3,6 +3,7 @@ package hu.bme.aut.database
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import hu.bme.aut.model.SeriesRatings
+import hu.bme.aut.models.EpisodeRatings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.exposed.sql.Database
@@ -17,7 +18,8 @@ object DatabaseFactory {
         Database.connect(hikari())
         transaction {
             SchemaUtils.createMissingTablesAndColumns(
-                SeriesRatings
+                SeriesRatings,
+                EpisodeRatings
             )
         }
     }

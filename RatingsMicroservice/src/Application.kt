@@ -1,8 +1,10 @@
 package hu.bme.aut
 
 import com.fasterxml.jackson.databind.SerializationFeature
+import hu.bme.aut.controllers.episodeRatings
 import hu.bme.aut.controllers.seriesRatings
 import hu.bme.aut.database.DatabaseFactory
+import hu.bme.aut.services.EpisodeRatingService
 import hu.bme.aut.services.SeriesRatingService
 import io.ktor.application.Application
 import io.ktor.application.call
@@ -47,6 +49,7 @@ fun Application.module(testing: Boolean = false) {
 
     install(Routing) {
         seriesRatings(SeriesRatingService())
+        episodeRatings(EpisodeRatingService())
     }
 }
 
