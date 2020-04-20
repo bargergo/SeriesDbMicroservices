@@ -48,7 +48,7 @@ namespace SeriesAndEpisodes.Services
 
         public async Task<SeriesDetail> GetAsync(string id) {
             var series = (await _collection.FindAsync(series => series.Id == id)).FirstOrDefault();
-            var response = await _httpClient.GetAsync($"/SeriesRatings/average/{id}");
+            var response = await _httpClient.GetAsync($"/SeriesRatings/Series/{id}/Average");
             response.EnsureSuccessStatusCode();
             using var responseStream = await response.Content.ReadAsStreamAsync();
             var averageRating = (await JsonSerializer.DeserializeAsync<AverageOfRatings>(responseStream)).average;

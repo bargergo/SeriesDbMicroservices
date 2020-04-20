@@ -32,7 +32,7 @@ fun Route.seriesRatings(service: SeriesRatingService) {
                 call.respond(OK, rating)
         }
 
-        get("/average/{seriesId}") {
+        get("/Series/{seriesId}/Average") {
             val seriesId = call.parameters["seriesId"]
             checkNotNull(seriesId)
             val averageOfRatings: Float = service.getAverage(seriesId)
