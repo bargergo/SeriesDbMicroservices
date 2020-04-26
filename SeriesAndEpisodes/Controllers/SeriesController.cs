@@ -22,12 +22,12 @@ namespace SeriesAndEpisodes.Controllers
             _seriesService = seriesService;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<List<SeriesInfo>>> GetAsync() =>
+        [HttpGet(Name = "GetAllSeries")]
+        public async Task<ActionResult<List<SeriesInfo>>> GetAll() =>
             await _seriesService.GetAsync();
 
         [HttpGet("{id:length(24)}", Name = "GetSeries")]
-        public async Task<ActionResult<SeriesDetail>> GetAsync(string id)
+        public async Task<ActionResult<SeriesDetail>> Get(string id)
         {
             var series = await _seriesService.GetAsync(id);
 
@@ -39,16 +39,16 @@ namespace SeriesAndEpisodes.Controllers
             return series;
         }
 
-        [HttpPost]
-        public async Task<ActionResult<SeriesDetail>> CreateAsync(UpsertSeriesRequest series)
+        [HttpPost(Name = "CreateSeries")]
+        public async Task<ActionResult<SeriesDetail>> Create(UpsertSeriesRequest series)
         {
             var createdSeries = await _seriesService.CreateAsync(series);
 
             return CreatedAtRoute("GetSeries", new { id = createdSeries.Id.ToString() }, createdSeries);
         }
 
-        [HttpPut("{id:length(24)}")]
-        public async Task<IActionResult> UpdateAsync(string id, UpsertSeriesRequest seriesIn)
+        [HttpPut("{id:length(24)}", Name = "UpdateSeries")]
+        public async Task<IActionResult> Update(string id, UpsertSeriesRequest seriesIn)
         {
             var series = _seriesService.GetAsync(id);
 
@@ -62,7 +62,7 @@ namespace SeriesAndEpisodes.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{id:length(24)}")]
+        [HttpDelete("{id:length(24)}", Name = "DeleteSeries")]
         public async Task<IActionResult> DeleteAsync(string id)
         {
             var series = await _seriesService.GetAsync(id);
@@ -77,14 +77,14 @@ namespace SeriesAndEpisodes.Controllers
             return NoContent();
         }
 
-        [HttpPost("{id:length(24)}/image")]
+        [HttpPost("{id:length(24)}/image", Name = "UploadImage")]
         public async Task<IActionResult> UploadImage(string id, IFormFile image)
         {
             await _seriesService.UploadImage(id, image);
             return NoContent();
         }
 
-        [HttpPost("{id:length(24)}/Season/{seasonId:int}")]
+        [HttpPost("{id:length(24)}/Season/{seasonId:int}", Name = "AddEpisode")]
         public async Task<IActionResult> AddEpisode(string id, int seasonId, CreateEpisodeRequest request)
         {
             var episode = await _seriesService.GetEpisode(id, seasonId, request.Id);
@@ -96,14 +96,14 @@ namespace SeriesAndEpisodes.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{id:length(24)}/Season/{seasonId:int}/Episode/{episodeId:int}")]
+        [HttpDelete("{id:length(24)}/Season/{seasonId:int}/Episode/{episodeId:int}", Name = "DeleteEpisode")]
         public async Task<IActionResult> DeleteEpisode(string id, int seasonId, int episodeId)
         {
             await _seriesService.DeleteEpisode(id, seasonId, episodeId);
             return NoContent();
         }
 
-        [HttpPut("{id:length(24)}/Season/{seasonId:int}/Episode/{episodeId:int}")]
+        [HttpPut("{id:length(24)}/Season/{seasonId:int}/Episode/{episodeId:int}", Name = "UpdateEpisode")]
         public async Task<IActionResult> EditEpisode(string id, int seasonId, int episodeId, CreateEpisodeRequest request)
         {
             var episodeToUpdate = await _seriesService.GetEpisode(id, seasonId, episodeId);
@@ -123,7 +123,7 @@ namespace SeriesAndEpisodes.Controllers
             return NoContent();
         }
 
-        [HttpGet("{id:length(24)}/Season/{seasonId:int}/Episode/{episodeId:int}")]
+        [HttpGet("{id:length(24)}/Season/{seasonId:int}/Episode/{episodeId:int}", Name = "GetEpisode")]
         public async Task<ActionResult<EpisodeDetail>> GetEpisode(string id, int seasonId, int episodeId)
         {
             var episode = await _seriesService.GetEpisode(id, seasonId, episodeId);

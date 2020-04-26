@@ -19,7 +19,7 @@ namespace SeriesAndEpisodes.Controllers
             _fileService = fileService;
         }
 
-        [HttpGet("{id:length(24)}")]
+        [HttpGet("{id:length(24)}", Name = "GetImage")]
         public async Task<IActionResult> DownloadImage(string id)
         {
             var bytes = await _fileService.DownloadImage(id);
