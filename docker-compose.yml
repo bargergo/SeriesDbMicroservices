@@ -47,8 +47,8 @@ services:
 
   ratings:
     build:
-      context: .
-      dockerfile: RatingsMicroservice/compose.Dockerfile
+      context: RatingsMicroservice
+      dockerfile: Dockerfile
     container_name: "ratings"
     environment:
       db__jdbcUrl: jdbc:mysql://mysql-ratingdb:3306/ratings
