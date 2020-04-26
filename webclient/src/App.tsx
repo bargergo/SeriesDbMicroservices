@@ -1,26 +1,51 @@
-import React from 'react';
+import React, { Component } from 'react';
+import { SeriesClient } from './typings/SeriesAndEpisodesClients';
 import logo from './logo.svg';
 import './App.css';
+import Series from './Series';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+
+class App extends Component {
+
+  state = {
+    series: []
+  }
+
+  componentDidMount() {
+    const client: SeriesClient = new SeriesClient("http://localhost");
+    client.getAllSeries()
+      .then(response => 
+        this.setState({series: response})
+      )
+      .catch(error => 
+        console.log(error)
+      );
+  }
+
+  render() {
+    console.log(this.state);
+    return (
+      <div className="App">
+        <header className="App-header">
+          <img src={logo} className="App-logo" alt="logo" />
+          <p>
+            Edit <code>src/App.tsx</code> and save to reload.
+          </p>
+          <div>{this.state.series.map(series => <Series data={series} />)}</div>
+          <a
+            className="App-link"
+            href="https://reactjs.org"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Learn React
+          </a>
+        
+        </header>
+      </div>
+    );
+  }
+  
 }
 
 export default App;
