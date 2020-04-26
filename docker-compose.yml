@@ -26,7 +26,7 @@ services:
       SeriesDbSettings__DatabaseName: "SeriesDb"
       RatingsServiceSettings__BaseAddress: "http://ratings:8080/"
     ports:
-      - "3000:80"
+      - "3001:80"
     depends_on:
       - mongodb-seriesdb
     labels:
@@ -55,7 +55,7 @@ services:
       db__username: root
       db__password: helloworld
     ports:
-      - "3001:8080"
+      - "3002:8080"
     depends_on:
       - mysql-ratingdb
     labels:
