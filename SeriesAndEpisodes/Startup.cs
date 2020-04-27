@@ -40,7 +40,16 @@ namespace SeriesAndEpisodes
                 sp.GetRequiredService<IOptions<SeriesDbSettings>>().Value);
 
             services.AddSingleton<SeriesService>();
-            services.AddSingleton<FileService>(); 
+            services.AddSingleton<FileService>();
+
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(
+                    builder =>
+                    {
+                        builder.WithOrigins(Environment.GetEnvironmentVariable("WebclientAddress"));
+                    });
+            });
 
             services.AddControllers();
 
@@ -66,7 +75,7 @@ namespace SeriesAndEpisodes
             });
 
             app.UseRouting();
-
+            app.UseCors();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

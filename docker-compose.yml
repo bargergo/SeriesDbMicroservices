@@ -25,6 +25,7 @@ services:
       SeriesDbSettings__ConnectionString: "mongodb://root:rootpassword@mongodb-seriesdb:27017"
       SeriesDbSettings__DatabaseName: "SeriesDb"
       RatingsServiceSettings__BaseAddress: "http://ratings:8080/"
+      WebclientAddress: "http://localhost:5000"
     ports:
       - "3001:80"
     depends_on:
