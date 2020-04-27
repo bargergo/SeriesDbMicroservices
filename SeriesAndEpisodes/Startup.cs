@@ -42,15 +42,6 @@ namespace SeriesAndEpisodes
             services.AddSingleton<SeriesService>();
             services.AddSingleton<FileService>();
 
-            services.AddCors(options =>
-            {
-                options.AddDefaultPolicy(
-                    builder =>
-                    {
-                        builder.WithOrigins(Environment.GetEnvironmentVariable("WebclientAddress"));
-                    });
-            });
-
             services.AddControllers();
 
             services.AddSwaggerGen(c =>
@@ -75,7 +66,6 @@ namespace SeriesAndEpisodes
             });
 
             app.UseRouting();
-            app.UseCors();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

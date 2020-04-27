@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SeriesClient } from './typings/SeriesAndEpisodesClients';
+import { SeriesClient, SeriesInfo } from './typings/SeriesAndEpisodesClients';
 import logo from './logo.svg';
 import './App.css';
 import Series from './Series';
@@ -7,12 +7,12 @@ import Series from './Series';
 
 class App extends Component {
 
-  state = {
+  state: { series: SeriesInfo[] } = {
     series: []
   }
 
   componentDidMount() {
-    const client: SeriesClient = new SeriesClient("http://localhost");
+    const client: SeriesClient = new SeriesClient(".");
     client.getAllSeries()
       .then(response => 
         this.setState({series: response})
@@ -31,7 +31,7 @@ class App extends Component {
           <p>
             Edit <code>src/App.tsx</code> and save to reload.
           </p>
-          <div>{this.state.series.map(series => <Series data={series} />)}</div>
+          <div>{this.state.series.map(series => <Series data={series} key={series.id} />)}</div>
           <a
             className="App-link"
             href="https://reactjs.org"
