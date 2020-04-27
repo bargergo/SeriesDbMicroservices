@@ -15,7 +15,7 @@ import io.ktor.response.respond
 import io.ktor.routing.*
 
 fun Route.seriesRatings(service: SeriesRatingService) {
-    route("/SeriesRatings") {
+    route("/api/SeriesRatings") {
 
         get("/") {
             val userId = call.request.queryParameters["userId"]?.toIntOrNull()

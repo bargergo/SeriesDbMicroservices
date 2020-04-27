@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace SeriesAndEpisodes.Controllers
 {
-    [Route("Series")]
+    [Route("api/Series")]
     [ApiController]
     public class SeriesController : ControllerBase
     {

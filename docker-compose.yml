@@ -25,14 +25,14 @@ services:
       SeriesDbSettings__ConnectionString: "mongodb://root:rootpassword@mongodb-seriesdb:27017"
       SeriesDbSettings__DatabaseName: "SeriesDb"
       RatingsServiceSettings__BaseAddress: "http://ratings:8080/"
-      WebclientAddress: "http://localhost:5000"
+      WebclientAddress: "http://localhost:3000"
     ports:
       - "3001:80"
     depends_on:
       - mongodb-seriesdb
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.series-and-episodes.rule=PathPrefix(`/Series`)"
+      - "traefik.http.routers.series-and-episodes.rule=PathPrefix(`/api/Series`) || PathPrefix(`/api/Images`)"
       - "traefik.http.routers.series-and-episodes.entrypoints=web"
 
   mongodb-seriesdb:
@@ -61,7 +61,7 @@ services:
       - mysql-ratingdb
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.ratings.rule=PathPrefix(`/SeriesRatings`) || PathPrefix(`/EpisodeRatings`)"
+      - "traefik.http.routers.ratings.rule=PathPrefix(`/api/SeriesRatings`) || PathPrefix(`/api/EpisodeRatings`)"
       - "traefik.http.routers.ratings.entrypoints=web"
 
   mysql-ratingdb:
@@ -82,6 +82,10 @@ services:
     container_name: "webclient"
     ports:
       - "5000:80"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.webclient.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.webclient.entrypoints=web"
 
 volumes:
   mongodb-data:

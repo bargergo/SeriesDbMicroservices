@@ -23,7 +23,7 @@ export class ImageClient {
      * @return Success
      */
     getImage(id: string | null): Promise<void> {
-        let url_ = this.baseUrl + "/Image/{id}";
+        let url_ = this.baseUrl + "/api/Images/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id));
@@ -77,7 +77,7 @@ export class SeriesClient {
      * @return Success
      */
     getAllSeries(): Promise<SeriesInfo[]> {
-        let url_ = this.baseUrl + "/Series";
+        let url_ = this.baseUrl + "/api/Series";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ = <AxiosRequestConfig>{
@@ -126,7 +126,7 @@ export class SeriesClient {
      * @return Success
      */
     createSeries(body: UpsertSeriesRequest | undefined): Promise<SeriesDetail> {
-        let url_ = this.baseUrl + "/Series";
+        let url_ = this.baseUrl + "/api/Series";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(body);
@@ -174,7 +174,7 @@ export class SeriesClient {
      * @return Success
      */
     getSeries(id: string | null): Promise<SeriesDetail> {
-        let url_ = this.baseUrl + "/Series/{id}";
+        let url_ = this.baseUrl + "/api/Series/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id));
@@ -222,7 +222,7 @@ export class SeriesClient {
      * @return Success
      */
     updateSeries(id: string | null, body: UpsertSeriesRequest | undefined): Promise<void> {
-        let url_ = this.baseUrl + "/Series/{id}";
+        let url_ = this.baseUrl + "/api/Series/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id));
@@ -269,7 +269,7 @@ export class SeriesClient {
      * @return Success
      */
     deleteSeries(id: string | null): Promise<void> {
-        let url_ = this.baseUrl + "/Series/{id}";
+        let url_ = this.baseUrl + "/api/Series/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id));
@@ -313,7 +313,7 @@ export class SeriesClient {
      * @return Success
      */
     uploadImage(id: string | null, body: Blob | undefined): Promise<void> {
-        let url_ = this.baseUrl + "/Series/{id}/image";
+        let url_ = this.baseUrl + "/api/Series/{id}/image";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id));
@@ -361,7 +361,7 @@ export class SeriesClient {
      * @return Success
      */
     addEpisode(id: string | null, seasonId: number, body: CreateEpisodeRequest | undefined): Promise<void> {
-        let url_ = this.baseUrl + "/Series/{id}/Season/{seasonId}";
+        let url_ = this.baseUrl + "/api/Series/{id}/Season/{seasonId}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id));
@@ -411,7 +411,7 @@ export class SeriesClient {
      * @return Success
      */
     deleteEpisode(id: string | null, seasonId: number, episodeId: number): Promise<void> {
-        let url_ = this.baseUrl + "/Series/{id}/Season/{seasonId}/Episode/{episodeId}";
+        let url_ = this.baseUrl + "/api/Series/{id}/Season/{seasonId}/Episode/{episodeId}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id));
@@ -461,7 +461,7 @@ export class SeriesClient {
      * @return Success
      */
     updateEpisode(id: string | null, seasonId: number, episodeId: number, body: CreateEpisodeRequest | undefined): Promise<void> {
-        let url_ = this.baseUrl + "/Series/{id}/Season/{seasonId}/Episode/{episodeId}";
+        let url_ = this.baseUrl + "/api/Series/{id}/Season/{seasonId}/Episode/{episodeId}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id));
@@ -514,7 +514,7 @@ export class SeriesClient {
      * @return Success
      */
     getEpisode(id: string | null, seasonId: number, episodeId: number): Promise<EpisodeDetail> {
-        let url_ = this.baseUrl + "/Series/{id}/Season/{seasonId}/Episode/{episodeId}";
+        let url_ = this.baseUrl + "/api/Series/{id}/Season/{seasonId}/Episode/{episodeId}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id));

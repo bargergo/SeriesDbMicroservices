@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SeriesAndEpisodes.Controllers
 {
-    [Route("Image")]
+    [Route("api/Images")]
     [ApiController]
     public class ImageController : ControllerBase
     {
