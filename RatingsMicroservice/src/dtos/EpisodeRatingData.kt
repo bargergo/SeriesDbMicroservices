@@ -1,5 +1,6 @@
 package hu.bme.aut.ratings.dtos
 
+import hu.bme.aut.ratings.validators.BetweenIntegers
 import hu.bme.aut.ratings.validators.ExactLength
 
 data class EpisodeRatingData(
@@ -7,6 +8,6 @@ data class EpisodeRatingData(
     @ExactLength(24) val seriesId: String,
     val seasonId: Int,
     val episodeId: Int,
-    val rating: Int,
+    @BetweenIntegers(1, 10) val rating: Int,
     val opinion: String
 )
