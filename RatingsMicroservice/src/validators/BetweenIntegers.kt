@@ -12,7 +12,6 @@ object BetweenIntegersValidator: AValidator<Int, BetweenIntegers>(Int::class, Be
     override fun validate(subject: Int?, annotation: BetweenIntegers): Int? {
         if (subject == null || subject < annotation.lowerBound || subject > annotation.upperBound)
             throw IllegalArgumentException("Invalid parameters")
-        subject?.
         return subject
     }
 }
