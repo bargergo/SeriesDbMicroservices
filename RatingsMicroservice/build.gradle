@@ -32,6 +32,7 @@ repositories {
     mavenLocal()
     jcenter()
     maven { url 'https://kotlin.bintray.com/ktor' }
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
@@ -46,6 +47,7 @@ dependencies {
     implementation "org.jetbrains.exposed:exposed-jdbc:$exposed_version"
     implementation "com.zaxxer:HikariCP:3.4.2"
     implementation"mysql:mysql-connector-java:8.0.19"
+    implementation 'com.github.papsign:Ktor-OpenAPI-Generator:-SNAPSHOT'
     testImplementation "io.ktor:ktor-server-tests:$ktor_version"
 }
 

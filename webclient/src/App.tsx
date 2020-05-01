@@ -3,12 +3,14 @@ import { SeriesClient, SeriesInfo } from './typings/SeriesAndEpisodesClients';
 import logo from './logo.svg';
 import './App.css';
 import Series from './Series';
+import { SeriesRatingInfo, Client } from './typings/RatingsClients';
 
 
 class App extends Component {
 
-  state: { series: SeriesInfo[] } = {
-    series: []
+  state: { series: SeriesInfo[], seriesRatings: SeriesRatingInfo[] } = {
+    series: [],
+    seriesRatings: []
   }
 
   componentDidMount() {
@@ -20,6 +22,14 @@ class App extends Component {
       .catch(error => 
         console.log(error)
       );
+    const ratingsClient: Client = new Client(".");
+    ratingsClient.seriesRatingsAll(undefined, undefined)
+    .then(response => 
+      this.setState({seriesRatings: response})
+    )
+    .catch(error => 
+      console.log(error)
+    );
   }
 
   render() {

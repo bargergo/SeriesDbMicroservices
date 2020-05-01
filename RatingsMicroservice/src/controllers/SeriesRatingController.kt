@@ -1,66 +1,64 @@
 package hu.bme.aut.ratings.controllers
 
-import hu.bme.aut.ratings.dtos.AverageOfRatingsResponse
-import hu.bme.aut.ratings.dtos.SeriesRatingData
-import hu.bme.aut.ratings.dtos.SeriesRatingInfo
+import com.papsign.ktor.openapigen.route.info
+import com.papsign.ktor.openapigen.route.path.normal.*
+import com.papsign.ktor.openapigen.route.response.respond
+import com.papsign.ktor.openapigen.route.route
+import hu.bme.aut.ratings.dtos.*
 import hu.bme.aut.ratings.model.SeriesRating
 import hu.bme.aut.ratings.services.SeriesRatingService
-import io.ktor.application.call
-import io.ktor.http.HttpStatusCode.Companion.Created
-import io.ktor.http.HttpStatusCode.Companion.NoContent
-import io.ktor.http.HttpStatusCode.Companion.NotFound
-import io.ktor.http.HttpStatusCode.Companion.OK
-import io.ktor.request.receive
-import io.ktor.response.respond
-import io.ktor.routing.*
+import io.ktor.features.NotFoundException
 
-fun Route.seriesRatings(service: SeriesRatingService) {
+fun NormalOpenAPIRoute.seriesRatings(service: SeriesRatingService) {
     route("/api/SeriesRatings") {
 
-        get("/") {
-            val userId = call.request.queryParameters["userId"]?.toIntOrNull()
-            val seriesId = call.request.queryParameters["seriesId"]
+        get<GetSeriesRatingsQueryParams, List<SeriesRatingInfo>>(
+            info("Get Episodes Ratings Endpoint", "This is a Get Episodes Ratings Endpoint"),
+            example = listOf(
+                SeriesRatingInfo(1, 2, "5e9215f27773ca0066637c26", 1, "Not good, not terrible")
+            )
+        ) { params ->
+            val userId = params.userId
+            val seriesId = params.seriesId
             val ratings: List<SeriesRatingInfo> = service.findByUserIdAndSeriesId(userId, seriesId)
                 .map { it.toSeriesRatingInfo() }
-            call.respond(OK, ratings)
+            respond(ratings)
         }
 
-        get("/{id}") {
-            val id = call.parameters["id"]?.toIntOrNull()
-            checkNotNull(id) { "The id parameter must be an integer" }
+        // {id}
+        get<SeriesRatingIdParam, SeriesRatingInfo> { params ->
+            val id = params.id
             val rating: SeriesRatingInfo? = service.findById(id)?.toSeriesRatingInfo()
             if (rating == null)
-                call.respond(NotFound)
+                throw NotFoundException()
             else
-                call.respond(OK, rating)
+                respond(rating)
         }
 
-        get("/Series/{seriesId}/Average") {
-            val seriesId = call.parameters["seriesId"]
-            checkNotNull(seriesId)
+        // Series/{seriesId}/Average
+        get<GetAverageRatingForSeriesParams, AverageOfRatingsResponse> { params ->
+            val seriesId = params.seriesId
             val result: AverageOfRatingsResponse = service.getAverage(seriesId)
-            call.respond(OK, result)
+            respond(result)
         }
 
-        post("/") {
-            val seriesData = call.receive<SeriesRatingData>()
+        post<Unit, Created201Response, SeriesRatingData> { _, seriesData ->
             service.insert(seriesData)
-            call.respond(Created)
+            respond(Created201Response())
         }
 
-        put("/{id}") {
-            val id = call.parameters["id"]?.toIntOrNull()
-            checkNotNull(id) { "The id parameter must be an integer" }
-            val seriesData = call.receive<SeriesRatingData>()
+        // {id}
+        put<SeriesRatingIdParam, NoContent204Response, SeriesRatingData> { params, seriesData ->
+            val id = params.id
             service.update(id, seriesData)
-            call.respond(NoContent)
+            respond(NoContent204Response())
         }
 
-        delete("/{id}") {
-            val id = call.parameters["id"]?.toIntOrNull()
-            checkNotNull(id) { "The id parameter must be an integer" }
+        // {id}
+        delete<SeriesRatingIdParam, NoContent204Response> { params ->
+            val id = params.id
             service.delete(id)
-            call.respond(NoContent)
+            respond(NoContent204Response())
         }
     }
 }

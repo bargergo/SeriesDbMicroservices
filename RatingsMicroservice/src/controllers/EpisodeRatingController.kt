@@ -1,87 +1,84 @@
 package hu.bme.aut.ratings.controllers
 
-import hu.bme.aut.ratings.dtos.AverageOfRatingsResponse
-import hu.bme.aut.ratings.dtos.EpisodeRatingData
-import hu.bme.aut.ratings.dtos.EpisodeRatingInfo
+import com.papsign.ktor.openapigen.route.info
+import com.papsign.ktor.openapigen.route.path.normal.*
+import com.papsign.ktor.openapigen.route.response.respond
+import com.papsign.ktor.openapigen.route.route
+import hu.bme.aut.ratings.dtos.*
 import hu.bme.aut.ratings.models.EpisodeRating
 import hu.bme.aut.ratings.services.EpisodeRatingService
-import io.ktor.application.call
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.HttpStatusCode.Companion.NotFound
-import io.ktor.http.HttpStatusCode.Companion.OK
-import io.ktor.request.receive
-import io.ktor.response.respond
-import io.ktor.routing.*
+import io.ktor.features.NotFoundException
 
-fun Route.episodeRatings(service: EpisodeRatingService) {
+fun NormalOpenAPIRoute.episodeRatings(service: EpisodeRatingService) {
     route("/api/EpisodeRatings") {
 
-        get("/") {
-            val userId = call.request.queryParameters["userId"]?.toIntOrNull()
-            val seriesId = call.request.queryParameters["seriesId"]
-            val seasonId = call.request.queryParameters["seasonId"]?.toIntOrNull()
-            val episodeId = call.request.queryParameters["episodeId"]?.toIntOrNull()
-            val ratings: List<EpisodeRatingInfo> = service.findByUserIdAndSeriesIdAndSeasonIdAndEpisodeId(userId, seriesId, seasonId, episodeId)
-                .map { it.toEpisodeRatingInfo() }
-            call.respond(OK, ratings)
-        }
+        get<GetEpisodeRatingsQueryParams, List<EpisodeRatingInfo>>(
+            info("Get Episodes Ratings Endpoint", "This is a Get Episodes Ratings Endpoint"),
+            example = listOf(
+                EpisodeRatingInfo(1, 2, "5e9215f27773ca0066637c26", 1, 1, 5, "Not good, not terrible")
+            )) { params ->
+                val userId = params.userId
+                val seriesId = params.seriesId
+                val seasonId = params.seasonId
+                val episodeId = params.episodeId
+                val ratings: List<EpisodeRatingInfo> =
+                    service.findByUserIdAndSeriesIdAndSeasonIdAndEpisodeId(userId, seriesId, seasonId, episodeId)
+                        .map { it.toEpisodeRatingInfo() }
+                respond(ratings)
+            }
 
-        get("/{id}") {
-            val id = call.parameters["id"]?.toIntOrNull()
+        // {id}
+        get<EpisodeRatingIdParam, EpisodeRatingInfo> { params ->
+            val id = params.id
             checkNotNull(id) { "The id parameter must be an integer" }
             val rating: EpisodeRatingInfo? = service.findById(id)?.toEpisodeRatingInfo()
             if (rating == null)
-                call.respond(NotFound)
+                throw NotFoundException()
             else
-                call.respond(OK, rating)
+                respond(rating)
         }
 
-        get("/Series/{seriesId}/Average") {
-            val seriesId = call.parameters["seriesId"]
-            checkNotNull(seriesId)
+        // Series/{seriesId}/Average
+        get<GetAverageRatingForSeriesParams, AverageOfRatingsResponse> { params ->
+            val seriesId = params.seriesId
             val result: AverageOfRatingsResponse = service.getAverageForSeries(seriesId)
-            call.respond(OK, result)
+            respond(result)
         }
 
-        get("/Series/{seriesId}/Season/{seasonId}/Average") {
-            val seriesId = call.parameters["seriesId"]
-            val seasonId = call.parameters["seasonId"]?.toIntOrNull()
-            checkNotNull(seriesId)
-            checkNotNull(seasonId)
+        // Series/{seriesId}/Season/{seasonId}/Average
+        get<GetAverageRatingForSeasonParams, AverageOfRatingsResponse> { params ->
+            val seriesId = params.seriesId
+            val seasonId = params.seasonId
             val result: AverageOfRatingsResponse = service.getAverageForSeason(seriesId, seasonId)
-            call.respond(OK, result)
+            respond(result)
         }
 
-        get("/Series/{seriesId}/Season/{seasonId}/Episode/{episodeId}/Average") {
-            val seriesId = call.parameters["seriesId"]
-            val seasonId = call.parameters["seasonId"]?.toIntOrNull()
-            val episodeId = call.parameters["episodeId"]?.toIntOrNull()
-            checkNotNull(seriesId)
-            checkNotNull(seasonId)
-            checkNotNull(episodeId)
+        // Series/{seriesId}/Season/{seasonId}/Episode/{episodeId}/Average
+        get<GetAverageRatingForEpisodeParams, AverageOfRatingsResponse> { params ->
+            val seriesId = params.seriesId
+            val seasonId = params.seasonId
+            val episodeId = params.episodeId
             val result: AverageOfRatingsResponse = service.getAverageForEpisode(seriesId, seasonId, episodeId)
-            call.respond(OK, result)
+            respond(result)
         }
 
-        post("/") {
-            val ratingData = call.receive<EpisodeRatingData>()
+        post<Unit, Created201Response, EpisodeRatingData> { _, ratingData ->
             service.insert(ratingData)
-            call.respond(HttpStatusCode.Created)
+            respond(Created201Response())
         }
 
-        put("/{id}") {
-            val id = call.parameters["id"]?.toIntOrNull()
-            checkNotNull(id) { "The id parameter must be an integer" }
-            val ratingData = call.receive<EpisodeRatingData>()
+        // {id}
+        put<EpisodeRatingIdParam, NoContent204Response, EpisodeRatingData> { params, ratingData ->
+            val id = params.id
             service.update(id, ratingData)
-            call.respond(HttpStatusCode.NoContent)
+            respond(NoContent204Response())
         }
 
-        delete("/{id}") {
-            val id = call.parameters["id"]?.toIntOrNull()
-            checkNotNull(id) { "The id parameter must be an integer" }
+        // {id}
+        delete<EpisodeRatingIdParam, NoContent204Response> { params ->
+            val id = params.id
             service.delete(id)
-            call.respond(HttpStatusCode.NoContent)
+            respond(NoContent204Response())
         }
     }
 }

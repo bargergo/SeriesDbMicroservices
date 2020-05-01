@@ -1,6 +1,9 @@
 package hu.bme.aut.ratings.dtos
 
-class EpisodeRatingInfo(
+import com.papsign.ktor.openapigen.annotations.Response
+
+@Response
+data class EpisodeRatingInfo(
     val id: Int,
     val userId: Int,
     val seriesId: String,
