@@ -12,7 +12,7 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "Series",
+      "launchUrl": "api/Series",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
@@ -20,7 +20,7 @@
     "SeriesAndEpisodes": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "Series",
+      "launchUrl": "api/Series",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
@@ -29,7 +29,7 @@
     "Docker": {
       "commandName": "Docker",
       "launchBrowser": true,
-      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/Series",
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/api/Series",
       "publishAllPorts": true
     }
   }
