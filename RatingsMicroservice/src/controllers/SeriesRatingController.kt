@@ -50,6 +50,9 @@ fun NormalOpenAPIRoute.seriesRatings(service: SeriesRatingService) {
         // {id}
         put<SeriesRatingIdParam, NoContent204Response, SeriesRatingData> { params, seriesData ->
             val id = params.id
+            val rating: SeriesRatingInfo? = service.findById(id)?.toSeriesRatingInfo()
+            if (rating == null)
+                throw NotFoundException()
             service.update(id, seriesData)
             respond(NoContent204Response())
         }
