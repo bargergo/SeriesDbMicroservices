@@ -52,7 +52,7 @@ fun Application.module(testing: Boolean = false) {
     install(OpenAPIGen) {
         // basic info
         info {
-            version = "0.0.1"
+            version = "v1"
             title = "Ratings API"
             description = "API for series and episode ratings"
         }
@@ -75,12 +75,12 @@ fun Application.module(testing: Boolean = false) {
 
     install(Routing) {
         routing {
-            get("/openapi.json") {
+            get("/swagger/v1/swagger.json") {
                 call.respond(this@module.openAPIGen.api)
             }
 
             get("/") {
-                call.respondRedirect("/swagger-ui/index.html?url=/openapi.json", true)
+                call.respondRedirect("/swagger-ui/index.html?url=/swagger/v1/swagger.json", true)
             }
         }
 
