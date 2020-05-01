@@ -19,7 +19,7 @@ export class SeriesRatingsClient {
         this.baseUrl = baseUrl ? baseUrl : "";
     }
 
-    seriesRatings(body: SeriesRatingData | undefined): Promise<Created201Response> {
+    createSeriesRating(body: SeriesRatingData | undefined): Promise<Created201Response> {
         let url_ = this.baseUrl + "/api/SeriesRatings";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -37,11 +37,11 @@ export class SeriesRatingsClient {
         };
 
         return this.instance.request(options_).then((_response: AxiosResponse) => {
-            return this.processSeriesRatings(_response);
+            return this.processCreateSeriesRating(_response);
         });
     }
 
-    protected processSeriesRatings(response: AxiosResponse): Promise<Created201Response> {
+    protected processCreateSeriesRating(response: AxiosResponse): Promise<Created201Response> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -70,7 +70,7 @@ export class SeriesRatingsClient {
      * @param seriesId (optional) seriesId
      * @return OK
      */
-    seriesRatingsAll(userId: number | undefined, seriesId: string | undefined): Promise<SeriesRatingInfo[]> {
+    getSeriesRatings(userId: number | undefined, seriesId: string | undefined): Promise<SeriesRatingInfo[]> {
         let url_ = this.baseUrl + "/api/SeriesRatings?";
         if (userId === null)
             throw new Error("The parameter 'userId' cannot be null.");
@@ -92,11 +92,11 @@ export class SeriesRatingsClient {
         };
 
         return this.instance.request(options_).then((_response: AxiosResponse) => {
-            return this.processSeriesRatingsAll(_response);
+            return this.processGetSeriesRatings(_response);
         });
     }
 
-    protected processSeriesRatingsAll(response: AxiosResponse): Promise<SeriesRatingInfo[]> {
+    protected processGetSeriesRatings(response: AxiosResponse): Promise<SeriesRatingInfo[]> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -127,7 +127,7 @@ export class SeriesRatingsClient {
      * @param id id of the series rating
      * @return OK
      */
-    seriesRatings2(id: number): Promise<SeriesRatingInfo> {
+    getSeriesRating(id: number): Promise<SeriesRatingInfo> {
         let url_ = this.baseUrl + "/api/SeriesRatings/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
@@ -144,11 +144,11 @@ export class SeriesRatingsClient {
         };
 
         return this.instance.request(options_).then((_response: AxiosResponse) => {
-            return this.processSeriesRatings2(_response);
+            return this.processGetSeriesRating(_response);
         });
     }
 
-    protected processSeriesRatings2(response: AxiosResponse): Promise<SeriesRatingInfo> {
+    protected processGetSeriesRating(response: AxiosResponse): Promise<SeriesRatingInfo> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -174,7 +174,7 @@ export class SeriesRatingsClient {
     /**
      * @param id id of the series rating
      */
-    seriesRatings3(id: number): Promise<NoContent204Response> {
+    deleteSeriesRating(id: number): Promise<NoContent204Response> {
         let url_ = this.baseUrl + "/api/SeriesRatings/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
@@ -191,11 +191,11 @@ export class SeriesRatingsClient {
         };
 
         return this.instance.request(options_).then((_response: AxiosResponse) => {
-            return this.processSeriesRatings3(_response);
+            return this.processDeleteSeriesRating(_response);
         });
     }
 
-    protected processSeriesRatings3(response: AxiosResponse): Promise<NoContent204Response> {
+    protected processDeleteSeriesRating(response: AxiosResponse): Promise<NoContent204Response> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -222,7 +222,7 @@ export class SeriesRatingsClient {
      * @param id id of the series rating
      * @param body (optional) 
      */
-    seriesRatings4(id: number, body: SeriesRatingData | undefined): Promise<NoContent204Response> {
+    updateSeriesRating(id: number, body: SeriesRatingData | undefined): Promise<NoContent204Response> {
         let url_ = this.baseUrl + "/api/SeriesRatings/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
@@ -243,11 +243,11 @@ export class SeriesRatingsClient {
         };
 
         return this.instance.request(options_).then((_response: AxiosResponse) => {
-            return this.processSeriesRatings4(_response);
+            return this.processUpdateSeriesRating(_response);
         });
     }
 
-    protected processSeriesRatings4(response: AxiosResponse): Promise<NoContent204Response> {
+    protected processUpdateSeriesRating(response: AxiosResponse): Promise<NoContent204Response> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -274,7 +274,7 @@ export class SeriesRatingsClient {
      * @param seriesId id of the series
      * @return OK
      */
-    average(seriesId: string): Promise<AverageOfRatingsResponse> {
+    getAverageRatingForSeries(seriesId: string): Promise<AverageOfRatingsResponse> {
         let url_ = this.baseUrl + "/api/SeriesRatings/Series/{seriesId}/Average";
         if (seriesId === undefined || seriesId === null)
             throw new Error("The parameter 'seriesId' must be defined.");
@@ -291,11 +291,11 @@ export class SeriesRatingsClient {
         };
 
         return this.instance.request(options_).then((_response: AxiosResponse) => {
-            return this.processAverage(_response);
+            return this.processGetAverageRatingForSeries(_response);
         });
     }
 
-    protected processAverage(response: AxiosResponse): Promise<AverageOfRatingsResponse> {
+    protected processGetAverageRatingForSeries(response: AxiosResponse): Promise<AverageOfRatingsResponse> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -329,7 +329,7 @@ export class EpisodeRatingsClient {
         this.baseUrl = baseUrl ? baseUrl : "";
     }
 
-    episodeRatings(body: EpisodeRatingData | undefined): Promise<Created201Response> {
+    createEpisodeRating(body: EpisodeRatingData | undefined): Promise<Created201Response> {
         let url_ = this.baseUrl + "/api/EpisodeRatings";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -347,11 +347,11 @@ export class EpisodeRatingsClient {
         };
 
         return this.instance.request(options_).then((_response: AxiosResponse) => {
-            return this.processEpisodeRatings(_response);
+            return this.processCreateEpisodeRating(_response);
         });
     }
 
-    protected processEpisodeRatings(response: AxiosResponse): Promise<Created201Response> {
+    protected processCreateEpisodeRating(response: AxiosResponse): Promise<Created201Response> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -382,7 +382,7 @@ export class EpisodeRatingsClient {
      * @param episodeId (optional) episodeId
      * @return OK
      */
-    episodeRatingsAll(userId: number | undefined, seriesId: string | undefined, seasonId: number | undefined, episodeId: number | undefined): Promise<EpisodeRatingInfo[]> {
+    getEpisodeRatings(userId: number | undefined, seriesId: string | undefined, seasonId: number | undefined, episodeId: number | undefined): Promise<EpisodeRatingInfo[]> {
         let url_ = this.baseUrl + "/api/EpisodeRatings?";
         if (userId === null)
             throw new Error("The parameter 'userId' cannot be null.");
@@ -412,11 +412,11 @@ export class EpisodeRatingsClient {
         };
 
         return this.instance.request(options_).then((_response: AxiosResponse) => {
-            return this.processEpisodeRatingsAll(_response);
+            return this.processGetEpisodeRatings(_response);
         });
     }
 
-    protected processEpisodeRatingsAll(response: AxiosResponse): Promise<EpisodeRatingInfo[]> {
+    protected processGetEpisodeRatings(response: AxiosResponse): Promise<EpisodeRatingInfo[]> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -446,7 +446,7 @@ export class EpisodeRatingsClient {
     /**
      * @param id id of the episode rating
      */
-    episodeRatings2(id: number): Promise<EpisodeRatingInfo> {
+    getEpisodeRating(id: number): Promise<EpisodeRatingInfo> {
         let url_ = this.baseUrl + "/api/EpisodeRatings/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
@@ -463,11 +463,11 @@ export class EpisodeRatingsClient {
         };
 
         return this.instance.request(options_).then((_response: AxiosResponse) => {
-            return this.processEpisodeRatings2(_response);
+            return this.processGetEpisodeRating(_response);
         });
     }
 
-    protected processEpisodeRatings2(response: AxiosResponse): Promise<EpisodeRatingInfo> {
+    protected processGetEpisodeRating(response: AxiosResponse): Promise<EpisodeRatingInfo> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -493,7 +493,7 @@ export class EpisodeRatingsClient {
     /**
      * @param id id of the episode rating
      */
-    episodeRatings3(id: number): Promise<NoContent204Response> {
+    deleteEpisodeRating(id: number): Promise<NoContent204Response> {
         let url_ = this.baseUrl + "/api/EpisodeRatings/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
@@ -510,11 +510,11 @@ export class EpisodeRatingsClient {
         };
 
         return this.instance.request(options_).then((_response: AxiosResponse) => {
-            return this.processEpisodeRatings3(_response);
+            return this.processDeleteEpisodeRating(_response);
         });
     }
 
-    protected processEpisodeRatings3(response: AxiosResponse): Promise<NoContent204Response> {
+    protected processDeleteEpisodeRating(response: AxiosResponse): Promise<NoContent204Response> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -541,7 +541,7 @@ export class EpisodeRatingsClient {
      * @param id id of the episode rating
      * @param body (optional) 
      */
-    episodeRatings4(id: number, body: EpisodeRatingData | undefined): Promise<NoContent204Response> {
+    updateEpisodeRating(id: number, body: EpisodeRatingData | undefined): Promise<NoContent204Response> {
         let url_ = this.baseUrl + "/api/EpisodeRatings/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
@@ -562,11 +562,11 @@ export class EpisodeRatingsClient {
         };
 
         return this.instance.request(options_).then((_response: AxiosResponse) => {
-            return this.processEpisodeRatings4(_response);
+            return this.processUpdateEpisodeRating(_response);
         });
     }
 
-    protected processEpisodeRatings4(response: AxiosResponse): Promise<NoContent204Response> {
+    protected processUpdateEpisodeRating(response: AxiosResponse): Promise<NoContent204Response> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -593,7 +593,7 @@ export class EpisodeRatingsClient {
      * @param seriesId id of the series
      * @return OK
      */
-    average2(seriesId: string): Promise<AverageOfRatingsResponse> {
+    getAverageRatingForSeries2(seriesId: string): Promise<AverageOfRatingsResponse> {
         let url_ = this.baseUrl + "/api/EpisodeRatings/Series/{seriesId}/Average";
         if (seriesId === undefined || seriesId === null)
             throw new Error("The parameter 'seriesId' must be defined.");
@@ -610,11 +610,11 @@ export class EpisodeRatingsClient {
         };
 
         return this.instance.request(options_).then((_response: AxiosResponse) => {
-            return this.processAverage2(_response);
+            return this.processGetAverageRatingForSeries2(_response);
         });
     }
 
-    protected processAverage2(response: AxiosResponse): Promise<AverageOfRatingsResponse> {
+    protected processGetAverageRatingForSeries2(response: AxiosResponse): Promise<AverageOfRatingsResponse> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -642,7 +642,7 @@ export class EpisodeRatingsClient {
      * @param seasonId id of the season
      * @return OK
      */
-    average3(seriesId: string, seasonId: number): Promise<AverageOfRatingsResponse> {
+    getAverageRatingForSeason(seriesId: string, seasonId: number): Promise<AverageOfRatingsResponse> {
         let url_ = this.baseUrl + "/api/EpisodeRatings/Series/{seriesId}/Season/{seasonId}/Average";
         if (seriesId === undefined || seriesId === null)
             throw new Error("The parameter 'seriesId' must be defined.");
@@ -662,11 +662,11 @@ export class EpisodeRatingsClient {
         };
 
         return this.instance.request(options_).then((_response: AxiosResponse) => {
-            return this.processAverage3(_response);
+            return this.processGetAverageRatingForSeason(_response);
         });
     }
 
-    protected processAverage3(response: AxiosResponse): Promise<AverageOfRatingsResponse> {
+    protected processGetAverageRatingForSeason(response: AxiosResponse): Promise<AverageOfRatingsResponse> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -695,7 +695,7 @@ export class EpisodeRatingsClient {
      * @param episodeId id of the episode
      * @return OK
      */
-    average4(seriesId: string, seasonId: number, episodeId: number): Promise<AverageOfRatingsResponse> {
+    getAverageRatingForEpisode(seriesId: string, seasonId: number, episodeId: number): Promise<AverageOfRatingsResponse> {
         let url_ = this.baseUrl + "/api/EpisodeRatings/Series/{seriesId}/Season/{seasonId}/Episode/{episodeId}/Average";
         if (seriesId === undefined || seriesId === null)
             throw new Error("The parameter 'seriesId' must be defined.");
@@ -718,11 +718,11 @@ export class EpisodeRatingsClient {
         };
 
         return this.instance.request(options_).then((_response: AxiosResponse) => {
-            return this.processAverage4(_response);
+            return this.processGetAverageRatingForEpisode(_response);
         });
     }
 
-    protected processAverage4(response: AxiosResponse): Promise<AverageOfRatingsResponse> {
+    protected processGetAverageRatingForEpisode(response: AxiosResponse): Promise<AverageOfRatingsResponse> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {

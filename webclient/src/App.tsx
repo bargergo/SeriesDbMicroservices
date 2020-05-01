@@ -23,7 +23,7 @@ class App extends Component {
         console.log(error)
       );
     const ratingsClient: SeriesRatingsClient = new SeriesRatingsClient(".");
-    ratingsClient.seriesRatingsAll(undefined, undefined)
+    ratingsClient.getSeriesRatings(undefined, undefined)
     .then(response => 
       this.setState({seriesRatings: response})
     )

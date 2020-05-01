@@ -7,6 +7,7 @@ import com.papsign.ktor.openapigen.route.route
 import hu.bme.aut.ratings.dtos.*
 import hu.bme.aut.ratings.models.EpisodeRating
 import hu.bme.aut.ratings.services.EpisodeRatingService
+import hu.bme.aut.ratings.utils.id
 import io.ktor.features.NotFoundException
 
 fun NormalOpenAPIRoute.episodeRatings(service: EpisodeRatingService) {
@@ -14,6 +15,7 @@ fun NormalOpenAPIRoute.episodeRatings(service: EpisodeRatingService) {
 
         get<GetEpisodeRatingsQueryParams, List<EpisodeRatingInfo>>(
             info("Get Episodes Ratings Endpoint", "This is a Get Episodes Ratings Endpoint"),
+            id("GetEpisodeRatings"),
             example = listOf(
                 EpisodeRatingInfo(1, 2, "5e9215f27773ca0066637c26", 1, 1, 5, "Not good, not terrible")
             )
@@ -29,7 +31,9 @@ fun NormalOpenAPIRoute.episodeRatings(service: EpisodeRatingService) {
         }
 
         // {id}
-        get<EpisodeRatingIdParam, EpisodeRatingInfo> { params ->
+        get<EpisodeRatingIdParam, EpisodeRatingInfo>(
+            id("GetEpisodeRating")
+        ) { params ->
             val id = params.id
             checkNotNull(id) { "The id parameter must be an integer" }
             val rating: EpisodeRatingInfo? = service.findById(id)?.toEpisodeRatingInfo()
@@ -40,14 +44,18 @@ fun NormalOpenAPIRoute.episodeRatings(service: EpisodeRatingService) {
         }
 
         // Series/{seriesId}/Average
-        get<GetAverageRatingForSeriesParams, AverageOfRatingsResponse> { params ->
+        get<GetAverageRatingForSeriesParams, AverageOfRatingsResponse>(
+            id("GetAverageRatingForSeries")
+        ) { params ->
             val seriesId = params.seriesId
             val result: AverageOfRatingsResponse = service.getAverageForSeries(seriesId)
             respond(result)
         }
 
         // Series/{seriesId}/Season/{seasonId}/Average
-        get<GetAverageRatingForSeasonParams, AverageOfRatingsResponse> { params ->
+        get<GetAverageRatingForSeasonParams, AverageOfRatingsResponse>(
+            id("GetAverageRatingForSeason")
+        ) { params ->
             val seriesId = params.seriesId
             val seasonId = params.seasonId
             val result: AverageOfRatingsResponse = service.getAverageForSeason(seriesId, seasonId)
@@ -55,7 +63,9 @@ fun NormalOpenAPIRoute.episodeRatings(service: EpisodeRatingService) {
         }
 
         // Series/{seriesId}/Season/{seasonId}/Episode/{episodeId}/Average
-        get<GetAverageRatingForEpisodeParams, AverageOfRatingsResponse> { params ->
+        get<GetAverageRatingForEpisodeParams, AverageOfRatingsResponse>(
+            id("GetAverageRatingForEpisode")
+        ) { params ->
             val seriesId = params.seriesId
             val seasonId = params.seasonId
             val episodeId = params.episodeId
@@ -63,13 +73,17 @@ fun NormalOpenAPIRoute.episodeRatings(service: EpisodeRatingService) {
             respond(result)
         }
 
-        post<Unit, Created201Response, EpisodeRatingData> { _, ratingData ->
+        post<Unit, Created201Response, EpisodeRatingData>(
+            id("CreateEpisodeRating")
+        ) { _, ratingData ->
             service.insert(ratingData)
             respond(Created201Response())
         }
 
         // {id}
-        put<EpisodeRatingIdParam, NoContent204Response, EpisodeRatingData> { params, ratingData ->
+        put<EpisodeRatingIdParam, NoContent204Response, EpisodeRatingData>(
+            id("UpdateEpisodeRating")
+        ) { params, ratingData ->
             val id = params.id
             val rating: EpisodeRatingInfo? = service.findById(id)?.toEpisodeRatingInfo()
             if (rating == null)
@@ -79,7 +93,9 @@ fun NormalOpenAPIRoute.episodeRatings(service: EpisodeRatingService) {
         }
 
         // {id}
-        delete<EpisodeRatingIdParam, NoContent204Response> { params ->
+        delete<EpisodeRatingIdParam, NoContent204Response>(
+            id("DeleteEpisodeRating")
+        ) { params ->
             val id = params.id
             service.delete(id)
             respond(NoContent204Response())
