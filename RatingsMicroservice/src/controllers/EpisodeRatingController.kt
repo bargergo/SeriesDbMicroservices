@@ -16,16 +16,17 @@ fun NormalOpenAPIRoute.episodeRatings(service: EpisodeRatingService) {
             info("Get Episodes Ratings Endpoint", "This is a Get Episodes Ratings Endpoint"),
             example = listOf(
                 EpisodeRatingInfo(1, 2, "5e9215f27773ca0066637c26", 1, 1, 5, "Not good, not terrible")
-            )) { params ->
-                val userId = params.userId
-                val seriesId = params.seriesId
-                val seasonId = params.seasonId
-                val episodeId = params.episodeId
-                val ratings: List<EpisodeRatingInfo> =
-                    service.findByUserIdAndSeriesIdAndSeasonIdAndEpisodeId(userId, seriesId, seasonId, episodeId)
-                        .map { it.toEpisodeRatingInfo() }
-                respond(ratings)
-            }
+            )
+        ) { params ->
+            val userId = params.userId
+            val seriesId = params.seriesId
+            val seasonId = params.seasonId
+            val episodeId = params.episodeId
+            val ratings: List<EpisodeRatingInfo> =
+                service.findByUserIdAndSeriesIdAndSeasonIdAndEpisodeId(userId, seriesId, seasonId, episodeId)
+                    .map { it.toEpisodeRatingInfo() }
+            respond(ratings)
+        }
 
         // {id}
         get<EpisodeRatingIdParam, EpisodeRatingInfo> { params ->
@@ -80,6 +81,7 @@ fun NormalOpenAPIRoute.episodeRatings(service: EpisodeRatingService) {
             service.delete(id)
             respond(NoContent204Response())
         }
+
     }
 }
 

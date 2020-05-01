@@ -3,7 +3,7 @@ import { SeriesClient, SeriesInfo } from './typings/SeriesAndEpisodesClients';
 import logo from './logo.svg';
 import './App.css';
 import Series from './Series';
-import { SeriesRatingInfo, Client } from './typings/RatingsClients';
+import { SeriesRatingInfo, SeriesRatingsClient } from './typings/RatingsClients';
 
 
 class App extends Component {
@@ -22,7 +22,7 @@ class App extends Component {
       .catch(error => 
         console.log(error)
       );
-    const ratingsClient: Client = new Client(".");
+    const ratingsClient: SeriesRatingsClient = new SeriesRatingsClient(".");
     ratingsClient.seriesRatingsAll(undefined, undefined)
     .then(response => 
       this.setState({seriesRatings: response})

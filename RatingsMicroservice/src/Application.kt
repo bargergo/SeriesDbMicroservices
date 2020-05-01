@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.papsign.ktor.openapigen.OpenAPIGen
 import com.papsign.ktor.openapigen.openAPIGen
 import com.papsign.ktor.openapigen.route.apiRouting
+import com.papsign.ktor.openapigen.route.tag
 import hu.bme.aut.ratings.controllers.episodeRatings
 import hu.bme.aut.ratings.controllers.seriesRatings
 import hu.bme.aut.ratings.database.DatabaseFactory
@@ -28,6 +29,7 @@ import io.ktor.routing.Routing
 import io.ktor.routing.get
 import io.ktor.routing.routing
 import org.slf4j.event.Level
+import utils.SwaggerTag
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
@@ -83,8 +85,12 @@ fun Application.module(testing: Boolean = false) {
         }
 
         apiRouting {
-            seriesRatings(SeriesRatingService())
-            episodeRatings(EpisodeRatingService())
+            tag(SwaggerTag("SeriesRatings")) {
+                seriesRatings(SeriesRatingService())
+            }
+            tag(SwaggerTag("EpisodeRatings")) {
+                episodeRatings(EpisodeRatingService())
+            }
         }
     }
 }
