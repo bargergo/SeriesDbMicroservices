@@ -1,8 +1,10 @@
 package hu.bme.aut.ratings.dtos
 
-class SeriesRatingData (
+import hu.bme.aut.ratings.validators.ExactLength
+
+data class SeriesRatingData (
     val userId: Int,
-    val seriesId: String,
+    @ExactLength(24) val seriesId: String,
     val rating: Int,
     val opinion: String
 )

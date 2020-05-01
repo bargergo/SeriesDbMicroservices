@@ -62,6 +62,7 @@ fun Application.module(testing: Boolean = false) {
             val regex = Regex("[A-Za-z0-9_.]+")
             it.toString().replace(regex) { it.value.split(".").last() }.replace(Regex(">|<|, "), "_")
         }
+        scanPackagesForModules += "hu.bme.aut.ratings.validators"
     }
 
 

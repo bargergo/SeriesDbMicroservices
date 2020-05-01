@@ -1,6 +1,6 @@
 package hu.bme.aut.ratings.dtos
 
-class AverageOfRatingsResponse (
+data class AverageOfRatingsResponse (
     val average: Float,
     val count: Long
 )
