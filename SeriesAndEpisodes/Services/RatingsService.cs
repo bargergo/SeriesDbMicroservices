@@ -21,7 +21,7 @@ namespace SeriesAndEpisodes.Services
 
         public async Task<AverageOfRatings> GetSeriesRatingStatsForSeries(string seriesId)
         {
-            var response = await _client.GetAsync($"/SeriesRatings/Series/{seriesId}/Average");
+            var response = await _client.GetAsync($"/api/SeriesRatings/Series/{seriesId}/Average");
             
             response.EnsureSuccessStatusCode();
 
