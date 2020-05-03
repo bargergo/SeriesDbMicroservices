@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
+using AutoMapper;
 
 namespace SeriesAndEpisodes.Services
 {
@@ -16,14 +17,16 @@ namespace SeriesAndEpisodes.Services
         private readonly IMongoCollection<Series> _collection;
         private readonly FileService _fileService;
         private readonly RatingsService _ratingsService;
+        private readonly IMapper _mapper;
 
-        public SeriesService(ISeriesDbSettings settings, FileService fileService, RatingsService ratingsService)
+        public SeriesService(ISeriesDbSettings settings, FileService fileService, RatingsService ratingsService, IMapper mapper)
         {
             var client = new MongoClient(settings.ConnectionString);
             var database = client.GetDatabase(settings.DatabaseName);
             _collection = database.GetCollection<Series>(settings.SeriesCollectionName);
             _fileService = fileService;
             _ratingsService = ratingsService;
+            _mapper = mapper;
         }
 
         public async Task<List<SeriesInfo>> GetAsync() {
@@ -60,29 +63,10 @@ namespace SeriesAndEpisodes.Services
                 Console.WriteLine(e.Message);
             }
             
-            return new SeriesDetail
-            {
-                Id = series.Id,
-                Title = series.Title,
-                Description = series.Description,
-                FirstAired = series.FirstAired,
-                LastUpdated = series.LastUpdated,
-                Seasons = series.Seasons.Select(s => new SeasonDetail
-                {
-                    Id = s.Id,
-                    Episodes = s.Episodes.Select(e => new EpisodeDetail
-                    {
-                        Id = e.Id,
-                        Title = e.Title,
-                        Description = e.Description,
-                        FirstAired = e.FirstAired,
-                        LastUpdated = e.LastUpdated
-                    }).ToList(),
-                }).ToList(),
-                ImageId = series.ImageId,
-                AverageRating = ratingStats.average,
-                NumberOfRatings = ratingStats.count
-            };
+            var result = _mapper.Map<SeriesDetail>(series);
+            result.AverageRating = ratingStats.average;
+            result.NumberOfRatings = ratingStats.count;
+            return result;
         }
 
         public async Task<SeriesDetail> CreateAsync(UpsertSeriesRequest series)
@@ -96,28 +80,7 @@ namespace SeriesAndEpisodes.Services
                 Seasons = new List<Season>()
             };
             await _collection.InsertOneAsync(newSeries);
-            return new SeriesDetail
-            {
-                Id = newSeries.Id,
-                Title = newSeries.Title,
-                Description = newSeries.Description,
-                FirstAired = newSeries.FirstAired,
-                LastUpdated = newSeries.LastUpdated,
-                Seasons = newSeries.Seasons.Select(s => new SeasonDetail 
-                {
-                    Id = s.Id,
-                    Episodes = s.Episodes.Select(e => new EpisodeDetail
-                    {
-                        Id = e.Id,
-                        Title = e.Title,
-                        Description = e.Description,
-                        FirstAired = e.FirstAired,
-                        LastUpdated = e.LastUpdated
-                    }).ToList(),
-                }).ToList(),
-                ImageId = newSeries.ImageId,
-
-            }; 
+            return _mapper.Map<SeriesDetail>(newSeries);
         }
 
         public async Task EditEpisode(string id, int seasonId, int episodeId, CreateEpisodeRequest request)
@@ -145,14 +108,7 @@ namespace SeriesAndEpisodes.Services
             var episode = series.Seasons.FirstOrDefault(s => s.Id == seasonId)?.Episodes.FirstOrDefault(e => e.Id == episodeId);
             if (episode == null)
                 return null;
-            return new EpisodeDetail
-            {
-                Id = episode.Id,
-                Title = episode.Title,
-                Description = episode.Description,
-                FirstAired = episode.FirstAired,
-                LastUpdated = episode.LastUpdated
-            };
+            return _mapper.Map<EpisodeDetail>(episode);
 
         }
 
