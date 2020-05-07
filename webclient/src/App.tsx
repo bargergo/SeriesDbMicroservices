@@ -1,61 +1,22 @@
-import React, { Component } from 'react';
-import { SeriesClient, SeriesInfo } from './typings/SeriesAndEpisodesClients';
-import logo from './logo.svg';
-import './App.css';
-import Series from './Series';
-import { SeriesRatingInfo, SeriesRatingsClient } from './typings/RatingsClients';
+import React from "react";
+import { BrowserRouter, Route } from "react-router-dom";
+import "./App.css";
+import About from "./components/About";
+import Header from "./components/Header";
+import Home from "./components/Home";
+import RatingsContainer from "./components/RatingsContainer";
+import SeriesContainer from "./components/SeriesContainer";
 
-
-class App extends Component {
-
-  state: { series: SeriesInfo[], seriesRatings: SeriesRatingInfo[] } = {
-    series: [],
-    seriesRatings: []
-  }
-
-  componentDidMount() {
-    const client: SeriesClient = new SeriesClient(".");
-    client.getAllSeries()
-      .then(response => 
-        this.setState({series: response})
-      )
-      .catch(error => 
-        console.log(error)
-      );
-    const ratingsClient: SeriesRatingsClient = new SeriesRatingsClient(".");
-    ratingsClient.getSeriesRatings(undefined, undefined)
-    .then(response => 
-      this.setState({seriesRatings: response})
-    )
-    .catch(error => 
-      console.log(error)
-    );
-  }
-
-  render() {
-    console.log(this.state);
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.tsx</code> and save to reload.
-          </p>
-          <div>{this.state.series.map(series => <Series data={series} key={series.id} />)}</div>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        
-        </header>
-      </div>
-    );
-  }
-  
-}
+const App = () => (
+  <BrowserRouter>
+    <div className="container">
+      <Header />
+      <Route exact path="/" component={Home} />
+      <Route exact path="/series" component={SeriesContainer} />
+      <Route exact path="/ratings" component={RatingsContainer} />
+      <Route path="/about" component={About} />
+    </div>
+  </BrowserRouter>
+);
 
 export default App;
