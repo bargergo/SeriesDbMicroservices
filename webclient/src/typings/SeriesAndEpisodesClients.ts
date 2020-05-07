@@ -565,12 +565,12 @@ export class SeriesClient {
 }
 
 export class SeriesInfo implements ISeriesInfo {
-    id?: string | undefined;
-    title?: string | undefined;
-    description?: string | undefined;
-    firstAired?: Date;
-    lastUpdated?: Date;
-    imageId?: string | undefined;
+    id!: string;
+    title!: string;
+    description!: string;
+    firstAired!: Date;
+    lastUpdated!: Date;
+    imageId!: string;
 
     constructor(data?: ISeriesInfo) {
         if (data) {
@@ -612,18 +612,18 @@ export class SeriesInfo implements ISeriesInfo {
 }
 
 export interface ISeriesInfo {
-    id?: string | undefined;
-    title?: string | undefined;
-    description?: string | undefined;
-    firstAired?: Date;
-    lastUpdated?: Date;
-    imageId?: string | undefined;
+    id: string;
+    title: string;
+    description: string;
+    firstAired: Date;
+    lastUpdated: Date;
+    imageId: string;
 }
 
 export class UpsertSeriesRequest implements IUpsertSeriesRequest {
-    title?: string | undefined;
-    description?: string | undefined;
-    firstAired?: Date;
+    title!: string;
+    description!: string;
+    firstAired!: Date;
 
     constructor(data?: IUpsertSeriesRequest) {
         if (data) {
@@ -659,17 +659,17 @@ export class UpsertSeriesRequest implements IUpsertSeriesRequest {
 }
 
 export interface IUpsertSeriesRequest {
-    title?: string | undefined;
-    description?: string | undefined;
-    firstAired?: Date;
+    title: string;
+    description: string;
+    firstAired: Date;
 }
 
 export class EpisodeDetail implements IEpisodeDetail {
-    id?: number;
-    title?: string | undefined;
-    description?: string | undefined;
-    firstAired?: Date;
-    lastUpdated?: Date;
+    id!: number;
+    title!: string;
+    description!: string;
+    firstAired!: Date;
+    lastUpdated!: Date;
 
     constructor(data?: IEpisodeDetail) {
         if (data) {
@@ -709,16 +709,16 @@ export class EpisodeDetail implements IEpisodeDetail {
 }
 
 export interface IEpisodeDetail {
-    id?: number;
-    title?: string | undefined;
-    description?: string | undefined;
-    firstAired?: Date;
-    lastUpdated?: Date;
+    id: number;
+    title: string;
+    description: string;
+    firstAired: Date;
+    lastUpdated: Date;
 }
 
 export class SeasonDetail implements ISeasonDetail {
-    id?: number;
-    episodes?: EpisodeDetail[] | undefined;
+    id!: number;
+    episodes!: EpisodeDetail[];
 
     constructor(data?: ISeasonDetail) {
         if (data) {
@@ -726,6 +726,9 @@ export class SeasonDetail implements ISeasonDetail {
                 if (data.hasOwnProperty(property))
                     (<any>this)[property] = (<any>data)[property];
             }
+        }
+        if (!data) {
+            this.episodes = [];
         }
     }
 
@@ -760,20 +763,20 @@ export class SeasonDetail implements ISeasonDetail {
 }
 
 export interface ISeasonDetail {
-    id?: number;
-    episodes?: EpisodeDetail[] | undefined;
+    id: number;
+    episodes: EpisodeDetail[];
 }
 
 export class SeriesDetail implements ISeriesDetail {
-    seasons?: SeasonDetail[] | undefined;
-    averageRating?: number;
-    numberOfRatings?: number;
-    id?: string | undefined;
-    title?: string | undefined;
-    description?: string | undefined;
-    firstAired?: Date;
-    lastUpdated?: Date;
-    imageId?: string | undefined;
+    seasons!: SeasonDetail[];
+    averageRating!: number;
+    numberOfRatings!: number;
+    id!: string;
+    title!: string;
+    description!: string;
+    firstAired!: Date;
+    lastUpdated!: Date;
+    imageId!: string;
 
     constructor(data?: ISeriesDetail) {
         if (data) {
@@ -781,6 +784,9 @@ export class SeriesDetail implements ISeriesDetail {
                 if (data.hasOwnProperty(property))
                     (<any>this)[property] = (<any>data)[property];
             }
+        }
+        if (!data) {
+            this.seasons = [];
         }
     }
 
@@ -829,22 +835,22 @@ export class SeriesDetail implements ISeriesDetail {
 }
 
 export interface ISeriesDetail {
-    seasons?: SeasonDetail[] | undefined;
-    averageRating?: number;
-    numberOfRatings?: number;
-    id?: string | undefined;
-    title?: string | undefined;
-    description?: string | undefined;
-    firstAired?: Date;
-    lastUpdated?: Date;
-    imageId?: string | undefined;
+    seasons: SeasonDetail[];
+    averageRating: number;
+    numberOfRatings: number;
+    id: string;
+    title: string;
+    description: string;
+    firstAired: Date;
+    lastUpdated: Date;
+    imageId: string;
 }
 
 export class CreateEpisodeRequest implements ICreateEpisodeRequest {
-    id?: number;
-    title?: string | undefined;
-    description?: string | undefined;
-    firstAired?: Date;
+    id!: number;
+    title!: string;
+    description!: string;
+    firstAired!: Date;
 
     constructor(data?: ICreateEpisodeRequest) {
         if (data) {
@@ -882,10 +888,10 @@ export class CreateEpisodeRequest implements ICreateEpisodeRequest {
 }
 
 export interface ICreateEpisodeRequest {
-    id?: number;
-    title?: string | undefined;
-    description?: string | undefined;
-    firstAired?: Date;
+    id: number;
+    title: string;
+    description: string;
+    firstAired: Date;
 }
 
 export class ApiException extends Error {
