@@ -8,7 +8,7 @@ class SeriesContainer extends Component {
   };
 
   componentDidMount() {
-    const client: SeriesClient = new SeriesClient(".");
+    const client: SeriesClient = new SeriesClient();
     client
       .getAllSeries()
       .then((response) => this.setState({ series: response }))

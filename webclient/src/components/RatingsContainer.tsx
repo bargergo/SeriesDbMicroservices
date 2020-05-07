@@ -11,7 +11,7 @@ class RatingsContainer extends Component {
   };
 
   componentDidMount() {
-    const client: SeriesRatingsClient = new SeriesRatingsClient(".");
+    const client: SeriesRatingsClient = new SeriesRatingsClient();
     client
       .getSeriesRatings(undefined, undefined)
       .then((response) => this.setState({ ratings: response }))
