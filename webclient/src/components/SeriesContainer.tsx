@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { ISeriesInfo, SeriesClient } from "../typings/SeriesAndEpisodesClients";
 import Series from "./Series";
 
-class SeriesContainer extends Component {
+export default class SeriesContainer extends Component {
   state: { series: ISeriesInfo[] } = {
     series: [],
   };
@@ -26,5 +26,3 @@ class SeriesContainer extends Component {
     );
   }
 }
-
-export default SeriesContainer;

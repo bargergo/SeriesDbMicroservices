@@ -5,7 +5,7 @@ import {
 } from "../typings/RatingsClients";
 import Rating from "./Rating";
 
-class RatingsContainer extends Component {
+export default class RatingsContainer extends Component {
   state: { ratings: ISeriesRatingInfo[] } = {
     ratings: [],
   };
@@ -29,5 +29,3 @@ class RatingsContainer extends Component {
     );
   }
 }
-
-export default RatingsContainer;
