@@ -40,6 +40,7 @@ namespace SeriesAndEpisodes.Controllers
         }
 
         [HttpPost(Name = "CreateSeries")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
         public async Task<ActionResult<SeriesDetail>> Create(UpsertSeriesRequest series)
         {
             var createdSeries = await _seriesService.CreateAsync(series);
