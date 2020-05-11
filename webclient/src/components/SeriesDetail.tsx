@@ -26,12 +26,14 @@ class SeriesDetail extends Component<
     };
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     const client: SeriesClient = new SeriesClient();
-    client
-      .getSeries(this.props.match.params.id)
-      .then((response) => this.setState(response))
-      .catch((error) => console.log(error));
+    try {
+      const response = await client.getSeries(this.props.match.params.id);
+      this.setState(response);
+    } catch (err) {
+      alert(err);
+    }
   }
 
   render() {

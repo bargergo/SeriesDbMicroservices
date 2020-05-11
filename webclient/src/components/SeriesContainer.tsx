@@ -7,12 +7,14 @@ export default class SeriesContainer extends Component {
     series: [],
   };
 
-  componentDidMount() {
+  async componentDidMount() {
     const client: SeriesClient = new SeriesClient();
-    client
-      .getAllSeries()
-      .then((response) => this.setState({ series: response }))
-      .catch((error) => console.log(error));
+    try {
+      const response = await client.getAllSeries();
+      this.setState({ series: response });
+    } catch (err) {
+      alert(err);
+    }
   }
 
   render() {

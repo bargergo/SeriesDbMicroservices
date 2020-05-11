@@ -10,12 +10,14 @@ export default class RatingsContainer extends Component {
     ratings: [],
   };
 
-  componentDidMount() {
+  async componentDidMount() {
     const client: SeriesRatingsClient = new SeriesRatingsClient();
-    client
-      .getSeriesRatings(undefined, undefined)
-      .then((response) => this.setState({ ratings: response }))
-      .catch((error) => console.log(error));
+    try {
+      const response = await client.getSeriesRatings(undefined, undefined);
+      this.setState({ ratings: response });
+    } catch (err) {
+      alert(err);
+    }
   }
 
   render() {
