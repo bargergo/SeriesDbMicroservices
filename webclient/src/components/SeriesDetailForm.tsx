@@ -22,7 +22,7 @@ const SeriesDetailForm = () => {
             .max(15, "Must be 15 characters or less")
             .required("Required"),
           description: Yup.string()
-            .max(20, "Must be 255 characters or less")
+            .max(255, "Must be 255 characters or less")
             .required("Required"),
           firstAired: Yup.string().required("Required"),
         })}

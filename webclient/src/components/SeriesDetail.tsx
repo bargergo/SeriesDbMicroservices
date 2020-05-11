@@ -4,6 +4,7 @@ import {
   ISeriesDetail,
   SeriesClient,
 } from "../typings/SeriesAndEpisodesClients";
+import SeriesRatingForm from "./SeriesRatingForm";
 
 type TParams = { id: string };
 
@@ -44,6 +45,7 @@ class SeriesDetail extends Component<
         <img src={`/api/Images/${this.state.imageId}`} alt="cover"></img>
         {this.state.description}
         {this.state.averageRating}
+        <SeriesRatingForm seriesId={this.state.id} />
       </div>
     );
   }
