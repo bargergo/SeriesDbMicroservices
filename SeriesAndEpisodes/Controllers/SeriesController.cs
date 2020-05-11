@@ -23,10 +23,13 @@ namespace SeriesAndEpisodes.Controllers
         }
 
         [HttpGet(Name = "GetAllSeries")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<List<SeriesInfo>>> GetAll() =>
             await _seriesService.GetAsync();
 
         [HttpGet("{id:length(24)}", Name = "GetSeries")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<SeriesDetail>> Get(string id)
         {
             var series = await _seriesService.GetAsync(id);
@@ -41,6 +44,7 @@ namespace SeriesAndEpisodes.Controllers
 
         [HttpPost(Name = "CreateSeries")]
         [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<SeriesDetail>> Create(UpsertSeriesRequest series)
         {
             var createdSeries = await _seriesService.CreateAsync(series);
@@ -48,7 +52,10 @@ namespace SeriesAndEpisodes.Controllers
             return CreatedAtRoute("GetSeries", new { id = createdSeries.Id.ToString() }, createdSeries);
         }
 
+
         [HttpPut("{id:length(24)}", Name = "UpdateSeries")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Update(string id, UpsertSeriesRequest seriesIn)
         {
             var series = _seriesService.GetAsync(id);
@@ -64,6 +71,8 @@ namespace SeriesAndEpisodes.Controllers
         }
 
         [HttpDelete("{id:length(24)}", Name = "DeleteSeries")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteAsync(string id)
         {
             var series = await _seriesService.GetAsync(id);
@@ -79,6 +88,8 @@ namespace SeriesAndEpisodes.Controllers
         }
 
         [HttpPost("{id:length(24)}/image", Name = "UploadImage")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UploadImage(string id, IFormFile image)
         {
             await _seriesService.UploadImage(id, image);
@@ -86,6 +97,8 @@ namespace SeriesAndEpisodes.Controllers
         }
 
         [HttpPost("{id:length(24)}/Season/{seasonId:int}", Name = "AddEpisode")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         public async Task<IActionResult> AddEpisode(string id, int seasonId, CreateEpisodeRequest request)
         {
             var episode = await _seriesService.GetEpisode(id, seasonId, request.Id);
@@ -98,6 +111,7 @@ namespace SeriesAndEpisodes.Controllers
         }
 
         [HttpDelete("{id:length(24)}/Season/{seasonId:int}/Episode/{episodeId:int}", Name = "DeleteEpisode")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> DeleteEpisode(string id, int seasonId, int episodeId)
         {
             await _seriesService.DeleteEpisode(id, seasonId, episodeId);
@@ -105,6 +119,9 @@ namespace SeriesAndEpisodes.Controllers
         }
 
         [HttpPut("{id:length(24)}/Season/{seasonId:int}/Episode/{episodeId:int}", Name = "UpdateEpisode")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         public async Task<IActionResult> EditEpisode(string id, int seasonId, int episodeId, CreateEpisodeRequest request)
         {
             var episodeToUpdate = await _seriesService.GetEpisode(id, seasonId, episodeId);
@@ -125,6 +142,8 @@ namespace SeriesAndEpisodes.Controllers
         }
 
         [HttpGet("{id:length(24)}/Season/{seasonId:int}/Episode/{episodeId:int}", Name = "GetEpisode")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<EpisodeDetail>> GetEpisode(string id, int seasonId, int episodeId)
         {
             var episode = await _seriesService.GetEpisode(id, seasonId, episodeId);

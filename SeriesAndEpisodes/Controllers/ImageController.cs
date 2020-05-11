@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using SeriesAndEpisodes.Services;
 using System;
 using System.Collections.Generic;
@@ -20,6 +21,8 @@ namespace SeriesAndEpisodes.Controllers
         }
 
         [HttpGet("{id:length(24)}", Name = "GetImage")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DownloadImage(string id)
         {
             var bytes = await _fileService.DownloadImage(id);
