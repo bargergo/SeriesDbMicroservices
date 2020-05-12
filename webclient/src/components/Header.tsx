@@ -1,50 +1,41 @@
 import React from "react";
+import { Container, Nav, Navbar, NavItem } from "react-bootstrap";
 import { Link, NavLink } from "react-router-dom";
 
 const Header = () => (
   <header>
-    <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
-      <div className="container">
-        <Link className="navbar-brand" to="/">
+    <Navbar bg="primary" variant="dark" expand="lg">
+      <Container>
+        <Navbar.Brand as={Link} to="/">
           Series DB Microservices
-        </Link>
-        <button
-          className="navbar-toggler"
-          type="button"
-          data-toggle="collapse"
-          data-target="#navbarNav"
-          aria-controls="navbarNav"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span className="navbar-toggler-icon"></span>
-        </button>
-        <div className="collapse navbar-collapse" id="navbarNav">
-          <ul className="navbar-nav">
-            <li className="nav-item">
-              <NavLink className="nav-link" exact to="/">
+        </Navbar.Brand>
+        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+        <Navbar.Collapse id="basic-navbar-nav">
+          <Nav className="mr-auto">
+            <NavItem>
+              <Nav.Link as={NavLink} exact to="/">
                 Home
-              </NavLink>
-            </li>
-            <li className="nav-item">
-              <NavLink className="nav-link" to="/series">
+              </Nav.Link>
+            </NavItem>
+            <NavItem>
+              <Nav.Link as={NavLink} to="/series">
                 Series
-              </NavLink>
-            </li>
-            <li className="nav-item">
-              <NavLink className="nav-link" to="/ratings">
+              </Nav.Link>
+            </NavItem>
+            <NavItem>
+              <Nav.Link as={NavLink} to="/ratings">
                 Ratings
-              </NavLink>
-            </li>
-            <li className="nav-item">
-              <NavLink className="nav-link" to="/about">
+              </Nav.Link>
+            </NavItem>
+            <NavItem>
+              <Nav.Link as={NavLink} to="/about">
                 About
-              </NavLink>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
+              </Nav.Link>
+            </NavItem>
+          </Nav>
+        </Navbar.Collapse>
+      </Container>
+    </Navbar>
   </header>
 );
 
