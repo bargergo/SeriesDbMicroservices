@@ -1,14 +1,18 @@
 package hu.bme.aut.ratings.controllers
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.papsign.ktor.openapigen.route.info
 import com.papsign.ktor.openapigen.route.path.normal.*
 import com.papsign.ktor.openapigen.route.response.respond
 import com.papsign.ktor.openapigen.route.route
 import hu.bme.aut.ratings.dtos.*
 import hu.bme.aut.ratings.model.SeriesRating
+import hu.bme.aut.ratings.services.RabbitService
 import hu.bme.aut.ratings.services.SeriesRatingService
 import hu.bme.aut.ratings.utils.id
 import io.ktor.features.NotFoundException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 fun NormalOpenAPIRoute.seriesRatings(service: SeriesRatingService) {
     route("/api/SeriesRatings") {
@@ -46,13 +50,24 @@ fun NormalOpenAPIRoute.seriesRatings(service: SeriesRatingService) {
             val seriesId = params.seriesId
             val result: AverageOfRatingsResponse = service.getAverage(seriesId)
             respond(result)
+
         }
 
         post<Unit, Created201Response, SeriesRatingData>(
             id("CreateSeriesRating")
         ) { _, seriesData ->
             service.insert(seriesData)
+            val updatedAverage = service.getAverage(seriesData.seriesId)
+            publishSeriesRatingChangedEvent(
+                SeriesRatingChangedEvent(
+                    seriesData.seriesId,
+                    updatedAverage.count,
+                    updatedAverage.average
+                )
+            )
             respond(Created201Response())
+
+
         }
 
         // {id}
@@ -85,3 +100,29 @@ fun SeriesRating.toSeriesRatingInfo() = SeriesRatingInfo(
     this.rating,
     this.opinion
 )
+
+
+data class MassTransitCompatibleMessage(
+    val destinationAddress: String,
+    val headers: Any,
+    val message: Any,
+    val messageType: List<String>
+)
+
+suspend fun publishSeriesRatingChangedEvent(event: SeriesRatingChangedEvent) {
+    val mapper = ObjectMapper()
+    val message = MassTransitCompatibleMessage(
+        "rabbitmq://message-queue/SeriesRatingUpdateQueue",
+        Unit,
+        event,
+        arrayListOf("urn:message:SeriesAndEpisodes.MessageQueue:SeriesRatingChangedEvent",
+            "urn:message:SeriesAndEpisodes.MessageQueue:ISeriesRatingChangedEvent")
+    )
+    withContext(Dispatchers.IO) {
+        val connection = RabbitService().connectionFactory.newConnection()
+        val channel = connection.createChannel()
+        channel.basicPublish("SeriesRatingUpdateQueue", "routingKey", null, mapper.writeValueAsBytes(message))
+        channel.close()
+        connection.close()
+    }
+}

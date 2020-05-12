@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using MassTransit;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SeriesAndEpisodes.DTOs;
+using SeriesAndEpisodes.MessageQueue;
 using SeriesAndEpisodes.Models;
 using SeriesAndEpisodes.Services;
 using System;
@@ -16,10 +18,12 @@ namespace SeriesAndEpisodes.Controllers
     public class SeriesController : ControllerBase
     {
         private readonly SeriesService _seriesService;
+        private readonly IBusControl _bus;
 
-        public SeriesController(SeriesService seriesService)
+        public SeriesController(SeriesService seriesService, IBusControl bus)
         {
             _seriesService = seriesService;
+            _bus = bus;
         }
 
         [HttpGet(Name = "GetAllSeries")]
@@ -38,6 +42,11 @@ namespace SeriesAndEpisodes.Controllers
             {
                 return NotFound();
             }
+
+            await _bus.Publish(new DummyMessage
+            {
+                DummyString = id
+            });
 
             return series;
         }

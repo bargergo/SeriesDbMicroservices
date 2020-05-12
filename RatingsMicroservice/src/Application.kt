@@ -6,10 +6,12 @@ import com.papsign.ktor.openapigen.OpenAPIGen
 import com.papsign.ktor.openapigen.openAPIGen
 import com.papsign.ktor.openapigen.route.apiRouting
 import com.papsign.ktor.openapigen.route.tag
+import com.rabbitmq.client.ConnectionFactory
 import hu.bme.aut.ratings.controllers.episodeRatings
 import hu.bme.aut.ratings.controllers.seriesRatings
 import hu.bme.aut.ratings.database.DatabaseFactory
 import hu.bme.aut.ratings.services.EpisodeRatingService
+import hu.bme.aut.ratings.services.RabbitService
 import hu.bme.aut.ratings.services.SeriesRatingService
 import io.ktor.application.Application
 import io.ktor.application.call
@@ -33,6 +35,7 @@ fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 @Suppress("unused") // Referenced in application.conf
 @kotlin.jvm.JvmOverloads
 fun Application.module(testing: Boolean = false) {
+
     install(DefaultHeaders)
     install(CallLogging) {
         level = Level.INFO
@@ -73,6 +76,9 @@ fun Application.module(testing: Boolean = false) {
     }
 
     DatabaseFactory.init()
+    RabbitService()
+        .defaultExchangeAndQueue()
+        .startListening()
 
     install(Routing) {
         routing {

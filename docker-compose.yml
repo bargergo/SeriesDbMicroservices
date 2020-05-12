@@ -30,6 +30,7 @@ services:
       - "3001:80"
     depends_on:
       - mongodb-seriesdb
+      - message-queue
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.series-and-episodes.rule=PathPrefix(`/api/Series`) || PathPrefix(`/api/Images`)"
@@ -59,6 +60,7 @@ services:
       - "3002:8080"
     depends_on:
       - mysql-ratingdb
+      - message-queue
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.ratings.rule=PathPrefix(`/api/SeriesRatings`) || PathPrefix(`/api/EpisodeRatings`)"
@@ -86,6 +88,16 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.webclient.rule=PathPrefix(`/`)"
       - "traefik.http.routers.webclient.entrypoints=web"
+
+  message-queue:
+    image: rabbitmq:3.8.3-management
+    container_name: "message-queue"
+    ports:
+      # The standard AMQP protocol port
+      - '5672:5672'
+      # HTTP management UI
+      - '15672:15672'
+    hostname: message-queue
 
 volumes:
   mongodb-data:

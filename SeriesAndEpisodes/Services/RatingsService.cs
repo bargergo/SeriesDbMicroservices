@@ -1,4 +1,6 @@
-﻿using SeriesAndEpisodes.DTOs;
+﻿using MassTransit;
+using SeriesAndEpisodes.DTOs;
+using SeriesAndEpisodes.MessageQueue;
 using SeriesAndEpisodes.Models;
 using System;
 using System.Collections.Generic;
@@ -26,6 +28,7 @@ namespace SeriesAndEpisodes.Services
             response.EnsureSuccessStatusCode();
 
             using var responseStream = await response.Content.ReadAsStreamAsync();
+
             return await JsonSerializer.DeserializeAsync<AverageOfRatings>(responseStream);
         }
     }
