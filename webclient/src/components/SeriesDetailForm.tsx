@@ -12,7 +12,7 @@ const SeriesDetailForm = () => {
   const client: SeriesClient = new SeriesClient();
   return (
     <>
-      <h1>Details of the Series</h1>
+      <h2>Details of the Series</h2>
       <Formik
         initialValues={{
           title: "",
@@ -26,7 +26,7 @@ const SeriesDetailForm = () => {
           description: Yup.string()
             .max(255, "Must be 255 characters or less")
             .required("Required"),
-          firstAired: Yup.string().required("Required"),
+          firstAired: Yup.date().required("Required"),
         })}
         onSubmit={async (values, { setSubmitting }) => {
           const request = new UpsertSeriesRequest({

@@ -5,6 +5,7 @@ import {
   SeriesClient,
 } from "../typings/SeriesAndEpisodesClients";
 import SeriesRatingForm from "./SeriesRatingForm";
+import { Container, Row, Col } from "react-bootstrap";
 
 type TParams = { id: string };
 
@@ -39,14 +40,36 @@ class SeriesDetail extends Component<
 
   render() {
     return (
-      <div>
-        <h2>Series Detail</h2>
-        {this.state.title}
-        <img src={`/api/Images/${this.state.imageId}`} alt="cover"></img>
-        {this.state.description}
-        {this.state.averageRating}
-        <SeriesRatingForm seriesId={this.state.id} />
-      </div>
+      <>
+        <h1>Series Detail</h1>
+        <Container>
+          <Row>
+            <Col>
+              {this.state.title} ({this.state.firstAired.getFullYear()})
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <img src={`/api/Images/${this.state.imageId}`} alt="cover"></img>
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              Rating:
+              <div>{this.state.averageRating} / 10</div>
+            </Col>
+            <Col>
+              Description:
+              <div>{this.state.description}</div>
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <SeriesRatingForm seriesId={this.state.id} />
+            </Col>
+          </Row>
+        </Container>
+      </>
     );
   }
 }

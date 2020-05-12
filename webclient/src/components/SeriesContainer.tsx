@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Container, Row } from "react-bootstrap";
 import { ISeriesInfo, SeriesClient } from "../typings/SeriesAndEpisodesClients";
 import Series from "./Series";
 
@@ -19,12 +20,16 @@ export default class SeriesContainer extends Component {
 
   render() {
     return (
-      <div>
-        <h2>Series</h2>
-        {this.state.series.map((s) => (
-          <Series key={s.id} data={s} />
-        ))}
-      </div>
+      <>
+        <h1>Series</h1>
+        <Container>
+          {this.state.series.map((s) => (
+            <Row>
+              <Series key={s.id} data={s} />
+            </Row>
+          ))}
+        </Container>
+      </>
     );
   }
 }
