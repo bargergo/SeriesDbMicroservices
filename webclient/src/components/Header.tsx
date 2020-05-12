@@ -18,17 +18,17 @@ const Header = () => (
               </Nav.Link>
             </NavItem>
             <NavItem>
-              <Nav.Link as={NavLink} to="/series">
+              <Nav.Link as={NavLink} to="/Series">
                 Series
               </Nav.Link>
             </NavItem>
             <NavItem>
-              <Nav.Link as={NavLink} to="/ratings">
+              <Nav.Link as={NavLink} to="/Ratings">
                 Ratings
               </Nav.Link>
             </NavItem>
             <NavItem>
-              <Nav.Link as={NavLink} to="/about">
+              <Nav.Link as={NavLink} to="/About">
                 About
               </Nav.Link>
             </NavItem>

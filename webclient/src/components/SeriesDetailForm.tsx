@@ -1,5 +1,7 @@
-import { ErrorMessage, Field, Form, Formik } from "formik";
+import { Field, Form, Formik } from "formik";
 import React from "react";
+import { Button, FormControl, FormGroup, FormLabel } from "react-bootstrap";
+import Feedback from "react-bootstrap/Feedback";
 import * as Yup from "yup";
 import {
   SeriesClient,
@@ -40,20 +42,45 @@ const SeriesDetailForm = () => {
           }
         }}
       >
-        {({ isSubmitting }) => (
-          <Form>
-            <label htmlFor="title">Title</label>
-            <Field type="text" name="title" />
-            <ErrorMessage name="title" component="div" />
-            <label htmlFor="description">Description</label>
-            <Field type="text" name="description" />
-            <ErrorMessage name="description" component="div" />
-            <label htmlFor="firstAired">First Aired</label>
-            <Field type="text" name="firstAired" />
-            <ErrorMessage name="firstAired" component="div" />
-            <button type="submit" disabled={isSubmitting}>
+        {({ isSubmitting, touched, errors, isValid }) => (
+          <Form noValidate>
+            <FormGroup controlId="title">
+              <FormLabel>Title</FormLabel>
+              <Field
+                as={FormControl}
+                type="text"
+                name="title"
+                isInvalid={touched.title && errors.title}
+              />
+              <Feedback type="invalid">{errors.title}</Feedback>
+            </FormGroup>
+            <FormGroup controlId="description">
+              <FormLabel>Description</FormLabel>
+              <Field
+                as={FormControl}
+                type="text"
+                name="description"
+                isInvalid={touched.description && errors.description}
+              />
+              <Feedback type="invalid">{errors.description}</Feedback>
+            </FormGroup>
+            <FormGroup controlId="firstAired">
+              <FormLabel>First aired</FormLabel>
+              <Field
+                as={FormControl}
+                type="date"
+                name="firstAired"
+                isInvalid={touched.firstAired && errors.firstAired}
+              />
+              <Feedback type="invalid">{errors.firstAired}</Feedback>
+            </FormGroup>
+            <Button
+              variant="primary"
+              type="submit"
+              disabled={isSubmitting || !isValid}
+            >
               Submit
-            </button>
+            </Button>
           </Form>
         )}
       </Formik>

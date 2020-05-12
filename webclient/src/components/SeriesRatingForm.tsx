@@ -1,9 +1,11 @@
-import { ErrorMessage, Field, Form, Formik } from "formik";
+import { Field, Form, Formik } from "formik";
 import React from "react";
+import { Button, FormControl, FormGroup, FormLabel } from "react-bootstrap";
+import Feedback from "react-bootstrap/Feedback";
 import * as Yup from "yup";
 import {
-  SeriesRatingsClient,
   SeriesRatingData,
+  SeriesRatingsClient,
 } from "../typings/RatingsClients";
 
 const SeriesRatingForm = (props: { seriesId: string }) => {
@@ -14,8 +16,8 @@ const SeriesRatingForm = (props: { seriesId: string }) => {
       <Formik
         initialValues={{
           opinion: "",
-          rating: 0,
-          userId: -1,
+          rating: undefined,
+          userId: undefined,
         }}
         validationSchema={Yup.object({
           opinion: Yup.string()
@@ -30,9 +32,9 @@ const SeriesRatingForm = (props: { seriesId: string }) => {
         onSubmit={async (values, { setSubmitting }) => {
           const request = new SeriesRatingData({
             opinion: values.opinion,
-            rating: values.rating,
+            rating: values.rating!!,
             seriesId: props.seriesId,
-            userId: values.userId,
+            userId: values.userId!!,
           });
           try {
             const response = await client.createSeriesRating(request);
@@ -42,20 +44,45 @@ const SeriesRatingForm = (props: { seriesId: string }) => {
           }
         }}
       >
-        {({ isSubmitting }) => (
-          <Form>
-            <label htmlFor="opinion">Opinion</label>
-            <Field type="text" name="opinion" />
-            <ErrorMessage name="opinion" component="div" />
-            <label htmlFor="rating">Rating</label>
-            <Field type="number" name="rating" />
-            <ErrorMessage name="rating" component="div" />
-            <label htmlFor="userId">User ID</label>
-            <Field type="number" name="userId" />
-            <ErrorMessage name="userId" component="div" />
-            <button type="submit" disabled={isSubmitting}>
+        {({ isSubmitting, touched, errors, isValid }) => (
+          <Form noValidate>
+            <FormGroup controlId="opinion">
+              <FormLabel>Opinion</FormLabel>
+              <Field
+                as={FormControl}
+                type="text"
+                name="opinion"
+                isInvalid={touched.opinion && errors.opinion}
+              />
+              <Feedback type="invalid">{errors.opinion}</Feedback>
+            </FormGroup>
+            <FormGroup controlId="rating">
+              <FormLabel>Rating</FormLabel>
+              <Field
+                as={FormControl}
+                type="number"
+                name="rating"
+                isInvalid={touched.rating && errors.rating}
+              />
+              <Feedback type="invalid">{errors.rating}</Feedback>
+            </FormGroup>
+            <FormGroup controlId="userId">
+              <FormLabel>User ID</FormLabel>
+              <Field
+                as={FormControl}
+                type="number"
+                name="userId"
+                isInvalid={touched.userId && errors.userId}
+              />
+              <Feedback type="invalid">{errors.userId}</Feedback>
+            </FormGroup>
+            <Button
+              variant="primary"
+              type="submit"
+              disabled={isSubmitting || !isValid}
+            >
               Submit
-            </button>
+            </Button>
           </Form>
         )}
       </Formik>
