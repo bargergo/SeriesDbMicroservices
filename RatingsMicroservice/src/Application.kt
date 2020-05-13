@@ -1,12 +1,10 @@
 package hu.bme.aut.ratings
 
 import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.databind.SerializationFeature
 import com.papsign.ktor.openapigen.OpenAPIGen
 import com.papsign.ktor.openapigen.openAPIGen
 import com.papsign.ktor.openapigen.route.apiRouting
 import com.papsign.ktor.openapigen.route.tag
-import com.rabbitmq.client.ConnectionFactory
 import hu.bme.aut.ratings.controllers.episodeRatings
 import hu.bme.aut.ratings.controllers.seriesRatings
 import hu.bme.aut.ratings.database.DatabaseFactory
@@ -77,7 +75,8 @@ fun Application.module(testing: Boolean = false) {
 
     DatabaseFactory.init()
     RabbitService()
-        .defaultExchangeAndQueue()
+        .dummyExchangeAndQueue()
+        .updateSeriesRatingExchangeAndQueue()
         .startListening()
 
     install(Routing) {

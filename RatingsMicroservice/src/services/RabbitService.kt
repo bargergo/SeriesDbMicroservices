@@ -17,13 +17,26 @@ class RabbitService {
         }
     }
 
-    fun defaultExchangeAndQueue(): RabbitService {
+    fun dummyExchangeAndQueue(): RabbitService {
         val connection = connectionFactory.newConnection()
         val channel = connection.createChannel()
 
         channel.exchangeDeclare("SeriesAndEpisodes.MessageQueue:IDummyMessage", "fanout", true)
         val queueName = channel.queueDeclare("DummyQueue", true, false, false, emptyMap()).queue
         channel.queueBind(queueName, "SeriesAndEpisodes.MessageQueue:IDummyMessage", "routingKey")
+
+        channel.close()
+        connection.close()
+        return this
+    }
+
+    fun updateSeriesRatingExchangeAndQueue(): RabbitService {
+        val connection = connectionFactory.newConnection()
+        val channel = connection.createChannel()
+
+        channel.exchangeDeclare("SeriesAndEpisodes.MessageQueue:ISeriesRatingChangedEvent", "fanout", true)
+        val queueName = channel.queueDeclare("SeriesRatingUpdateQueue", true, false, false, emptyMap()).queue
+        channel.queueBind(queueName, "SeriesAndEpisodes.MessageQueue:ISeriesRatingChangedEvent", "routingKey")
 
         channel.close()
         connection.close()

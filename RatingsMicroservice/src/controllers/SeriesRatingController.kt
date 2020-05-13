@@ -79,6 +79,14 @@ fun NormalOpenAPIRoute.seriesRatings(service: SeriesRatingService) {
             if (rating == null)
                 throw NotFoundException()
             service.update(id, seriesData)
+            val updatedAverage = service.getAverage(seriesData.seriesId)
+            publishSeriesRatingChangedEvent(
+                SeriesRatingChangedEvent(
+                    seriesData.seriesId,
+                    updatedAverage.count,
+                    updatedAverage.average
+                )
+            )
             respond(NoContent204Response())
         }
 
@@ -87,7 +95,18 @@ fun NormalOpenAPIRoute.seriesRatings(service: SeriesRatingService) {
             id("DeleteSeriesRating")
         ) { params ->
             val id = params.id
+            val rating: SeriesRatingInfo? = service.findById(id)?.toSeriesRatingInfo()
             service.delete(id)
+            if (rating != null) {
+                val updatedAverage = service.getAverage(rating.seriesId)
+                publishSeriesRatingChangedEvent(
+                    SeriesRatingChangedEvent(
+                        rating.seriesId,
+                        updatedAverage.count,
+                        updatedAverage.average
+                    )
+                )
+            }
             respond(NoContent204Response())
         }
     }
