@@ -4,16 +4,17 @@ import com.rabbitmq.client.CancelCallback
 import com.rabbitmq.client.ConnectionFactory
 import com.rabbitmq.client.DeliverCallback
 import com.rabbitmq.client.Delivery
+import hu.bme.aut.ratings.utils.getenvCheckNotNull
 
 class RabbitService {
     val connectionFactory: ConnectionFactory
     init {
         connectionFactory = ConnectionFactory().apply {
-            host = "message-queue"
+            host = getenvCheckNotNull("MessageQueueSettings__Hostname")
             port = 5672
             virtualHost = "/"
-            username = "guest"
-            password = "guest"
+            username = getenvCheckNotNull("MessageQueueSettings__Username")
+            password = getenvCheckNotNull("MessageQueueSettings__Password")
         }
     }
 

@@ -4,6 +4,7 @@ import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import hu.bme.aut.ratings.model.SeriesRatings
 import hu.bme.aut.ratings.models.EpisodeRatings
+import hu.bme.aut.ratings.utils.getenvCheckNotNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.exposed.sql.Database
@@ -35,8 +36,4 @@ object DatabaseFactory {
         withContext(Dispatchers.IO) {
             transaction { block() }
         }
-}
-
-fun getenvCheckNotNull(param: String): String {
-    return checkNotNull(System.getenv(param)) { "Environment variable '${param}' must be set." }
 }
