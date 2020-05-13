@@ -1,17 +1,25 @@
 ﻿using MassTransit;
+using SeriesAndEpisodes.Services;
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace SeriesAndEpisodes.MessageQueue
 {
     public class SeriesRatingChangedEventHandler : IConsumer<ISeriesRatingChangedEvent>
     {
-        public Task Consume(ConsumeContext<ISeriesRatingChangedEvent> context)
+
+        readonly SeriesService _seriesService;
+
+        public SeriesRatingChangedEventHandler(SeriesService seriesService)
         {
-            Console.WriteLine($"Consumed (SeriesId: {context.Message.SeriesId}, Count: {context.Message.Count}, Average: {context.Message.Average})");
-            return Task.CompletedTask;
+            _seriesService = seriesService;
+        }
+
+        public async Task Consume(ConsumeContext<ISeriesRatingChangedEvent> context)
+        {
+            await _seriesService.UpdateRatingsAsync(context.Message.SeriesId, context.Message.Average, context.Message.Count);
+            Console.WriteLine($"Consumed: {JsonSerializer.Serialize(context)}");
         }
     }
 }

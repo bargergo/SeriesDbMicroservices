@@ -2,8 +2,6 @@
 using MongoDB.Bson.Serialization.Attributes;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace SeriesAndEpisodes.Models
 {
@@ -25,5 +23,9 @@ namespace SeriesAndEpisodes.Models
 
         [BsonRepresentation(BsonType.ObjectId)]
         public string ImageId { get; set; }
+
+        public float AverageRating { get; set; }
+
+        public long NumberOfRatings { get; set; }
     }
 }

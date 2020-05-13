@@ -1,14 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using MongoDB.Driver;
 using SeriesAndEpisodes.DTOs;
 using SeriesAndEpisodes.Models;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Linq;
-using System.Net.Http;
-using System.Text.Json;
-using AutoMapper;
+using System.Threading.Tasks;
 
 namespace SeriesAndEpisodes.Services
 {
@@ -64,8 +62,6 @@ namespace SeriesAndEpisodes.Services
             }
             
             var result = _mapper.Map<SeriesDetail>(series);
-            result.AverageRating = ratingStats.average;
-            result.NumberOfRatings = ratingStats.count;
             return result;
         }
 
@@ -188,6 +184,16 @@ namespace SeriesAndEpisodes.Services
             var imageId = await _fileService.UploadImage(image);
             var filter = Builders<Series>.Filter.Eq(s => s.Id, id);
             var update = Builders<Series>.Update.Set(s => s.ImageId, imageId);
+            await _collection.UpdateOneAsync(filter, update);
+        }
+
+        public async Task UpdateRatingsAsync(string id, float rating, long numberOfRatings)
+        {
+            var filter = Builders<Series>.Filter.Eq(s => s.Id, id);
+            var update = Builders<Series>.Update
+                .Set(s => s.AverageRating, rating)
+                .Set(s => s.NumberOfRatings, numberOfRatings)
+                .Set(s => s.LastUpdated, DateTime.UtcNow);
             await _collection.UpdateOneAsync(filter, update);
         }
     }

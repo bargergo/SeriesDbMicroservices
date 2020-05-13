@@ -1,22 +1,17 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using AutoMapper;
 using MassTransit;
 using MassTransit.Util;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using SeriesAndEpisodes.MessageQueue;
 using SeriesAndEpisodes.Models;
 using SeriesAndEpisodes.Services;
+using System;
 
 namespace SeriesAndEpisodes
 {
@@ -35,7 +30,7 @@ namespace SeriesAndEpisodes
             services.AddMassTransit(x =>
             {
                 x.AddConsumer<SeriesRatingChangedEventHandler>();
-                x.AddBus(provider =>
+                x.AddBus(context =>
                     Bus.Factory.CreateUsingRabbitMq(cfg =>
                     {
                         var host = cfg.Host(new Uri($"rabbitmq://message-queue:/"),
@@ -46,7 +41,7 @@ namespace SeriesAndEpisodes
                             });
                         cfg.ReceiveEndpoint("SeriesRatingUpdateQueue", ep =>
                         {
-                            ep.Consumer<SeriesRatingChangedEventHandler>();
+                            ep.ConfigureConsumer<SeriesRatingChangedEventHandler>(context);
                         });
                     }));
                 EndpointConvention.Map<IDummyMessage>(new Uri("rabbitmq://rabbitmq:/dummy"));
