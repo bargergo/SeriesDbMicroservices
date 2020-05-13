@@ -29,28 +29,26 @@ namespace SeriesAndEpisodes
         {
             services.AddMassTransit(x =>
             {
+                var config = Configuration.GetSection(nameof(MessageQueueSettings)).Get<MessageQueueSettings>();
                 x.AddConsumer<SeriesRatingChangedEventHandler>();
                 x.AddBus(context =>
                     Bus.Factory.CreateUsingRabbitMq(cfg =>
                     {
-                        var host = cfg.Host(new Uri($"rabbitmq://message-queue:/"),
+
+                        var host = cfg.Host(new Uri($"rabbitmq://{config.Hostname}:/"),
                             hostConfig =>
                             {
-                                hostConfig.Username("guest");
-                                hostConfig.Password("guest");
+                                hostConfig.Username(config.Username);
+                                hostConfig.Password(config.Password);
                             });
                         cfg.ReceiveEndpoint("SeriesRatingUpdateQueue", ep =>
                         {
                             ep.ConfigureConsumer<SeriesRatingChangedEventHandler>(context);
                         });
-                    }));
-                EndpointConvention.Map<IDummyMessage>(new Uri("rabbitmq://rabbitmq:/dummy"));
+                    })
+                );
+                EndpointConvention.Map<IDummyMessage>(new Uri($"rabbitmq://{config.Hostname}:/dummy"));
             });
-            services.Configure<RatingsServiceSettings>(
-                Configuration.GetSection(nameof(RatingsServiceSettings)));
-            services.AddSingleton<IRatingsServiceSettings>(sp =>
-                sp.GetRequiredService<IOptions<RatingsServiceSettings>>().Value);
-            services.AddHttpClient<RatingsService>();
 
             services.Configure<SeriesDbSettings>(
                 Configuration.GetSection(nameof(SeriesDbSettings)));

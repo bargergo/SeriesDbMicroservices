@@ -14,16 +14,14 @@ namespace SeriesAndEpisodes.Services
     {
         private readonly IMongoCollection<Series> _collection;
         private readonly FileService _fileService;
-        private readonly RatingsService _ratingsService;
         private readonly IMapper _mapper;
 
-        public SeriesService(ISeriesDbSettings settings, FileService fileService, RatingsService ratingsService, IMapper mapper)
+        public SeriesService(ISeriesDbSettings settings, FileService fileService, IMapper mapper)
         {
             var client = new MongoClient(settings.ConnectionString);
             var database = client.GetDatabase(settings.DatabaseName);
             _collection = database.GetCollection<Series>(settings.SeriesCollectionName);
             _fileService = fileService;
-            _ratingsService = ratingsService;
             _mapper = mapper;
         }
 
@@ -49,17 +47,6 @@ namespace SeriesAndEpisodes.Services
 
         public async Task<SeriesDetail> GetAsync(string id) {
             var series = (await _collection.FindAsync(series => series.Id == id)).FirstOrDefault();
-            var ratingStats = new AverageOfRatings {
-                average = -1,
-                count = -1
-            };
-            try
-            {
-                ratingStats = await _ratingsService.GetSeriesRatingStatsForSeries(series.Id);
-            } catch(Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
             
             var result = _mapper.Map<SeriesDetail>(series);
             return result;
