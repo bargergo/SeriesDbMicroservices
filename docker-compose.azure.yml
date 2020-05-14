@@ -1,0 +1,115 @@
+version: '3.4'
+
+services:
+  apigateway:
+    image: traefik:v2.2
+    container_name: "apigateway"
+    command:
+      #- "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entryPoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entryPoints.web.http.redirections.entryPoint.scheme=https"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      #- "--certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
+      - "--certificatesresolvers.myresolver.acme.email=<email>"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - "./letsencrypt:/letsencrypt"
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+
+  series-and-episodes:
+    image: <azure-contianer-registry-name>.azurecr.io/seriesandepisodes:v1
+    environment:
+      SeriesDbSettings__SeriesCollectionName: "Series"
+      SeriesDbSettings__ConnectionString: "mongodb://root:rootpassword@mongodb-seriesdb:27017"
+      SeriesDbSettings__DatabaseName: "SeriesDb"
+      MessageQueueSettings__Hostname: "message-queue"
+      MessageQueueSettings__Username: "guest"
+      MessageQueueSettings__Password: "guest"
+    ports:
+      - "3001:80"
+    depends_on:
+      - mongodb-seriesdb
+      - message-queue
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.series-and-episodes.rule=Host(`<hostname>`) && (PathPrefix(`/api/Series`) || PathPrefix(`/api/Images`))"
+      - "traefik.http.routers.series-and-episodes.entrypoints=websecure"
+      - "traefik.http.routers.series-and-episodes.tls.certresolver=myresolver"
+
+  mongodb-seriesdb:
+    image: mongo:4.2.3
+    container_name: "mongodb-seriesdb"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: rootpassword
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongodb-data:/data/db
+
+  ratings:
+    image: <azure-contianer-registry-name>.azurecr.io/ratings:v1
+    container_name: "ratings"
+    environment:
+      db__jdbcUrl: jdbc:mysql://mysql-ratingdb:3306/ratings
+      db__username: root
+      db__password: helloworld
+      MessageQueueSettings__Hostname: "message-queue"
+      MessageQueueSettings__Username: "guest"
+      MessageQueueSettings__Password: "guest"
+    ports:
+      - "3002:8080"
+    depends_on:
+      - mysql-ratingdb
+      - message-queue
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.ratings.rule=Host(`<hostname>`) && (PathPrefix(`/api/SeriesRatings`) || PathPrefix(`/api/EpisodeRatings`))"
+      - "traefik.http.routers.ratings.entrypoints=websecure"
+      - "traefik.http.routers.ratings.tls.certresolver=myresolver"
+
+  mysql-ratingdb:
+    image: mysql:8.0.19
+    container_name: "mysql-ratingdb"
+    environment:
+      MYSQL_ROOT_PASSWORD: helloworld
+      MYSQL_DATABASE: ratings
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  webclient:
+    image: <azure-contianer-registry-name>.azurecr.io/webclient:v1
+    container_name: "webclient"
+    ports:
+      - "5000:80"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.webclient.rule=Host(`<hostname>`) &&  PathPrefix(`/`)"
+      - "traefik.http.routers.webclient.entrypoints=websecure"
+      - "traefik.http.routers.webclient.tls.certresolver=myresolver"
+
+  message-queue:
+    image: rabbitmq:3.8.3-management
+    container_name: "message-queue"
+    ports:
+      # The standard AMQP protocol port
+      - '5672:5672'
+      # HTTP management UI
+      - '15672:15672'
+    hostname: message-queue
+
+volumes:
+  mongodb-data:
+  mysql-data:
