@@ -138,10 +138,8 @@ suspend fun publishSeriesRatingChangedEvent(event: SeriesRatingChangedEvent) {
             "urn:message:SeriesAndEpisodes.MessageQueue:ISeriesRatingChangedEvent")
     )
     withContext(Dispatchers.IO) {
-        val connection = RabbitService().connectionFactory.newConnection()
-        val channel = connection.createChannel()
+        val channel = RabbitService.connection.createChannel()
         channel.basicPublish("SeriesRatingUpdateQueue", "routingKey", null, mapper.writeValueAsBytes(message))
         channel.close()
-        connection.close()
     }
 }

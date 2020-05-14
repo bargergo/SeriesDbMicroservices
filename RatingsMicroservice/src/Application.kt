@@ -74,7 +74,7 @@ fun Application.module(testing: Boolean = false) {
     }
 
     DatabaseFactory.init()
-    RabbitService()
+    RabbitService
         .dummyExchangeAndQueue()
         .updateSeriesRatingExchangeAndQueue()
         .startListening()

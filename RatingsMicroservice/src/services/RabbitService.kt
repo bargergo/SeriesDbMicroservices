@@ -1,13 +1,13 @@
 package hu.bme.aut.ratings.services
 
-import com.rabbitmq.client.CancelCallback
-import com.rabbitmq.client.ConnectionFactory
-import com.rabbitmq.client.DeliverCallback
-import com.rabbitmq.client.Delivery
+import com.rabbitmq.client.*
 import hu.bme.aut.ratings.utils.getenvCheckNotNull
+import java.net.ConnectException
 
-class RabbitService {
+
+object RabbitService {
     val connectionFactory: ConnectionFactory
+    lateinit var connection: Connection
     init {
         connectionFactory = ConnectionFactory().apply {
             host = getenvCheckNotNull("MessageQueueSettings__Hostname")
@@ -16,10 +16,20 @@ class RabbitService {
             username = getenvCheckNotNull("MessageQueueSettings__Username")
             password = getenvCheckNotNull("MessageQueueSettings__Password")
         }
+
+    }
+
+    fun tryToConnect() {
+        try {
+            connection = connectionFactory.newConnection()
+        } catch (e: ConnectException) {
+            Thread.sleep(5000)
+            tryToConnect()
+        }
     }
 
     fun dummyExchangeAndQueue(): RabbitService {
-        val connection = connectionFactory.newConnection()
+        tryToConnect()
         val channel = connection.createChannel()
 
         channel.exchangeDeclare("SeriesAndEpisodes.MessageQueue:IDummyMessage", "fanout", true)
@@ -27,12 +37,10 @@ class RabbitService {
         channel.queueBind(queueName, "SeriesAndEpisodes.MessageQueue:IDummyMessage", "routingKey")
 
         channel.close()
-        connection.close()
         return this
     }
 
     fun updateSeriesRatingExchangeAndQueue(): RabbitService {
-        val connection = connectionFactory.newConnection()
         val channel = connection.createChannel()
 
         channel.exchangeDeclare("SeriesAndEpisodes.MessageQueue:ISeriesRatingChangedEvent", "fanout", true)
@@ -40,12 +48,10 @@ class RabbitService {
         channel.queueBind(queueName, "SeriesAndEpisodes.MessageQueue:ISeriesRatingChangedEvent", "routingKey")
 
         channel.close()
-        connection.close()
         return this
     }
 
     fun startListening() {
-        val connection = connectionFactory.newConnection()
         val channel = connection.createChannel()
         val deliverCallback = DeliverCallback { consumerTag: String?, message: Delivery? ->
             println("Consuming message: ${String(message!!.body)}")
