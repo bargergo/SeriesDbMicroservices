@@ -54,6 +54,7 @@ services:
       dockerfile: Dockerfile
     container_name: "ratings"
     environment:
+      KTOR_ENV: prod
       db__jdbcUrl: jdbc:mysql://mysql-ratingdb:3306/ratings
       db__username: root
       db__password: helloworld
