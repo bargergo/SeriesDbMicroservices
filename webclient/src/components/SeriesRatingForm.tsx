@@ -76,11 +76,7 @@ const SeriesRatingForm = (props: { seriesId: string }) => {
               />
               <Feedback type="invalid">{errors.userId}</Feedback>
             </FormGroup>
-            <Button
-              variant="primary"
-              type="submit"
-              disabled={isSubmitting || !isValid}
-            >
+            <Button variant="primary" type="submit" disabled={isSubmitting}>
               Submit
             </Button>
           </Form>

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { RouteComponentProps } from "react-router-dom";
+import { RouteComponentProps, Link } from "react-router-dom";
 import {
   ISeriesDetail,
   SeriesClient,
@@ -42,6 +42,7 @@ class SeriesDetail extends Component<
     return (
       <>
         <h1>Series Detail</h1>
+        <Link to={`${this.props.match.params.id}/edit`}>Edit</Link>
         <Container>
           <Row>
             <Col>
