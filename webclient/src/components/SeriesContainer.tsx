@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Container, Row } from "react-bootstrap";
+import { Container, Row, Button } from "react-bootstrap";
 import { ISeriesInfo, SeriesClient } from "../typings/SeriesAndEpisodesClients";
 import Series from "./Series";
 import { Link } from "react-router-dom";
@@ -20,7 +20,12 @@ export default class SeriesContainer extends Component<IProps, IState> {
     };
   }
 
-  async componentDidMount() {
+  componentDidMount() {
+    this.loadData();
+  }
+
+  async loadData() {
+    this.setState({ loading: true });
     const client: SeriesClient = new SeriesClient();
     try {
       const response = await client.getAllSeries();
@@ -28,6 +33,16 @@ export default class SeriesContainer extends Component<IProps, IState> {
     } catch (err) {
       alert(err);
     }
+  }
+
+  async handleDelete(id: string) {
+    const client: SeriesClient = new SeriesClient();
+    try {
+      await client.deleteSeries(id);
+    } catch (err) {
+      alert(err);
+    }
+    this.loadData();
   }
 
   render() {
@@ -44,6 +59,9 @@ export default class SeriesContainer extends Component<IProps, IState> {
             {this.state.series.map((s) => (
               <Row>
                 <Series key={s.id} data={s} />
+                <Button variant="link" onClick={() => this.handleDelete(s.id)}>
+                  Delete
+                </Button>
               </Row>
             ))}
           </Container>
