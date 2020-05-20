@@ -5,26 +5,24 @@ import {
   SeriesClient,
 } from "../typings/SeriesAndEpisodesClients";
 import SeriesRatingForm from "./SeriesRatingForm";
-import { Container, Row, Col } from "react-bootstrap";
+import { Container, Row, Col, Table } from "react-bootstrap";
 
-type TParams = { id: string };
+interface IProps {
+  id: string;
+}
 
-class SeriesDetail extends Component<
-  RouteComponentProps<TParams>,
-  ISeriesDetail
+interface IState {
+  series: ISeriesDetail | null;
+}
+
+export default class SeriesDetail extends Component<
+  RouteComponentProps<IProps>,
+  IState
 > {
-  constructor(props: RouteComponentProps<TParams>) {
+  constructor(props: RouteComponentProps<IProps>) {
     super(props);
     this.state = {
-      seasons: [],
-      averageRating: -1,
-      numberOfRatings: -1,
-      id: "",
-      title: "",
-      description: "",
-      firstAired: new Date(),
-      lastUpdated: new Date(),
-      imageId: "",
+      series: null,
     };
   }
 
@@ -32,7 +30,9 @@ class SeriesDetail extends Component<
     const client: SeriesClient = new SeriesClient();
     try {
       const response = await client.getSeries(this.props.match.params.id);
-      this.setState(response);
+      this.setState({
+        series: response,
+      });
     } catch (err) {
       alert(err);
     }
@@ -43,36 +43,78 @@ class SeriesDetail extends Component<
       <>
         <h1>Series Detail</h1>
         <Link to={`${this.props.match.params.id}/edit`}>Edit</Link>
-        <Container>
-          <Row>
-            <Col>
-              {this.state.title} ({this.state.firstAired.getFullYear()})
-            </Col>
-          </Row>
-          <Row>
-            <Col>
-              <img src={`/api/Images/${this.state.imageId}`} alt="cover"></img>
-            </Col>
-          </Row>
-          <Row>
-            <Col>
-              Rating:
-              <div>{this.state.averageRating} / 10</div>
-            </Col>
-            <Col>
-              Description:
-              <div>{this.state.description}</div>
-            </Col>
-          </Row>
-          <Row>
-            <Col>
-              <SeriesRatingForm seriesId={this.state.id} />
-            </Col>
-          </Row>
-        </Container>
+        {this.state.series ? (
+          <Container>
+            <Row>
+              <Col>
+                {this.state.series.title} (
+                {this.state.series.firstAired.getFullYear()})
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                <img
+                  src={`/api/Images/${this.state.series.imageId}`}
+                  alt="cover"
+                ></img>
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                Rating:
+                <div>{this.state.series.averageRating} / 10</div>
+              </Col>
+              <Col>
+                Description:
+                <div>{this.state.series.description}</div>
+              </Col>
+            </Row>
+            <h2>Episodes</h2>
+            {this.state.series.seasons.length > 0 ? (
+              <Row>
+                <Col>
+                  <Table striped bordered hover>
+                    <thead>
+                      <tr>
+                        <th>Season</th>
+                        <th>Episode</th>
+                        <th>Title</th>
+                        <th>Description</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {this.state.series.seasons.map((season) =>
+                        season.episodes.map((episode) => (
+                          <tr key={`${season.id}_${episode.id}`}>
+                            <td>{season.id}</td>
+                            <td>{episode.id}</td>
+                            <td>{episode.title}</td>
+                            <td>{episode.description}</td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </Table>
+                </Col>
+              </Row>
+            ) : (
+              <p>
+                <em>No episodes added yet</em>
+              </p>
+            )}
+
+            <Row>
+              <Col>
+                <SeriesRatingForm seriesId={this.state.series.id} />
+              </Col>
+            </Row>
+          </Container>
+        ) : (
+          <p>
+            <em>Loading...</em>
+          </p>
+        )}
       </>
     );
   }
 }
-
-export default SeriesDetail;
