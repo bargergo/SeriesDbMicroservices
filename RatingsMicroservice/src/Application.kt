@@ -2,15 +2,19 @@ package hu.bme.aut.ratings
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.papsign.ktor.openapigen.OpenAPIGen
+import com.papsign.ktor.openapigen.annotations.type.number.ConstraintVialoation
 import com.papsign.ktor.openapigen.openAPIGen
 import com.papsign.ktor.openapigen.route.apiRouting
 import com.papsign.ktor.openapigen.route.tag
+import com.papsign.ktor.openapigen.schema.namer.DefaultSchemaNamer
+import com.papsign.ktor.openapigen.schema.namer.SchemaNamer
 import hu.bme.aut.ratings.controllers.episodeRatings
 import hu.bme.aut.ratings.controllers.seriesRatings
 import hu.bme.aut.ratings.database.DatabaseFactory
 import hu.bme.aut.ratings.services.EpisodeRatingService
 import hu.bme.aut.ratings.services.RabbitService
 import hu.bme.aut.ratings.services.SeriesRatingService
+import hu.bme.aut.ratings.validators.ConstraintViolation
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
@@ -27,6 +31,7 @@ import io.ktor.routing.get
 import io.ktor.routing.routing
 import org.slf4j.event.Level
 import utils.SwaggerTag
+import kotlin.reflect.KType
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
@@ -44,9 +49,13 @@ fun Application.module(testing: Boolean = false) {
         exception<NotFoundException> { e ->
             call.respond(HttpStatusCode.NotFound)
         }
-        exception<Throwable> { e ->
+        exception<ConstraintViolation> { e ->
             call.respondText(e.localizedMessage,
-                ContentType.Text.Plain, HttpStatusCode.InternalServerError)
+                ContentType.Text.Plain, HttpStatusCode.BadRequest)
+        }
+        exception<ConstraintVialoation> { e ->
+            call.respondText(e.localizedMessage,
+                ContentType.Text.Plain, HttpStatusCode.BadRequest)
         }
     }
 
@@ -57,13 +66,13 @@ fun Application.module(testing: Boolean = false) {
             title = "Ratings API"
             description = "API for series and episode ratings"
         }
-        //optional
-        schemaNamer = {
-            //rename DTOs from java type name to generator compatible form
+        //optional custom schema object namer
+        replaceModule(DefaultSchemaNamer, object: SchemaNamer {
             val regex = Regex("[A-Za-z0-9_.]+")
-            it.toString().replace(regex) { it.value.split(".").last() }.replace(Regex(">|<|, "), "_")
-        }
-        scanPackagesForModules += "hu.bme.aut.ratings.validators"
+            override fun get(type: KType): String {
+                return type.toString().replace(regex) { it.value.split(".").last() }.replace(Regex(">|<|, "), "_")
+            }
+        })
     }
 
 
