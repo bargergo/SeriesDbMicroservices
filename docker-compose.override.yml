@@ -4,3 +4,6 @@ services:
   series-and-episodes:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+  ratings:
+    environment:
+      KTOR_ENV: dev

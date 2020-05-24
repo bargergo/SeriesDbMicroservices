@@ -57,6 +57,16 @@ fun Application.module(testing: Boolean = false) {
             call.respondText(e.localizedMessage,
                 ContentType.Text.Plain, HttpStatusCode.BadRequest)
         }
+        exception<Throwable> { e ->
+            if (isDev) {
+                call.respondText(e.localizedMessage,
+                    ContentType.Text.Plain, HttpStatusCode.InternalServerError)
+            } else {
+                call.respondText("An unexpected server error occured",
+                    ContentType.Text.Plain, HttpStatusCode.InternalServerError)
+            }
+
+        }
     }
 
     install(OpenAPIGen) {
@@ -110,3 +120,6 @@ fun Application.module(testing: Boolean = false) {
     }
 }
 
+val Application.envKind get() = environment.config.property("ktor.environment").getString()
+val Application.isDev get() = envKind == "dev"
+val Application.isProd get() = envKind != "dev"
