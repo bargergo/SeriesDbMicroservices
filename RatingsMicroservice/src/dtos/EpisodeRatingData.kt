@@ -1,13 +1,14 @@
 package hu.bme.aut.ratings.dtos
 
 import com.papsign.ktor.openapigen.annotations.type.number.integer.clamp.Clamp
-import hu.bme.aut.ratings.validators.ExactLength
+import com.papsign.ktor.openapigen.annotations.type.string.length.Length
+import com.papsign.ktor.openapigen.annotations.type.string.pattern.RegularExpression
 
 data class EpisodeRatingData(
     val userId: Int,
-    @ExactLength(24) val seriesId: String,
+    @Length(24, 24, "Wrong seriesId") @RegularExpression("^[a-zA-Z0-9]*$", "Wrong seriesId") val seriesId: String,
     val seasonId: Int,
     val episodeId: Int,
-    @Clamp(1, 10) val rating: Int,
+    @Clamp(1, 10, "Rating value must be between 1 and 10") val rating: Int,
     val opinion: String
 )

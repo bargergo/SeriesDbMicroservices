@@ -2,7 +2,7 @@ package hu.bme.aut.ratings
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.papsign.ktor.openapigen.OpenAPIGen
-import com.papsign.ktor.openapigen.annotations.type.number.ConstraintVialoation
+import com.papsign.ktor.openapigen.annotations.type.common.ConstraintViolation
 import com.papsign.ktor.openapigen.openAPIGen
 import com.papsign.ktor.openapigen.route.apiRouting
 import com.papsign.ktor.openapigen.route.tag
@@ -14,7 +14,6 @@ import hu.bme.aut.ratings.database.DatabaseFactory
 import hu.bme.aut.ratings.services.EpisodeRatingService
 import hu.bme.aut.ratings.services.RabbitService
 import hu.bme.aut.ratings.services.SeriesRatingService
-import hu.bme.aut.ratings.validators.ConstraintViolation
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
@@ -50,10 +49,6 @@ fun Application.module(testing: Boolean = false) {
             call.respond(HttpStatusCode.NotFound)
         }
         exception<ConstraintViolation> { e ->
-            call.respondText(e.localizedMessage,
-                ContentType.Text.Plain, HttpStatusCode.BadRequest)
-        }
-        exception<ConstraintVialoation> { e ->
             call.respondText(e.localizedMessage,
                 ContentType.Text.Plain, HttpStatusCode.BadRequest)
         }
