@@ -22,4 +22,4 @@ jobs:
     - name: Build
       run: cd SeriesAndEpisodes && dotnet build --configuration Release --no-restore
     - name: Test
-      run: cd SeriesAndEpisodes && dotnet test --no-restore --verbosity normal
+      run: cd SeriesAndEpisodes.Tests && dotnet test --no-restore --verbosity normal
