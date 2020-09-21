@@ -8,14 +8,11 @@ import kotlin.test.assertEquals
 class ExampleTest {
     @Test
     fun passingTest() {
-        withTestApplication({ module(testing = true) }) {
-            assertEquals(1, 1)
-        }
+        assertEquals(1, 1)
     }
+
     @Test
     fun failingTest() {
-        withTestApplication({ module(testing = true) }) {
-            assertEquals(1, 2)
-        }
+        assertEquals(1, 2)
     }
 }
