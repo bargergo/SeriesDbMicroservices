@@ -10,9 +10,4 @@ class ExampleTest {
     fun passingTest() {
         assertEquals(1, 1)
     }
-
-    @Test
-    fun failingTest() {
-        assertEquals(1, 2)
-    }
 }
