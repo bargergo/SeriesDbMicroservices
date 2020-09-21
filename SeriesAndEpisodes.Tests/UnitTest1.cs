@@ -12,12 +12,5 @@ namespace SeriesAndEpisodes.Tests
             var number = 1;
             number.Should().Be(1);
         }
-
-        [Fact]
-        public void FailingTest()
-        {
-            var number = 1;
-            number.Should().Be(2);
-        }
     }
 }
