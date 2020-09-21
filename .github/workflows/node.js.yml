@@ -31,10 +31,10 @@ jobs:
               ${{ runner.os }}-
 
        - name: Install Dependencies
-         run: npm install
+         run: cd webclient && npm install
 
        - name: Build
-         run: npm build
+         run: cd webclient && npm build
 
        - name: Test
-         run: npm test
+         run: cd webclient && npm test
