@@ -22,9 +22,9 @@ jobs:
          uses: actions/cache@v2
          with:
            path: ~/.npm
-           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+           key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
            restore-keys: |
-                ${{ runner.os }}-node-
+                ${{ runner.os }}-npm-
 
        - name: Install Dependencies
          if: steps.cache-node-modules.outputs.cache-hit != 'true'
