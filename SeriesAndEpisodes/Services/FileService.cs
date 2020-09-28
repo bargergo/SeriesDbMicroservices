@@ -1,11 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using MongoDB.Bson;
-using MongoDB.Driver;
 using MongoDB.Driver.GridFS;
 using SeriesAndEpisodes.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SeriesAndEpisodes.Services
@@ -14,11 +10,9 @@ namespace SeriesAndEpisodes.Services
     {
         private readonly IGridFSBucket _gridFsBucket;
 
-        public FileService(ISeriesDbSettings settings)
+        public FileService(MongoDbContext dbContext)
         {
-            var client = new MongoClient(settings.ConnectionString);
-            var database = client.GetDatabase(settings.DatabaseName);
-            _gridFsBucket = new GridFSBucket(database);
+            _gridFsBucket = dbContext.GetGridFSBucket();
         }
 
         public async Task DeleteImage(string id)

@@ -55,6 +55,8 @@ namespace SeriesAndEpisodes
             services.AddSingleton<ISeriesDbSettings>(sp =>
                 sp.GetRequiredService<IOptions<SeriesDbSettings>>().Value);
 
+            services.AddSingleton<MongoDbContext>();
+
             services.AddSingleton<SeriesService>();
             services.AddSingleton<FileService>();
 

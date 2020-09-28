@@ -16,11 +16,9 @@ namespace SeriesAndEpisodes.Services
         private readonly FileService _fileService;
         private readonly IMapper _mapper;
 
-        public SeriesService(ISeriesDbSettings settings, FileService fileService, IMapper mapper)
+        public SeriesService(ISeriesDbSettings settings, MongoDbContext dbContext, FileService fileService, IMapper mapper)
         {
-            var client = new MongoClient(settings.ConnectionString);
-            var database = client.GetDatabase(settings.DatabaseName);
-            _collection = database.GetCollection<Series>(settings.SeriesCollectionName);
+            _collection = dbContext.GetCollection<Series>(settings.SeriesCollectionName);
             _fileService = fileService;
             _mapper = mapper;
         }
