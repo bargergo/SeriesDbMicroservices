@@ -10,11 +10,16 @@ namespace SeriesAndEpisodes.Tests.Fixtures
 
         public SeriesDbFixture()
         {
+            var connectionString = "mongodb://root:rootpassword@localhost:27017";
+            var hostname = Environment.GetEnvironmentVariable("MONGODB_HOST");
+            var port = Environment.GetEnvironmentVariable("MONGODB_PORT");
+            if (hostname != null)
+                connectionString = $"mongodb://{hostname}:{port}";
             var dbName = $"test_db_{Guid.NewGuid()}";
             DbContextSettings = new SeriesDbSettings
             {
                 SeriesCollectionName = "Series",
-                ConnectionString = "mongodb://root:rootpassword@localhost:27017",
+                ConnectionString = connectionString,
                 DatabaseName = dbName
             };
             DbContext = new SeriesDbContext(DbContextSettings);
