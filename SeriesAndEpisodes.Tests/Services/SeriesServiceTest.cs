@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using FluentAssertions;
+using MongoDB.Driver;
 using SeriesAndEpisodes.AutoMapper;
+using SeriesAndEpisodes.Models;
 using SeriesAndEpisodes.Services;
 using SeriesAndEpisodes.Tests.Fixtures;
 using System;
@@ -8,7 +10,7 @@ using Xunit;
 
 namespace SeriesAndEpisodes.Tests.Services
 {
-    public class SeriesServiceTest : IClassFixture<SeriesDbFixture>
+    public class SeriesServiceTest : IClassFixture<SeriesDbFixture>, IDisposable
     {
         private readonly SeriesDbFixture _fixture;
         private readonly SeriesService _service;
@@ -23,6 +25,23 @@ namespace SeriesAndEpisodes.Tests.Services
 
             var mapper = config.CreateMapper();
             _service = new SeriesService(_fixture.DbContext, fileService, mapper);
+        }
+
+        public void Dispose()
+        {
+            _fixture.DbContext.GetCollection().DeleteMany(Builders<Series>.Filter.Empty);
+        }
+
+        [Fact]
+        public async void GetAsync_WithEmptyCollection_Returns0Series()
+        {
+            // Arrange
+
+            // Act
+            var series = await _service.GetAsync();
+
+            // Assert
+            series.Should().HaveCount(0);
         }
 
         [Fact]
