@@ -2,9 +2,9 @@ name: .NET Core
 
 on:
   push:
-    branches: [ master, test ]
+    branches: [ master, tests ]
   pull_request:
-    branches: [ master, test ]
+    branches: [ master, tests ]
 
 jobs:
   build:
@@ -19,9 +19,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-      env:
-        MONGODB_HOST: localhost
-        MONGODB_PORT: ${{ job.services.mongodb.ports[27017] }}
     - uses: actions/cache@v2
       with:
        path: ~/.nuget/packages
@@ -38,3 +35,6 @@ jobs:
       run: dotnet build SeriesAndEpisodes --configuration Release --no-restore
     - name: Test
       run: dotnet test SeriesAndEpisodes.Tests --no-restore --verbosity normal
+      env:
+        MONGODB_HOST: localhost
+        MONGODB_PORT: ${{ job.services.mongodb.ports[27017] }}
