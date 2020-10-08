@@ -11,6 +11,9 @@ jobs:
 
     runs-on: ubuntu-latest
     
+    container:
+      image:  mcr.microsoft.com/dotnet/core/sdk:3.1-buster
+    
     services:
       mongodb:
         image: mongo:4.2.3
@@ -25,10 +28,6 @@ jobs:
        key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
        restore-keys: |
           ${{ runner.os }}-nuget-
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 3.1.301
     - name: Install dependencies
       run: dotnet restore SeriesAndEpisodes && dotnet restore SeriesAndEpisodes.Tests
     - name: Build
@@ -36,5 +35,5 @@ jobs:
     - name: Test
       run: dotnet test SeriesAndEpisodes.Tests --no-restore --verbosity normal
       env:
-        MONGODB_HOST: localhost
+        MONGODB_HOST: mongodb
         MONGODB_PORT: ${{ job.services.mongodb.ports[27017] }}
