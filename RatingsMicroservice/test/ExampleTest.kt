@@ -48,11 +48,6 @@ class ExampleTest {
     }
 
     @Test
-    fun passingTest() {
-        assertEquals(1, 1)
-    }
-
-    @Test
     fun databaseIsEmpty() {
         val size = runBlocking {
             val result = episodeRatingService.findByUserIdAndSeriesIdAndSeasonIdAndEpisodeId(null, null, null, null)
