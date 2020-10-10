@@ -32,7 +32,7 @@ namespace SeriesAndEpisodes.Tests.Services
             _fixture.DbContext.GetCollection().DeleteMany(Builders<Series>.Filter.Empty);
         }
 
-        [Fact]
+        [Fact(Timeout = 500)]
         public async void GetAsync_WithEmptyCollection_Returns0Series()
         {
             // Arrange
@@ -44,7 +44,7 @@ namespace SeriesAndEpisodes.Tests.Services
             series.Should().HaveCount(0);
         }
 
-        [Fact]
+        [Fact(Timeout = 500)]
         public async void GetAsync_WithNotEmptyCollection_ReturnsAllSeries()
         {
             // Arrange
@@ -62,6 +62,51 @@ namespace SeriesAndEpisodes.Tests.Services
 
             // Assert
             series.Should().HaveCount(1);
+        }
+
+        [Fact(Timeout = 500)]
+        public async void CreateAsync_IntoNotEmptyCollection_Succeeds()
+        {
+            // Arrange
+            var collection = _fixture.DbContext.GetCollection();
+            await collection.InsertOneAsync(new Models.Series
+            {
+                Title = "Supernatural",
+                Description = "Two brothers follow their father's footsteps as hunters, fighting evil supernatural beings of many kinds, including monsters, demons and gods that roam the earth.",
+                FirstAired = new DateTime(2006, 07, 28, 22, 35, 5),
+                LastUpdated = DateTime.Now
+            });
+            // Act
+            await _service.CreateAsync(new DTOs.UpsertSeriesRequest { 
+                Title = "Dummy Series",
+                Description = "Best series ever",
+                FirstAired = DateTime.UtcNow
+            });
+
+            // Assert
+            var series = await _service.GetAsync();
+            series.Should().HaveCount(2);
+        }
+
+        [Fact(Timeout = 500)]
+        public async void RemoveAsync_FromNotEmptyCollection_Succeeds()
+        {
+            // Arrange
+            var collection = _fixture.DbContext.GetCollection();
+            var newSeries = new Models.Series
+            {
+                Title = "Supernatural",
+                Description = "Two brothers follow their father's footsteps as hunters, fighting evil supernatural beings of many kinds, including monsters, demons and gods that roam the earth.",
+                FirstAired = new DateTime(2006, 07, 28, 22, 35, 5),
+                LastUpdated = DateTime.Now
+            };
+            await collection.InsertOneAsync(newSeries);
+            // Act
+            await _service.RemoveAsync(newSeries.Id);
+
+            // Assert
+            var series = await _service.GetAsync();
+            series.Should().HaveCount(0);
         }
     }
 }
