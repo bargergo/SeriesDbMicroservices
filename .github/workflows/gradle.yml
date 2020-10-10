@@ -19,6 +19,9 @@ jobs:
         image: mysql:8.0.19
         ports:
         - 3306:3306
+        env:
+          MYSQL_ROOT_PASSWORD: helloworld
+          MYSQL_DATABASE: ratings
 
     steps:
     - uses: actions/checkout@v2
