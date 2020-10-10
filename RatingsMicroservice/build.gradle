@@ -49,6 +49,7 @@ dependencies {
     implementation "mysql:mysql-connector-java:8.0.19"
     implementation "com.github.papsign:Ktor-OpenAPI-Generator:0.2-beta.6"
     implementation "com.rabbitmq:amqp-client:5.9.0"
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.4.2'
     testImplementation "io.ktor:ktor-server-tests:$ktor_version"
 }
 

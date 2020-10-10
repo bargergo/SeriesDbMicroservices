@@ -1,10 +1,8 @@
 package hu.bme.aut.ratings.database
 
-import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import hu.bme.aut.ratings.model.SeriesRatings
 import hu.bme.aut.ratings.models.EpisodeRatings
-import hu.bme.aut.ratings.utils.getenvCheckNotNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.exposed.sql.Database
@@ -13,23 +11,14 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 object DatabaseFactory {
 
-    fun init() {
-        Database.connect(hikari())
+    fun init(hikariDataSource: HikariDataSource) {
+        Database.connect(hikariDataSource)
         transaction {
             SchemaUtils.createMissingTablesAndColumns(
                 SeriesRatings,
                 EpisodeRatings
             )
         }
-    }
-
-    private fun hikari(): HikariDataSource {
-        val config = HikariConfig("/hikari.properties")
-        config.jdbcUrl = getenvCheckNotNull("db__jdbcUrl")
-        config.username = getenvCheckNotNull("db__username")
-        config.password = getenvCheckNotNull("db__password")
-        config.validate()
-        return HikariDataSource(config)
     }
 
     suspend fun <T> dbQuery(block: () -> T): T =
