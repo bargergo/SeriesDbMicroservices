@@ -1,5 +1,10 @@
-import { render } from '@testing-library/react';
+import { render } from "@testing-library/react";
+import React from "react";
+import Home from "./components/Home";
 
-test('passing test', () => {
-    expect(1).toBe(1);
+it("should render", () => {
+  const { getByText } = render(<Home />);
+  expect(
+    getByText(/Front End Course Directory/i)
+  ).toBeInTheDocument();
 });
