@@ -1,4 +1,4 @@
-package hu.bme.aut.ratings
+package hu.bme.aut.ratings.services
 
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
@@ -7,7 +7,6 @@ import hu.bme.aut.ratings.dtos.EpisodeRatingData
 import hu.bme.aut.ratings.models.EpisodeRating
 import hu.bme.aut.ratings.models.EpisodeRatings
 import hu.bme.aut.ratings.models.toEpisodeRating
-import hu.bme.aut.ratings.services.EpisodeRatingService
 import hu.bme.aut.ratings.utils.getenvOrDefault
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.exposed.sql.deleteAll
