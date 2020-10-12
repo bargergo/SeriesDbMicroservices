@@ -4,13 +4,17 @@ import { Button, FormControl, FormGroup, FormLabel } from "react-bootstrap";
 import Feedback from "react-bootstrap/Feedback";
 import * as Yup from "yup";
 import {
-    ISeriesRatingsClient,
+  ISeriesRatingsClient,
   SeriesRatingData,
   SeriesRatingsClient,
 } from "../typings/RatingsClients";
 
-const SeriesRatingForm = (props: { seriesId: string, client: ISeriesRatingsClient }) => {
+const SeriesRatingForm = (props: {
+  seriesId: string;
+  client: ISeriesRatingsClient;
+}) => {
   const _client: ISeriesRatingsClient = props.client;
+
   return (
     <>
       <h1>Add rating</h1>
@@ -88,7 +92,7 @@ const SeriesRatingForm = (props: { seriesId: string, client: ISeriesRatingsClien
 };
 
 SeriesRatingForm.defaultProps = {
-    client: new SeriesRatingsClient()
+  client: new SeriesRatingsClient(),
 };
 
 export default SeriesRatingForm;

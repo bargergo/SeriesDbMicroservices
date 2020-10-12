@@ -20,7 +20,7 @@ interface IState {
   series: ISeriesDetail | null;
 }
 
-export default class SeriesDetail extends Component<IProps, IState> {
+export default class SeriesDetailComponent extends Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
     this.state = {
