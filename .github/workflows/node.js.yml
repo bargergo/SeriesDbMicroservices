@@ -6,6 +6,10 @@ name: Node.js CI
 on:
   push:
     branches: [ master, tests ]
+    paths-ignore:
+    - 'RatingsMicroservice/**'
+    - 'SeriesAndEpisodes/**'
+    - 'SeriesAndEpisodes.Tests/**'
   pull_request:
     branches: [ master, tests ]
 

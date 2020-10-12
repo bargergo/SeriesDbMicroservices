@@ -6,6 +6,10 @@ name: Java CI with Gradle
 on:
   push:
     branches: [ master, tests ]
+    paths-ignore:
+    - 'SeriesAndEpisodes/**'
+    - 'SeriesAndEpisodes.Tests/**'
+    - 'webclient/**'
   pull_request:
     branches: [ master, tests ]
 
