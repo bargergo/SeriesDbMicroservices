@@ -17,7 +17,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class ExampleTest {
+class EpisodeRatingServiceTest {
     val episodeRatingService = EpisodeRatingService()
 
     companion object {
