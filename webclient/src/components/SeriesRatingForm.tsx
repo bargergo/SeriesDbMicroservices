@@ -4,12 +4,13 @@ import { Button, FormControl, FormGroup, FormLabel } from "react-bootstrap";
 import Feedback from "react-bootstrap/Feedback";
 import * as Yup from "yup";
 import {
+    ISeriesRatingsClient,
   SeriesRatingData,
   SeriesRatingsClient,
 } from "../typings/RatingsClients";
 
-const SeriesRatingForm = (props: { seriesId: string }) => {
-  const client: SeriesRatingsClient = new SeriesRatingsClient();
+const SeriesRatingForm = (props: { seriesId: string, client: ISeriesRatingsClient }) => {
+  const _client: ISeriesRatingsClient = props.client;
   return (
     <>
       <h1>Add rating</h1>
@@ -37,7 +38,7 @@ const SeriesRatingForm = (props: { seriesId: string }) => {
             userId: values.userId!!,
           });
           try {
-            const response = await client.createSeriesRating(request);
+            const response = await _client.createSeriesRating(request);
             alert(JSON.stringify(response));
           } catch (err) {
             alert(err);
@@ -84,6 +85,10 @@ const SeriesRatingForm = (props: { seriesId: string }) => {
       </Formik>
     </>
   );
+};
+
+SeriesRatingForm.defaultProps = {
+    client: new SeriesRatingsClient()
 };
 
 export default SeriesRatingForm;
