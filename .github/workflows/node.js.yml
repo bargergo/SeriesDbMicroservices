@@ -5,9 +5,13 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, tests ]
+    paths-ignore:
+    - 'RatingsMicroservice/**'
+    - 'SeriesAndEpisodes/**'
+    - 'SeriesAndEpisodes.Tests/**'
   pull_request:
-    branches: [ master ]
+    branches: [ master, tests ]
 
 jobs:
   build:
@@ -26,7 +30,7 @@ jobs:
                 ${{ runner.os }}-npm-
 
        - name: Install Dependencies
-         run: cd webclient && npm install
+         run: cd webclient && npm ci
 
        - name: Build
          run: cd webclient && npm build

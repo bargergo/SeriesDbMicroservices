@@ -8,26 +8,22 @@ import com.papsign.ktor.openapigen.route.apiRouting
 import com.papsign.ktor.openapigen.route.tag
 import com.papsign.ktor.openapigen.schema.namer.DefaultSchemaNamer
 import com.papsign.ktor.openapigen.schema.namer.SchemaNamer
+import com.zaxxer.hikari.HikariConfig
+import com.zaxxer.hikari.HikariDataSource
 import hu.bme.aut.ratings.controllers.episodeRatings
 import hu.bme.aut.ratings.controllers.seriesRatings
 import hu.bme.aut.ratings.database.DatabaseFactory
 import hu.bme.aut.ratings.services.EpisodeRatingService
 import hu.bme.aut.ratings.services.RabbitService
 import hu.bme.aut.ratings.services.SeriesRatingService
-import io.ktor.application.Application
-import io.ktor.application.call
-import io.ktor.application.install
+import hu.bme.aut.ratings.utils.getenvCheckNotNull
+import io.ktor.application.*
 import io.ktor.features.*
-import io.ktor.http.ContentType
-import io.ktor.http.HttpStatusCode
-import io.ktor.jackson.jackson
-import io.ktor.request.path
-import io.ktor.response.respond
-import io.ktor.response.respondRedirect
-import io.ktor.response.respondText
-import io.ktor.routing.Routing
-import io.ktor.routing.get
-import io.ktor.routing.routing
+import io.ktor.http.*
+import io.ktor.jackson.*
+import io.ktor.request.*
+import io.ktor.response.*
+import io.ktor.routing.*
 import org.slf4j.event.Level
 import utils.SwaggerTag
 import kotlin.reflect.KType
@@ -87,7 +83,16 @@ fun Application.module(testing: Boolean = false) {
         }
     }
 
-    DatabaseFactory.init()
+    fun hikari(): HikariDataSource {
+        val config = HikariConfig("/hikari.properties")
+        config.jdbcUrl = getenvCheckNotNull("db__jdbcUrl")
+        config.username = getenvCheckNotNull("db__username")
+        config.password = getenvCheckNotNull("db__password")
+        config.validate()
+        return HikariDataSource(config)
+    }
+
+    DatabaseFactory.init(hikari())
     RabbitService
         .dummyExchangeAndQueue()
         .updateSeriesRatingExchangeAndQueue()

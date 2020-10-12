@@ -10,7 +10,7 @@ namespace SeriesAndEpisodes.Services
     {
         private readonly IGridFSBucket _gridFsBucket;
 
-        public FileService(MongoDbContext dbContext)
+        public FileService(SeriesDbContext dbContext)
         {
             _gridFsBucket = dbContext.GetGridFSBucket();
         }

@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import {
   ISeriesRatingInfo,
+  ISeriesRatingsClient,
   SeriesRatingsClient,
 } from "../typings/RatingsClients";
 import Rating from "./Rating";
@@ -10,7 +11,9 @@ interface IState {
   loading: boolean;
 }
 
-interface IProps {}
+interface IProps {
+  client: ISeriesRatingsClient;
+}
 
 export default class RatingsContainer extends Component<IProps, IState> {
   constructor(props: IProps) {
@@ -21,8 +24,12 @@ export default class RatingsContainer extends Component<IProps, IState> {
     };
   }
 
+  static defaultProps = {
+    client: new SeriesRatingsClient(),
+  };
+
   async componentDidMount() {
-    const client: SeriesRatingsClient = new SeriesRatingsClient();
+    const client: ISeriesRatingsClient = this.props.client;
     try {
       const response = await client.getSeriesRatings(undefined, undefined);
       this.setState({ ratings: response, loading: false });

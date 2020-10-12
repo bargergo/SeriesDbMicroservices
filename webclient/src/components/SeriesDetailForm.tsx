@@ -8,10 +8,15 @@ import {
   SeriesClient,
   UpsertSeriesRequest,
   ISeriesDetail,
+  ISeriesClient,
 } from "../typings/SeriesAndEpisodesClients";
 
-interface IProps {
+interface IRouteProps {
   id: string | undefined;
+}
+
+interface IProps extends RouteComponentProps<IRouteProps> {
+    client: ISeriesClient;
 }
 
 interface IState {
@@ -19,11 +24,8 @@ interface IState {
   loading: boolean;
 }
 
-export default class SeriesDetailForm extends Component<
-  RouteComponentProps<IProps>,
-  IState
-> {
-  constructor(props: RouteComponentProps<IProps>) {
+export default class SeriesDetailForm extends Component<IProps, IState> {
+  constructor(props: IProps) {
     super(props);
     this.state = {
       series: null,
@@ -31,9 +33,13 @@ export default class SeriesDetailForm extends Component<
     };
   }
 
+  static defaultProps = {
+    client: new SeriesClient()
+  };
+
   async componentDidMount() {
     if (this.props.match.params.id) {
-      const client: SeriesClient = new SeriesClient();
+      const client: ISeriesClient = this.props.client;
       const series = await client.getSeries(this.props.match.params.id);
       this.setState({ series: series });
     }
@@ -41,7 +47,7 @@ export default class SeriesDetailForm extends Component<
   }
 
   render() {
-    const client: SeriesClient = new SeriesClient();
+    const client: ISeriesClient = this.props.client;
     return (
       <>
         <h2>{this.props.match.params.id ? "Edit" : "Create"} Series</h2>

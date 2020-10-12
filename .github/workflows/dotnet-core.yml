@@ -2,14 +2,23 @@ name: .NET Core
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, tests ]
+    paths-ignore:
+    - 'RatingsMicroservice/**'
+    - 'webclient/**'
   pull_request:
-    branches: [ master ]
+    branches: [ master, tests ]
 
 jobs:
   build:
 
     runs-on: ubuntu-latest
+    
+    services:
+      mongodb:
+        image: mongo:4.2.3
+        ports:
+        - 27017:27017
 
     steps:
     - uses: actions/checkout@v2
@@ -29,3 +38,6 @@ jobs:
       run: dotnet build SeriesAndEpisodes --configuration Release --no-restore
     - name: Test
       run: dotnet test SeriesAndEpisodes.Tests --no-restore --verbosity normal
+      env:
+        MONGODB_HOST: localhost
+        MONGODB_PORT: ${{ job.services.mongodb.ports[27017] }}

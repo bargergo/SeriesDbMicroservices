@@ -1,33 +1,39 @@
 import React, { Component } from "react";
 import { RouteComponentProps, Link } from "react-router-dom";
 import {
+  ISeriesClient,
   ISeriesDetail,
   SeriesClient,
 } from "../typings/SeriesAndEpisodesClients";
 import SeriesRatingForm from "./SeriesRatingForm";
 import { Container, Row, Col, Table } from "react-bootstrap";
 
-interface IProps {
+interface IRouteProps {
   id: string;
+}
+
+interface IProps extends RouteComponentProps<IRouteProps> {
+  client: ISeriesClient;
 }
 
 interface IState {
   series: ISeriesDetail | null;
 }
 
-export default class SeriesDetail extends Component<
-  RouteComponentProps<IProps>,
-  IState
-> {
-  constructor(props: RouteComponentProps<IProps>) {
+export default class SeriesDetailComponent extends Component<IProps, IState> {
+  constructor(props: IProps) {
     super(props);
     this.state = {
       series: null,
     };
   }
 
+  static defaultProps = {
+    client: new SeriesClient(),
+  };
+
   async componentDidMount() {
-    const client: SeriesClient = new SeriesClient();
+    const client: ISeriesClient = this.props.client;
     try {
       const response = await client.getSeries(this.props.match.params.id);
       this.setState({

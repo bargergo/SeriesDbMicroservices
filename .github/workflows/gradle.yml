@@ -5,14 +5,27 @@ name: Java CI with Gradle
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, tests ]
+    paths-ignore:
+    - 'SeriesAndEpisodes/**'
+    - 'SeriesAndEpisodes.Tests/**'
+    - 'webclient/**'
   pull_request:
-    branches: [ master ]
+    branches: [ master, tests ]
 
 jobs:
   build:
 
     runs-on: ubuntu-latest
+    
+    services:
+      mysql:
+        image: mysql:8.0.19
+        ports:
+        - 3306:3306
+        env:
+          MYSQL_ROOT_PASSWORD: helloworld
+          MYSQL_DATABASE: ratings
 
     steps:
     - uses: actions/checkout@v2
@@ -34,4 +47,9 @@ jobs:
       run: cd RatingsMicroservice && ./gradlew build -x test 
     - name: Test
       run: cd RatingsMicroservice && ./gradlew test 
+      env:
+        MYSQL_HOST: localhost
+        MYSQL_PORT: ${{ job.services.mysql.ports[3306] }}
+        MYSQL_USER: root
+        MYSQL_PASSWORD: helloworld
 
