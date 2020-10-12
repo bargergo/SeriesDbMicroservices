@@ -3,6 +3,9 @@ name: .NET Core
 on:
   push:
     branches: [ master, tests ]
+    paths-ignore:
+    - 'RatingsMicroservice/**'
+    - 'webclient/**'
   pull_request:
     branches: [ master, tests ]
 
