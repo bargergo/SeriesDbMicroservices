@@ -1,11 +1,14 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace UserServer.Controllers
 {
-    public class AccountController : Controller
+    [Route("Account")]
+    [ApiController]
+    public class AccountController : ControllerBase
     {
         public IActionResult Login()
         {
@@ -17,6 +20,7 @@ namespace UserServer.Controllers
             //return RedirectToAction("Index", "Home");
         }
 
+        [HttpGet("Logout")]
         public IActionResult Logout()
         {
             var callbackUrl = Url.Action("Index", "Home");
@@ -26,6 +30,13 @@ namespace UserServer.Controllers
             },
             new AuthenticationProperties { RedirectUri = callbackUrl }
             );
+        }
+
+        [Authorize]
+        [HttpGet("Authorize")]
+        public IActionResult Authorize()
+        {
+            return Ok();
         }
     }
 }

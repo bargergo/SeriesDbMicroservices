@@ -23,7 +23,7 @@ namespace UserServer
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews();
+            services.AddControllers();
 
             services.AddAuthentication(options =>
             {
@@ -49,9 +49,10 @@ namespace UserServer
                         RoleClaimType = "groups",
                         ValidateIssuer = true
                     };
+                    var signinRedirectUrl = Configuration["OpenIdConnectSettings:SigninRedirectUrl"];
                     options.Events.OnRedirectToIdentityProvider = n =>
                     {
-                        n.ProtocolMessage.RedirectUri = "http://localhost:80/signin-oidc";
+                        n.ProtocolMessage.RedirectUri = signinRedirectUrl;
                         return Task.FromResult(0);
                     };
                 });
@@ -75,7 +76,7 @@ namespace UserServer
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapDefaultControllerRoute();
+                endpoints.MapControllers();
             });
         }
     }
