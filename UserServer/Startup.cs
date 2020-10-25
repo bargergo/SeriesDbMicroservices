@@ -42,6 +42,7 @@ namespace UserServer
                     options.GetClaimsFromUserInfoEndpoint = true;
                     options.Scope.Add("openid");
                     options.Scope.Add("profile");
+                    options.Scope.Add("email");
                     options.SaveTokens = true;
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
@@ -53,7 +54,12 @@ namespace UserServer
                     options.Events.OnRedirectToIdentityProvider = n =>
                     {
                         n.ProtocolMessage.RedirectUri = signinRedirectUrl;
-                        return Task.FromResult(0);
+                        return Task.CompletedTask;
+                    };
+                    options.Events.OnUserInformationReceived = userInfo =>
+                    {
+                        // Can view User information in the debugger
+                        return Task.CompletedTask;
                     };
                 });
 
