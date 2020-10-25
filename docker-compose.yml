@@ -36,6 +36,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.series-and-episodes.rule=PathPrefix(`/api/Series`) || PathPrefix(`/api/Images`)"
       - "traefik.http.routers.series-and-episodes.entrypoints=web"
+      - "traefik.http.routers.series-and-episodes.middlewares=user-service"
 
   mongodb-seriesdb:
     image: mongo:4.2.3
@@ -103,6 +104,24 @@ services:
       # HTTP management UI
       - '15672:15672'
     hostname: message-queue
+
+  user-service:
+    build:
+      context: .
+      dockerfile: UserServer/Dockerfile
+    environment:
+        OpenIdConnectSettings__ClientId: "<secret>"
+        OpenIdConnectSettings__ClientSecret: "<secret>"
+        OpenIdConnectSettings__Authority: "https://accounts.google.com"
+        OpenIdConnectSettings__EndSessionEndpoint: "https://accounts.google.com/Logout"
+        OpenIdConnectSettings__SigninRedirectUrl: "http://localhost:80/signin-oidc"
+    ports:
+      - "3003:80"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.user-service.rule=PathPrefix(`/Account`) || PathPrefix(`/Home`) || PathPrefix(`/signin-oidc`)"
+      - "traefik.http.routers.user-service.entrypoints=web"
+      - "traefik.http.middlewares.user-service.forwardauth.address=http://user-service:80/Account/Authorize"
 
 volumes:
   mongodb-data:
