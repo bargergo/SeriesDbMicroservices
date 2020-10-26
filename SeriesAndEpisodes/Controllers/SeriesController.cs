@@ -1,19 +1,17 @@
 ﻿using MassTransit;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SeriesAndEpisodes.DTOs;
 using SeriesAndEpisodes.MessageQueue;
-using SeriesAndEpisodes.Models;
 using SeriesAndEpisodes.Services;
-using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SeriesAndEpisodes.Controllers
 {
     [Route("api/Series")]
+    //[Authorize]
     [ApiController]
     public class SeriesController : ControllerBase
     {

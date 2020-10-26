@@ -2,13 +2,14 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using System.Threading.Tasks;
+using UserServer.Models;
 
 namespace UserServer
 {
@@ -23,17 +24,41 @@ namespace UserServer
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<TokenSettings>(
+                Configuration.GetSection(nameof(TokenSettings)));
+            services.AddSingleton<ITokenSettings>(sp =>
+                sp.GetRequiredService<IOptions<TokenSettings>>().Value);
+
             services.AddControllers();
+
+            /*services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.ForwardedHeaders = ForwardedHeaders.All;
+                options.KnownNetworks.Clear();
+                options.KnownProxies.Clear();
+            });*/
 
             services.AddAuthentication(options =>
             {
-                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;  //"MyJwtScheme"; //JwtBearerDefaults.AuthenticationScheme; //
                 options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
             })
                 .AddCookie()
+                /*.AddJwtBearer("MyJwtScheme", config =>
+                {
+                    var secretBytes = Encoding.UTF8.GetBytes(Configuration["TokenSettings:Secret"]);
+                    var key = new SymmetricSecurityKey(secretBytes);
+
+                    config.TokenValidationParameters = new TokenValidationParameters()
+                    {
+                        ValidIssuer = Configuration["TokenSettings:Issuer"],
+                        ValidAudience = Configuration["TokenSettings:Audience"],
+                        IssuerSigningKey = key
+                    };
+                })*/
                 .AddOpenIdConnect(options =>
                 {
-                    options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme; //"MyJwtScheme"; //JwtBearerDefaults.AuthenticationScheme; //
                     options.Authority = Configuration["OpenIdConnectSettings:Authority"];
                     options.RequireHttpsMetadata = true;
                     options.ClientId = Configuration["OpenIdConnectSettings:ClientId"];
@@ -73,6 +98,17 @@ namespace UserServer
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            //app.UseForwardedHeaders();
+
+            app.Use(async (context, next) =>
+            {
+                // Get the original Uri
+                context.Request.Headers.TryGetValue("X-Forwarded-Uri", out var originalUri);
+
+                // Call the next delegate/middleware in the pipeline
+                await next();
+            });
 
             app.UseRouting();
 
