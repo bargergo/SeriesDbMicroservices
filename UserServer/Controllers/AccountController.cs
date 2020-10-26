@@ -46,7 +46,7 @@ namespace UserServer.Controllers
         }
 
         [HttpGet("Authenticate")]
-        public IActionResult Authenticate()
+        public IActionResult Authenticate(string returnUrl)
         {
             if (!HttpContext.User.Identity.IsAuthenticated)
             {
@@ -79,7 +79,7 @@ namespace UserServer.Controllers
 
             var tokenJson = new JwtSecurityTokenHandler().WriteToken(token);
 
-            return Ok(new { access_token = tokenJson });
+            return Ok(new { access_token = tokenJson, returnUrl });
         }
 
         [Authorize]

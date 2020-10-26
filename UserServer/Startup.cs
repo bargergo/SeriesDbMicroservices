@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -76,9 +77,9 @@ namespace UserServer
                         ValidateIssuer = true
                     };
                     var signinRedirectUrl = Configuration["OpenIdConnectSettings:SigninRedirectUrl"];
-                    options.Events.OnRedirectToIdentityProvider = n =>
+                    options.Events.OnRedirectToIdentityProvider = context =>
                     {
-                        n.ProtocolMessage.RedirectUri = signinRedirectUrl;
+                        context.ProtocolMessage.RedirectUri = signinRedirectUrl;
                         return Task.CompletedTask;
                     };
                     options.Events.OnUserInformationReceived = userInfo =>
@@ -105,6 +106,11 @@ namespace UserServer
             {
                 // Get the original Uri
                 context.Request.Headers.TryGetValue("X-Forwarded-Uri", out var originalUri);
+                if (originalUri.Count != 0)
+                {
+                    var returnUrl = new QueryString("?returnUrl=" + originalUri);
+                    context.Request.QueryString = returnUrl;
+                }
 
                 // Call the next delegate/middleware in the pipeline
                 await next();

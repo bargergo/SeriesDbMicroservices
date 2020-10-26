@@ -127,7 +127,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.user-service.rule=PathPrefix(`/Account`) || PathPrefix(`/Home`) || PathPrefix(`/signin-oidc`)"
       - "traefik.http.routers.user-service.entrypoints=web"
-      - "traefik.http.middlewares.user-service.forwardauth.address=http://user-service:80/Account/Authorize"
+      - "traefik.http.middlewares.user-service.forwardauth.address=http://user-service:80/Account/Authenticate"
 
 volumes:
   mongodb-data:
