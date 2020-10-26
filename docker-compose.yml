@@ -56,6 +56,7 @@ services:
     build:
       context: RatingsMicroservice
       dockerfile: Dockerfile
+    image: ratings:dev
     container_name: "ratings"
     environment:
       KTOR_ENV: prod
@@ -90,6 +91,7 @@ services:
     build:
       context: webclient
       dockerfile: Dockerfile
+    image: webclient:dev
     container_name: "webclient"
     ports:
       - "5000:80"
@@ -125,7 +127,7 @@ services:
       - "3003:80"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.user-service.rule=PathPrefix(`/Account`) || PathPrefix(`/Home`) || PathPrefix(`/signin-oidc`)"
+      - "traefik.http.routers.user-service.rule=PathPrefix(`/Account`) || PathPrefix(`/signin-oidc`)"
       - "traefik.http.routers.user-service.entrypoints=web"
       - "traefik.http.middlewares.user-service.forwardauth.address=http://user-service:80/Account/Authenticate"
 
