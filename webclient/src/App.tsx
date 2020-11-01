@@ -8,6 +8,7 @@ import RatingsContainer from "./components/RatingsContainer";
 import SeriesContainer from "./components/SeriesContainer";
 import SeriesDetailComponent from "./components/SeriesDetailComponent";
 import SeriesDetailForm from "./components/SeriesDetailForm";
+import SignInComponent from "./components/SignInComponent";
 
 const App = () => (
   <BrowserRouter>
@@ -20,6 +21,7 @@ const App = () => (
         <Route exact path="/Series/:id/edit" component={SeriesDetailForm} />
         <Route exact path="/Series/:id" component={SeriesDetailComponent} />
         <Route exact path="/Ratings" component={RatingsContainer} />
+        <Route exact path="/Signin" component={SignInComponent}/>
         <Route path="/about" component={About} />
       </Switch>
     </div>

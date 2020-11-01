@@ -32,6 +32,11 @@ const Header = () => (
                 About
               </Nav.Link>
             </NavItem>
+            <NavItem>
+              <Nav.Link as={NavLink} to="/Signin">
+                Sign In
+              </Nav.Link>
+            </NavItem>
           </Nav>
         </Navbar.Collapse>
       </Container>

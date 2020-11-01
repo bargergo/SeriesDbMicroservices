@@ -79,12 +79,12 @@ namespace UserServer.Controllers
 
             var tokenJson = new JwtSecurityTokenHandler().WriteToken(token);
 
-            return Ok(new { access_token = tokenJson, returnUrl });
+            return Redirect($"{returnUrl}?access_token={tokenJson}");//Ok(new { access_token = tokenJson, returnUrl });
         }
 
-        [Authorize]
-        [HttpGet("Authorize")]
-        public IActionResult Authorize()
+        [Authorize(AuthenticationSchemes = "MyJwtScheme")]
+        [HttpGet("AuthenticateWithToken")]
+        public IActionResult AuthenticateWithToken()
         {
             return Ok();
         }

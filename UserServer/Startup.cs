@@ -9,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using System.Threading.Tasks;
 using UserServer.Models;
 
@@ -45,7 +46,7 @@ namespace UserServer
                 options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
             })
                 .AddCookie()
-                /*.AddJwtBearer("MyJwtScheme", config =>
+                .AddJwtBearer("MyJwtScheme", config =>
                 {
                     var secretBytes = Encoding.UTF8.GetBytes(Configuration["TokenSettings:Secret"]);
                     var key = new SymmetricSecurityKey(secretBytes);
@@ -56,7 +57,7 @@ namespace UserServer
                         ValidAudience = Configuration["TokenSettings:Audience"],
                         IssuerSigningKey = key
                     };
-                })*/
+                })
                 .AddOpenIdConnect(options =>
                 {
                     options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme; //"MyJwtScheme"; //JwtBearerDefaults.AuthenticationScheme; //
