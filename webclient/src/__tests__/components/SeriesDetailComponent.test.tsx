@@ -1,13 +1,19 @@
 import { render } from "@testing-library/react";
 import React from "react";
 import { MemoryRouter, Route } from "react-router-dom";
+import ClientsContext from "../../ClientsContext";
 import SeriesDetailComponent from "../../components/SeriesDetailComponent";
+import {
+  EpisodeRatingsClient,
+  SeriesRatingsClient,
+} from "../../typings/RatingsClients";
 import {
   CreateEpisodeRequest,
   EpisodeDetail,
   FileParameter,
-  ISeriesClient,
+  ImageClient,
   SeasonDetail,
+  SeriesClient,
   SeriesDetail,
   SeriesInfo,
   UpsertSeriesRequest,
@@ -38,7 +44,7 @@ it("should render the average rating", async () => {
     lastUpdated: new Date(Date.now()),
     imageId: "imageId",
   });
-  class FakeSeriesClient implements ISeriesClient {
+  class FakeSeriesClient extends SeriesClient {
     getAllSeries(): Promise<SeriesInfo[]> {
       throw new Error("Method not implemented.");
     }
@@ -46,7 +52,9 @@ it("should render the average rating", async () => {
       throw new Error("Method not implemented.");
     }
     getSeries(id: string | null): Promise<SeriesDetail> {
-      return new Promise<SeriesDetail>((resolveFunction, _errorFunction) => resolveFunction(fakeSeriesDetail));
+      return new Promise<SeriesDetail>((resolveFunction, _errorFunction) =>
+        resolveFunction(fakeSeriesDetail)
+      );
     }
     updateSeries(
       id: string | null,
@@ -94,21 +102,25 @@ it("should render the average rating", async () => {
     }
   }
 
-  
   const { getByText } = render(
-    <MemoryRouter initialEntries={["/seriesId234"]}>
-      <Route
-        path="/:id"
-        render={(props) => (
-          <SeriesDetailComponent {...props} client={new FakeSeriesClient()} />
-        )}
-      />
-    </MemoryRouter>
+    <ClientsContext.Provider
+      value={{
+        seriesClient: new FakeSeriesClient(),
+        imageClient: new ImageClient(),
+        seriesRatingClient: new SeriesRatingsClient(),
+        episodeRatingClient: new EpisodeRatingsClient(),
+      }}
+    >
+      <MemoryRouter initialEntries={["/seriesId234"]}>
+        <Route
+          path="/:id"
+          render={(props) => <SeriesDetailComponent {...props} />}
+        />
+      </MemoryRouter>
+    </ClientsContext.Provider>
   );
   await flushPromises();
-  expect(
-    getByText(/5.6\s\/\s10/i)
-  ).toBeInTheDocument();
+  expect(getByText(/5.6\s\/\s10/i)).toBeInTheDocument();
 });
 
 const flushPromises = () => new Promise(setImmediate);
