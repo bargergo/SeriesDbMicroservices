@@ -9,6 +9,27 @@
 
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse, CancelToken } from 'axios';
 
+export class ClientBase {
+    /**
+     * authorization token value
+     */
+    public token: string | null;
+
+    constructor() {
+        this.token = null
+    }
+
+    protected transformOptions(options: any) {
+
+        if (this.token) {
+            options.headers["Authorization"] = "Bearer " + this.token
+        } else {
+            console.warn("Authorization token have not been set please authorize first.");
+        }
+        return Promise.resolve(options);
+    }
+}
+
 export interface ISeriesRatingsClient {
     createSeriesRating(body: SeriesRatingData | undefined): Promise<Created201Response>;
     /**
@@ -39,12 +60,13 @@ export interface ISeriesRatingsClient {
     getAverageRatingForSeries(seriesId: string): Promise<AverageOfRatingsResponse>;
 }
 
-export class SeriesRatingsClient implements ISeriesRatingsClient {
+export class SeriesRatingsClient extends ClientBase implements ISeriesRatingsClient {
     private instance: AxiosInstance;
     private baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
 
     constructor(baseUrl?: string, instance?: AxiosInstance) {
+        super();
         this.instance = instance ? instance : axios.create();
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
@@ -66,7 +88,9 @@ export class SeriesRatingsClient implements ISeriesRatingsClient {
             cancelToken
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.instance.request(transformedOptions_);
+        }).catch((_error: any) => {
             if (isAxiosError(_error) && _error.response) {
                 return _error.response;
             } else {
@@ -127,7 +151,9 @@ export class SeriesRatingsClient implements ISeriesRatingsClient {
             cancelToken
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.instance.request(transformedOptions_);
+        }).catch((_error: any) => {
             if (isAxiosError(_error) && _error.response) {
                 return _error.response;
             } else {
@@ -185,7 +211,9 @@ export class SeriesRatingsClient implements ISeriesRatingsClient {
             cancelToken
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.instance.request(transformedOptions_);
+        }).catch((_error: any) => {
             if (isAxiosError(_error) && _error.response) {
                 return _error.response;
             } else {
@@ -238,7 +266,9 @@ export class SeriesRatingsClient implements ISeriesRatingsClient {
             cancelToken
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.instance.request(transformedOptions_);
+        }).catch((_error: any) => {
             if (isAxiosError(_error) && _error.response) {
                 return _error.response;
             } else {
@@ -296,7 +326,9 @@ export class SeriesRatingsClient implements ISeriesRatingsClient {
             cancelToken
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.instance.request(transformedOptions_);
+        }).catch((_error: any) => {
             if (isAxiosError(_error) && _error.response) {
                 return _error.response;
             } else {
@@ -350,7 +382,9 @@ export class SeriesRatingsClient implements ISeriesRatingsClient {
             cancelToken
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.instance.request(transformedOptions_);
+        }).catch((_error: any) => {
             if (isAxiosError(_error) && _error.response) {
                 return _error.response;
             } else {
@@ -429,12 +463,13 @@ export interface IEpisodeRatingsClient {
     getAverageRatingForEpisode(seriesId: string, seasonId: number, episodeId: number): Promise<AverageOfRatingsResponse>;
 }
 
-export class EpisodeRatingsClient implements IEpisodeRatingsClient {
+export class EpisodeRatingsClient extends ClientBase implements IEpisodeRatingsClient {
     private instance: AxiosInstance;
     private baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
 
     constructor(baseUrl?: string, instance?: AxiosInstance) {
+        super();
         this.instance = instance ? instance : axios.create();
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
@@ -456,7 +491,9 @@ export class EpisodeRatingsClient implements IEpisodeRatingsClient {
             cancelToken
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.instance.request(transformedOptions_);
+        }).catch((_error: any) => {
             if (isAxiosError(_error) && _error.response) {
                 return _error.response;
             } else {
@@ -527,7 +564,9 @@ export class EpisodeRatingsClient implements IEpisodeRatingsClient {
             cancelToken
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.instance.request(transformedOptions_);
+        }).catch((_error: any) => {
             if (isAxiosError(_error) && _error.response) {
                 return _error.response;
             } else {
@@ -584,7 +623,9 @@ export class EpisodeRatingsClient implements IEpisodeRatingsClient {
             cancelToken
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.instance.request(transformedOptions_);
+        }).catch((_error: any) => {
             if (isAxiosError(_error) && _error.response) {
                 return _error.response;
             } else {
@@ -637,7 +678,9 @@ export class EpisodeRatingsClient implements IEpisodeRatingsClient {
             cancelToken
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.instance.request(transformedOptions_);
+        }).catch((_error: any) => {
             if (isAxiosError(_error) && _error.response) {
                 return _error.response;
             } else {
@@ -695,7 +738,9 @@ export class EpisodeRatingsClient implements IEpisodeRatingsClient {
             cancelToken
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.instance.request(transformedOptions_);
+        }).catch((_error: any) => {
             if (isAxiosError(_error) && _error.response) {
                 return _error.response;
             } else {
@@ -749,7 +794,9 @@ export class EpisodeRatingsClient implements IEpisodeRatingsClient {
             cancelToken
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.instance.request(transformedOptions_);
+        }).catch((_error: any) => {
             if (isAxiosError(_error) && _error.response) {
                 return _error.response;
             } else {
@@ -807,7 +854,9 @@ export class EpisodeRatingsClient implements IEpisodeRatingsClient {
             cancelToken
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.instance.request(transformedOptions_);
+        }).catch((_error: any) => {
             if (isAxiosError(_error) && _error.response) {
                 return _error.response;
             } else {
@@ -869,7 +918,9 @@ export class EpisodeRatingsClient implements IEpisodeRatingsClient {
             cancelToken
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.instance.request(transformedOptions_);
+        }).catch((_error: any) => {
             if (isAxiosError(_error) && _error.response) {
                 return _error.response;
             } else {

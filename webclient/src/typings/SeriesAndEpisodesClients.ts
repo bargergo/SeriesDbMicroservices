@@ -9,6 +9,27 @@
 
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse, CancelToken } from 'axios';
 
+export class ClientBase {
+    /**
+     * authorization token value
+     */
+    public token: string | null;
+
+    constructor() {
+        this.token = null
+    }
+
+    protected transformOptions(options: any) {
+
+        if (this.token) {
+            options.headers["Authorization"] = "Bearer " + this.token
+        } else {
+            console.warn("Authorization token have not been set please authorize first.");
+        }
+        return Promise.resolve(options);
+    }
+}
+
 export interface IImageClient {
     /**
      * @return Success
@@ -16,12 +37,13 @@ export interface IImageClient {
     getImage(id: string | null): Promise<void>;
 }
 
-export class ImageClient implements IImageClient {
+export class ImageClient extends ClientBase implements IImageClient {
     private instance: AxiosInstance;
     private baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
 
     constructor(baseUrl?: string, instance?: AxiosInstance) {
+        super();
         this.instance = instance ? instance : axios.create();
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
@@ -44,7 +66,9 @@ export class ImageClient implements IImageClient {
             cancelToken
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.instance.request(transformedOptions_);
+        }).catch((_error: any) => {
             if (isAxiosError(_error) && _error.response) {
                 return _error.response;
             } else {
@@ -130,12 +154,13 @@ export interface ISeriesClient {
     getEpisode(id: string | null, seasonId: number, episodeId: number): Promise<EpisodeDetail>;
 }
 
-export class SeriesClient implements ISeriesClient {
+export class SeriesClient extends ClientBase implements ISeriesClient {
     private instance: AxiosInstance;
     private baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
 
     constructor(baseUrl?: string, instance?: AxiosInstance) {
+        super();
         this.instance = instance ? instance : axios.create();
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
@@ -156,7 +181,9 @@ export class SeriesClient implements ISeriesClient {
             cancelToken
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.instance.request(transformedOptions_);
+        }).catch((_error: any) => {
             if (isAxiosError(_error) && _error.response) {
                 return _error.response;
             } else {
@@ -215,7 +242,9 @@ export class SeriesClient implements ISeriesClient {
             cancelToken
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.instance.request(transformedOptions_);
+        }).catch((_error: any) => {
             if (isAxiosError(_error) && _error.response) {
                 return _error.response;
             } else {
@@ -274,7 +303,9 @@ export class SeriesClient implements ISeriesClient {
             cancelToken
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.instance.request(transformedOptions_);
+        }).catch((_error: any) => {
             if (isAxiosError(_error) && _error.response) {
                 return _error.response;
             } else {
@@ -337,7 +368,9 @@ export class SeriesClient implements ISeriesClient {
             cancelToken
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.instance.request(transformedOptions_);
+        }).catch((_error: any) => {
             if (isAxiosError(_error) && _error.response) {
                 return _error.response;
             } else {
@@ -392,7 +425,9 @@ export class SeriesClient implements ISeriesClient {
             cancelToken
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.instance.request(transformedOptions_);
+        }).catch((_error: any) => {
             if (isAxiosError(_error) && _error.response) {
                 return _error.response;
             } else {
@@ -453,7 +488,9 @@ export class SeriesClient implements ISeriesClient {
             cancelToken
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.instance.request(transformedOptions_);
+        }).catch((_error: any) => {
             if (isAxiosError(_error) && _error.response) {
                 return _error.response;
             } else {
@@ -516,7 +553,9 @@ export class SeriesClient implements ISeriesClient {
             cancelToken
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.instance.request(transformedOptions_);
+        }).catch((_error: any) => {
             if (isAxiosError(_error) && _error.response) {
                 return _error.response;
             } else {
@@ -577,7 +616,9 @@ export class SeriesClient implements ISeriesClient {
             cancelToken
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.instance.request(transformedOptions_);
+        }).catch((_error: any) => {
             if (isAxiosError(_error) && _error.response) {
                 return _error.response;
             } else {
@@ -637,7 +678,9 @@ export class SeriesClient implements ISeriesClient {
             cancelToken
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.instance.request(transformedOptions_);
+        }).catch((_error: any) => {
             if (isAxiosError(_error) && _error.response) {
                 return _error.response;
             } else {
@@ -705,7 +748,9 @@ export class SeriesClient implements ISeriesClient {
             cancelToken
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.instance.request(transformedOptions_);
+        }).catch((_error: any) => {
             if (isAxiosError(_error) && _error.response) {
                 return _error.response;
             } else {

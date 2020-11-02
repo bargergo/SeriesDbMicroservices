@@ -4,8 +4,8 @@ import React from "react";
 const SignInComponent = (props: any) => {
     let query = new URLSearchParams(props.location.search);
     let accessToken = query.get("access_token");
-    if (accessToken) {
-        axios.defaults.headers.common['Authorization'] = accessToken;
+    if (!!accessToken) {
+        axios.defaults.headers.common['Authorization'] = "Bearer " + accessToken;
     }
     return (
         <div className="main-content">

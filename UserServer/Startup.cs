@@ -103,7 +103,7 @@ namespace UserServer
 
             //app.UseForwardedHeaders();
 
-            app.Use(async (context, next) =>
+            /*app.Use(async (context, next) =>
             {
                 // Get the original Uri
                 context.Request.Headers.TryGetValue("X-Forwarded-Uri", out var originalUri);
@@ -115,7 +115,7 @@ namespace UserServer
 
                 // Call the next delegate/middleware in the pipeline
                 await next();
-            });
+            });*/
 
             app.UseRouting();
 

@@ -10,7 +10,7 @@ interface IState {
 }
 
 interface IProps {
-    client: ISeriesClient;
+    client: SeriesClient;
 }
 
 export default class SeriesContainer extends Component<IProps, IState> {
@@ -27,7 +27,8 @@ export default class SeriesContainer extends Component<IProps, IState> {
   };
 
   async componentDidMount() {
-    const client: ISeriesClient = this.props.client;
+    const client: SeriesClient = this.props.client;
+    this.props.client.token = "asaasd";
     try {
       const response = await client.getAllSeries();
       this.setState({ series: response, loading: false });
