@@ -1,8 +1,9 @@
 import { Field, Form, Formik } from "formik";
-import React from "react";
+import React, { useContext } from "react";
 import { Button, FormControl, FormGroup, FormLabel } from "react-bootstrap";
 import Feedback from "react-bootstrap/Feedback";
 import * as Yup from "yup";
+import ClientsContext from "../ClientsContext";
 import {
   ISeriesRatingsClient,
   SeriesRatingData,
@@ -13,7 +14,8 @@ const SeriesRatingForm = (props: {
   seriesId: string;
   client: ISeriesRatingsClient;
 }) => {
-  const _client: ISeriesRatingsClient = props.client;
+  const clients = useContext(ClientsContext);
+  const _client: ISeriesRatingsClient = clients.seriesRatingClient;
 
   return (
     <>

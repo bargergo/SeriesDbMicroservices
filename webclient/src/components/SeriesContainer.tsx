@@ -1,8 +1,9 @@
 import React, { Component } from "react";
 import { Container, Row } from "react-bootstrap";
-import { ISeriesClient, ISeriesInfo, SeriesClient } from "../typings/SeriesAndEpisodesClients";
-import Series from "./Series";
 import { Link } from "react-router-dom";
+import ClientsContext from "../ClientsContext";
+import { ISeriesClient, ISeriesInfo } from "../typings/SeriesAndEpisodesClients";
+import Series from "./Series";
 
 interface IState {
   series: ISeriesInfo[];
@@ -10,7 +11,6 @@ interface IState {
 }
 
 interface IProps {
-    client: SeriesClient;
 }
 
 export default class SeriesContainer extends Component<IProps, IState> {
@@ -22,13 +22,10 @@ export default class SeriesContainer extends Component<IProps, IState> {
     };
   }
 
-  static defaultProps = {
-      client: new SeriesClient()
-  };
+  static contextType = ClientsContext;
 
   async componentDidMount() {
-    const client: SeriesClient = this.props.client;
-    this.props.client.token = "asaasd";
+    const client: ISeriesClient = this.context.seriesClient;
     try {
       const response = await client.getAllSeries();
       this.setState({ series: response, loading: false });

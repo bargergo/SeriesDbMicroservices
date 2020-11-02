@@ -4,11 +4,9 @@ import { Button, FormControl, FormGroup, FormLabel } from "react-bootstrap";
 import Feedback from "react-bootstrap/Feedback";
 import { RouteComponentProps } from "react-router-dom";
 import * as Yup from "yup";
+import ClientsContext from "../ClientsContext";
 import {
-  SeriesClient,
-  UpsertSeriesRequest,
-  ISeriesDetail,
-  ISeriesClient,
+    ISeriesClient, ISeriesDetail, UpsertSeriesRequest
 } from "../typings/SeriesAndEpisodesClients";
 
 interface IRouteProps {
@@ -16,7 +14,6 @@ interface IRouteProps {
 }
 
 interface IProps extends RouteComponentProps<IRouteProps> {
-    client: ISeriesClient;
 }
 
 interface IState {
@@ -33,13 +30,11 @@ export default class SeriesDetailForm extends Component<IProps, IState> {
     };
   }
 
-  static defaultProps = {
-    client: new SeriesClient()
-  };
+  static contextType = ClientsContext;
 
   async componentDidMount() {
     if (this.props.match.params.id) {
-      const client: ISeriesClient = this.props.client;
+      const client: ISeriesClient = this.context.seriesClient;
       const series = await client.getSeries(this.props.match.params.id);
       this.setState({ series: series });
     }
@@ -47,7 +42,7 @@ export default class SeriesDetailForm extends Component<IProps, IState> {
   }
 
   render() {
-    const client: ISeriesClient = this.props.client;
+    const client: ISeriesClient = this.context.seriesClient;
     return (
       <>
         <h2>{this.props.match.params.id ? "Edit" : "Create"} Series</h2>

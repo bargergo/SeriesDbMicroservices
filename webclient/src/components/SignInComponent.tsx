@@ -1,11 +1,22 @@
-import axios from 'axios';
-import React from "react";
+import React, { useContext } from "react";
+import ClientsContext from '../ClientsContext';
+import { EpisodeRatingsClient, SeriesRatingsClient } from "../typings/RatingsClients";
+import { ImageClient, SeriesClient } from '../typings/SeriesAndEpisodesClients';
 
 const SignInComponent = (props: any) => {
+    const clients = useContext(ClientsContext)
+    
     let query = new URLSearchParams(props.location.search);
     let accessToken = query.get("access_token");
+    let seriesClient: SeriesClient = clients.seriesClient;
+    let imageClient: ImageClient = clients.imageClient;
+    let seriesRatingClient: SeriesRatingsClient = clients.seriesRatingClient;
+    let episodeRatingClient: EpisodeRatingsClient = clients.episodeRatingClient;
     if (!!accessToken) {
-        axios.defaults.headers.common['Authorization'] = "Bearer " + accessToken;
+        seriesClient.token = accessToken;
+        imageClient.token = accessToken;
+        seriesRatingClient.token = accessToken;
+        episodeRatingClient.token = accessToken;
     }
     return (
         <div className="main-content">

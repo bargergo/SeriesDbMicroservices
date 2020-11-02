@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import ClientsContext from "../ClientsContext";
 import {
   ISeriesRatingInfo,
   ISeriesRatingsClient,
@@ -28,8 +29,10 @@ export default class RatingsContainer extends Component<IProps, IState> {
     client: new SeriesRatingsClient(),
   };
 
+  static contextType = ClientsContext;
+
   async componentDidMount() {
-    const client: ISeriesRatingsClient = this.props.client;
+    const client: ISeriesRatingsClient = this.context.seriesRatingClient;
     try {
       const response = await client.getSeriesRatings(undefined, undefined);
       this.setState({ ratings: response, loading: false });
