@@ -31,10 +31,7 @@ export class ClientBase {
 }
 
 export interface IImageClient {
-    /**
-     * @return Success
-     */
-    getImage(id: string | null): Promise<void>;
+    getImage(id: string | null): Promise<FileResponse>;
 }
 
 export class ImageClient extends ClientBase implements IImageClient {
@@ -48,10 +45,7 @@ export class ImageClient extends ClientBase implements IImageClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
 
-    /**
-     * @return Success
-     */
-    getImage(id: string | null , cancelToken?: CancelToken | undefined): Promise<void> {
+    getImage(id: string | null , cancelToken?: CancelToken | undefined): Promise<FileResponse> {
         let url_ = this.baseUrl + "/api/Images/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
@@ -59,9 +53,11 @@ export class ImageClient extends ClientBase implements IImageClient {
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ = <AxiosRequestConfig>{
+            responseType: "blob",
             method: "GET",
             url: url_,
             headers: {
+                "Accept": "image/jpeg"
             },
             cancelToken
         };
@@ -79,7 +75,7 @@ export class ImageClient extends ClientBase implements IImageClient {
         });
     }
 
-    protected processGetImage(response: AxiosResponse): Promise<void> {
+    protected processGetImage(response: AxiosResponse): Promise<FileResponse> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -89,20 +85,16 @@ export class ImageClient extends ClientBase implements IImageClient {
                 }
             }
         }
-        if (status === 200) {
-            const _responseText = response.data;
-            return Promise.resolve<void>(<any>null);
-        } else if (status === 404) {
-            const _responseText = response.data;
-            let result404: any = null;
-            let resultData404  = _responseText;
-            result404 = ProblemDetails.fromJS(resultData404);
-            return throwException("Not Found", status, _responseText, _headers, result404);
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers["content-disposition"] : undefined;
+            const fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+            const fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            return Promise.resolve({ fileName: fileName, status: status, data: response.data as Blob, headers: _headers });
         } else if (status !== 200 && status !== 204) {
             const _responseText = response.data;
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
         }
-        return Promise.resolve<void>(<any>null);
+        return Promise.resolve<FileResponse>(<any>null);
     }
 }
 
@@ -1176,6 +1168,13 @@ export interface ICreateEpisodeRequest {
 export interface FileParameter {
     data: any;
     fileName: string;
+}
+
+export interface FileResponse {
+    data: Blob;
+    status: number;
+    fileName?: string;
+    headers?: { [name: string]: any };
 }
 
 export class ApiException extends Error {

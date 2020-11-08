@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 namespace SeriesAndEpisodes.Controllers
 {
     [Route("api/Series")]
-    //[Authorize]
     [ApiController]
     public class SeriesController : ControllerBase
     {

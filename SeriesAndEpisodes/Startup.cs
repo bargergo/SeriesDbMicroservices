@@ -7,13 +7,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SeriesAndEpisodes.MessageQueue;
 using SeriesAndEpisodes.Models;
 using SeriesAndEpisodes.Services;
+using SeriesAndEpisodes.Utils;
 using System;
-using System.Text;
 
 namespace SeriesAndEpisodes
 {
@@ -52,20 +51,6 @@ namespace SeriesAndEpisodes
                 EndpointConvention.Map<IDummyMessage>(new Uri($"rabbitmq://{config.Hostname}:/dummy"));
             });
 
-            services.AddAuthentication("MyJwtScheme")
-                .AddJwtBearer("MyJwtScheme", config =>
-                {
-                    var secretBytes = Encoding.UTF8.GetBytes(Configuration["TokenSettings:Secret"]);
-                    var key = new SymmetricSecurityKey(secretBytes);
-
-                    config.TokenValidationParameters = new TokenValidationParameters()
-                    {
-                        ValidIssuer = Configuration["TokenSettings:Issuer"],
-                        ValidAudience = Configuration["TokenSettings:Audience"],
-                        IssuerSigningKey = key
-                    };
-                });
-
             services.Configure<SeriesDbSettings>(
                 Configuration.GetSection(nameof(SeriesDbSettings)));
             services.AddSingleton<ISeriesDbSettings>(sp =>
@@ -83,6 +68,7 @@ namespace SeriesAndEpisodes
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "SeriesAndEpisodes API", Version = "v1" });
+                c.OperationFilter<FileResultContentTypeOperationFilter>();
             });
         }
 

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Container, Row } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, RouteComponentProps } from "react-router-dom";
 import ClientsContext from "../ClientsContext";
 import { ISeriesClient, ISeriesInfo } from "../typings/SeriesAndEpisodesClients";
 import Series from "./Series";
@@ -13,8 +13,8 @@ interface IState {
 interface IProps {
 }
 
-export default class SeriesContainer extends Component<IProps, IState> {
-  constructor(props: IProps) {
+export default class SeriesContainer extends Component<RouteComponentProps<IProps>, IState> {
+  constructor(props: RouteComponentProps<IProps>) {
     super(props);
     this.state = {
       series: [],
@@ -47,7 +47,7 @@ export default class SeriesContainer extends Component<IProps, IState> {
           <Container>
             {this.state.series.map((s) => (
               <Row>
-                <Series key={s.id} data={s} />
+                <Series key={s.id} data={s} match={this.props.match}/>
               </Row>
             ))}
           </Container>

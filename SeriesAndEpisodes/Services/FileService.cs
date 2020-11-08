@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using MongoDB.Bson;
 using MongoDB.Driver.GridFS;
+using SeriesAndEpisodes.Controllers;
 using SeriesAndEpisodes.Models;
+using System;
 using System.Threading.Tasks;
 
 namespace SeriesAndEpisodes.Services
@@ -30,7 +32,13 @@ namespace SeriesAndEpisodes.Services
         public async Task<byte[]> DownloadImage(string id)
         {
             var objectId = ObjectId.Parse(id);
-            return await _gridFsBucket.DownloadAsBytesAsync(objectId);
+            try
+            {
+                return await _gridFsBucket.DownloadAsBytesAsync(objectId);
+            } catch(Exception)
+            {
+                throw new FileDoesntExistException();
+            }
         }
     }
 }
