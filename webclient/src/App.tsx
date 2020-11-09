@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Switch } from "react-router-dom";
 import "./App.css";
 import ClientsContext from "./ClientsContext";
 import About from "./components/About";
+import ContainerComponent from "./components/ContainerComponent";
 import Header from "./components/Header";
 import Home from "./components/Home";
 import RatingsContainer from "./components/RatingsContainer";
@@ -22,7 +23,7 @@ const App = () => (
   }}>
     <BrowserRouter>
       <Header />
-      <div className="container">
+      <ContainerComponent>
         <Switch>
           <Route exact path="/" component={Home} />
           <Route exact path="/Series" component={SeriesContainer} />
@@ -33,7 +34,7 @@ const App = () => (
           <Route exact path="/Signin" component={SignInComponent} />
           <Route path="/about" component={About} />
         </Switch>
-      </div>
+      </ContainerComponent>
     </BrowserRouter>
   </ClientsContext.Provider>
 );
