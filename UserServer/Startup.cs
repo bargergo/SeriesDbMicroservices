@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -11,7 +11,10 @@ using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Threading.Tasks;
+using UserServer.Database;
+using UserServer.Interfaces;
 using UserServer.Models;
+using UserServer.Services;
 
 namespace UserServer
 {
@@ -30,6 +33,11 @@ namespace UserServer
                 Configuration.GetSection(nameof(TokenSettings)));
             services.AddSingleton<ITokenSettings>(sp =>
                 sp.GetRequiredService<IOptions<TokenSettings>>().Value);
+
+            services.AddDbContext<UserDbContext>(o =>
+                o.UseSqlServer(Configuration.GetConnectionString("DbConnection"), options => options.EnableRetryOnFailure()));
+
+            services.AddTransient<IUserService, UserService>();
 
             services.AddControllers();
 
@@ -94,7 +102,7 @@ namespace UserServer
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, UserDbContext dataContext)
         {
             if (env.IsDevelopment())
             {
@@ -116,6 +124,9 @@ namespace UserServer
                 // Call the next delegate/middleware in the pipeline
                 await next();
             });*/
+
+            if (Configuration["Environment:IsInDockerCompose"] == "True")
+                dataContext.Database.Migrate();
 
             app.UseRouting();
 

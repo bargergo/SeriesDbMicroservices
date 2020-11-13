@@ -9,6 +9,9 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
+using UserServer.Entities;
+using UserServer.Interfaces;
 using UserServer.Models;
 
 namespace UserServer.Controllers
@@ -18,10 +21,12 @@ namespace UserServer.Controllers
     public class AccountController : ControllerBase
     {
         private readonly ITokenSettings _tokenSettings;
+        private readonly IUserService _userService;
 
-        public AccountController(ITokenSettings _tokenSettings)
+        public AccountController(ITokenSettings _tokenSettings, IUserService userService)
         {
             this._tokenSettings = _tokenSettings;
+            _userService = userService;
         }
         public IActionResult Login()
         {
@@ -46,7 +51,7 @@ namespace UserServer.Controllers
         }
 
         [HttpGet("Authenticate")]
-        public IActionResult Authenticate(string returnUrl)
+        public async Task<IActionResult> Authenticate(string returnUrl)
         {
             if (!HttpContext.User.Identity.IsAuthenticated)
             {
@@ -58,10 +63,26 @@ namespace UserServer.Controllers
             {
                 new Claim("customclaim", "custom")
             };
-            foreach (var claim in HttpContext.User.Claims)
+            claims.AddRange(HttpContext.User.Claims);
+            var email = claims.Find(c => c.Type == ClaimTypes.Email)?.Value;
+            var firstname = claims.Find(c => c.Type == ClaimTypes.GivenName)?.Value;
+            var lastname = claims.Find(c => c.Type == ClaimTypes.Surname)?.Value;
+            try
             {
-                claims.Add(claim);
+                var user = await _userService.FindUserByEmail(email);
+            } catch
+            {
+                var user = new ApplicationUser
+                {
+                    Email = email,
+                    UserName = email,
+                    Firstname = firstname,
+                    Lastname = lastname
+                };
+                await _userService.RegisterUser(user);
             }
+                
+
             var secretBytes = Encoding.UTF8.GetBytes(_tokenSettings.Secret);
             var key = new SymmetricSecurityKey(secretBytes);
             var algorithm = SecurityAlgorithms.HmacSha256;
