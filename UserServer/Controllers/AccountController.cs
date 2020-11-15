@@ -58,29 +58,24 @@ namespace UserServer.Controllers
                 return Challenge(OpenIdConnectDefaults.AuthenticationScheme);
             }
 
-            
-            var claims = new List<Claim>
-            {
-                new Claim("customclaim", "custom")
-            };
+
+            var claims = new List<Claim>();
             claims.AddRange(HttpContext.User.Claims);
             var email = claims.Find(c => c.Type == ClaimTypes.Email)?.Value;
             var firstname = claims.Find(c => c.Type == ClaimTypes.GivenName)?.Value;
             var lastname = claims.Find(c => c.Type == ClaimTypes.Surname)?.Value;
-            try
+            var userData = new ApplicationUser
             {
-                var user = await _userService.FindUserByEmail(email);
-            } catch
-            {
-                var user = new ApplicationUser
-                {
-                    Email = email,
-                    UserName = email,
-                    Firstname = firstname,
-                    Lastname = lastname
-                };
-                await _userService.RegisterUser(user);
-            }
+                Email = email,
+                UserName = email,
+                Firstname = firstname,
+                Lastname = lastname
+            };
+            var user = await _userService.FindUserByEmail(email);
+            if (user != null)
+                await _userService.UpdateUser(email, userData);
+            else
+                await _userService.RegisterUser(userData);
                 
 
             var secretBytes = Encoding.UTF8.GetBytes(_tokenSettings.Secret);

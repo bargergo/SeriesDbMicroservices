@@ -19,7 +19,7 @@ namespace UserServer.Database
             {
                 // Each User can have many entries in the UserRole join table
                 b.HasMany(e => e.UserRoles)
-                .WithOne()
+                .WithOne(e => e.User)
                 .HasForeignKey(ur => ur.UserId)
                 .IsRequired();
 

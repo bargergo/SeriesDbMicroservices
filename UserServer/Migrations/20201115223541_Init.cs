@@ -43,8 +43,7 @@ namespace UserServer.Migrations
                     Id = table.Column<long>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<long>(nullable: false),
-                    RoleId = table.Column<long>(nullable: false),
-                    UserId1 = table.Column<long>(nullable: true)
+                    RoleId = table.Column<long>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -61,12 +60,6 @@ namespace UserServer.Migrations
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_UserRoles_Users_UserId1",
-                        column: x => x.UserId1,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.InsertData(
@@ -95,11 +88,6 @@ namespace UserServer.Migrations
                 name: "IX_UserRoles_UserId",
                 table: "UserRoles",
                 column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserRoles_UserId1",
-                table: "UserRoles",
-                column: "UserId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_Email",
