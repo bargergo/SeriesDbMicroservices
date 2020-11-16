@@ -15,7 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 fun NormalOpenAPIRoute.seriesRatings(service: SeriesRatingService) {
-    route("/api/SeriesRatings/public") {
+    route("/api/public/SeriesRatings") {
 
         get<GetSeriesRatingsQueryParams, List<SeriesRatingInfo>>(
                 info("Get Episodes Ratings Endpoint", "This is a Get Episodes Ratings Endpoint"),
@@ -53,8 +53,8 @@ fun NormalOpenAPIRoute.seriesRatings(service: SeriesRatingService) {
 
         }
     }
-    
-    route("/api/SeriesRatings/public") {
+
+    route("/api/protected/SeriesRatings") {
 
         post<Unit, Created201Response, SeriesRatingData>(
             id("CreateSeriesRating")

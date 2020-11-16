@@ -2,7 +2,7 @@ import React from "react";
 import { RouteComponentProps } from "react-router-dom";
 import ClientsContext from '../ClientsContext';
 import { EpisodeRatingsClient, SeriesRatingsClient } from "../typings/RatingsClients";
-import { ImageClient, SeriesClient } from '../typings/SeriesAndEpisodesClients';
+import { ImageClient, SeriesAdminClient, SeriesClient } from '../typings/SeriesAndEpisodesClients';
 
 interface IProps extends RouteComponentProps {
 
@@ -26,6 +26,7 @@ export default class SignInComponent extends React.Component<IProps, IState> {
     componentDidMount() {
     
         let seriesClient: SeriesClient = this.context.seriesClient;
+        let seriesAdminClient: SeriesAdminClient = this.context.seriesAdminClient;
         let imageClient: ImageClient = this.context.imageClient;
         let seriesRatingClient: SeriesRatingsClient = this.context.seriesRatingClient;
         let episodeRatingClient: EpisodeRatingsClient = this.context.episodeRatingClient;
@@ -35,6 +36,7 @@ export default class SignInComponent extends React.Component<IProps, IState> {
 
         if (!!accessToken) {
             seriesClient.token = accessToken;
+            seriesAdminClient.token = accessToken;
             imageClient.token = accessToken;
             seriesRatingClient.token = accessToken;
             episodeRatingClient.token = accessToken;
@@ -56,7 +58,7 @@ export default class SignInComponent extends React.Component<IProps, IState> {
                 select a topic -- HTML, CSS, or JavaScript -- to see a list of our
                 courses.
             </p>
-            <a href={`/Account/Authenticate?returnUrl=${this.props.location.pathname}`}>Sign in</a>
+            <a href={`/api/Account/Authenticate?returnUrl=${this.props.location.pathname}`}>Sign in</a>
             <p>
                 access_token: {this.state.accessToken ? this.state.accessToken : ''}
             </p>

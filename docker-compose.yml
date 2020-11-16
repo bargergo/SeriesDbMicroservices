@@ -37,9 +37,9 @@ services:
       - message-queue
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.series-and-episodes.rule=PathPrefix(`/api/Series/public`) || PathPrefix(`/api/Images/public`)"
+      - "traefik.http.routers.series-and-episodes.rule=PathPrefix(`/api/public/Series`) || PathPrefix(`/api/public/Images`)"
       - "traefik.http.routers.series-and-episodes.entrypoints=web"
-      - "traefik.http.routers.series-and-episodes-admin.rule=PathPrefix(`/api/Series/admin`) || PathPrefix(`/api/Images/admin`)"
+      - "traefik.http.routers.series-and-episodes-admin.rule=PathPrefix(`/api/admin/Series`) || PathPrefix(`/api/admin/Images`)"
       - "traefik.http.routers.series-and-episodes-admin.entrypoints=web"
       - "traefik.http.routers.series-and-episodes-admin.middlewares=user-service-admin"
 
@@ -75,9 +75,9 @@ services:
       - message-queue
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.ratings.rule=PathPrefix(`/api/SeriesRatings/public`) || PathPrefix(`/api/EpisodeRatings/public`)"
+      - "traefik.http.routers.ratings.rule=PathPrefix(`/api/public/SeriesRatings`) || PathPrefix(`/api/public/EpisodeRatings`)"
       - "traefik.http.routers.ratings.entrypoints=web"
-      - "traefik.http.routers.ratings-login.rule=PathPrefix(`/api/SeriesRatings/protected`) || PathPrefix(`/api/EpisodeRatings/protected`)"
+      - "traefik.http.routers.ratings-login.rule=PathPrefix(`/api/protected/SeriesRatings`) || PathPrefix(`/api/protected/EpisodeRatings`)"
       - "traefik.http.routers.ratings-login.entrypoints=web"
       - "traefik.http.routers.ratings-login.middlewares=user-service"
 
@@ -136,10 +136,10 @@ services:
       - user-db
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.user-service.rule=PathPrefix(`/Account`) || PathPrefix(`/signin-oidc`)"
+      - "traefik.http.routers.user-service.rule=PathPrefix(`/api/Account`) || PathPrefix(`/signin-oidc`)"
       - "traefik.http.routers.user-service.entrypoints=web"
-      - "traefik.http.middlewares.user-service.forwardauth.address=http://user-service:80/Account/AuthenticateWithToken"
-      - "traefik.http.middlewares.user-service-admin.forwardauth.address=http://user-service:80/Account/AuthenticateAdminWithToken"
+      - "traefik.http.middlewares.user-service.forwardauth.address=http://user-service:80/api/Account/AuthenticateWithToken"
+      - "traefik.http.middlewares.user-service-admin.forwardauth.address=http://user-service:80/api/Account/AuthenticateAdminWithToken"
   
   user-db:
     image: "mcr.microsoft.com/mssql/server:2019-CU4-ubuntu-16.04"

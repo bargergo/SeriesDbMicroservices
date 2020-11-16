@@ -11,7 +11,7 @@ import hu.bme.aut.ratings.utils.id
 import io.ktor.features.NotFoundException
 
 fun NormalOpenAPIRoute.episodeRatings(service: EpisodeRatingService) {
-    route("/api/EpisodeRatings/public") {
+    route("/api/public/EpisodeRatings") {
 
         get<GetEpisodeRatingsQueryParams, List<EpisodeRatingInfo>>(
                 info("Get Episodes Ratings Endpoint", "This is a Get Episodes Ratings Endpoint"),
@@ -74,7 +74,7 @@ fun NormalOpenAPIRoute.episodeRatings(service: EpisodeRatingService) {
         }
     }
 
-    route("/api/EpisodeRatings/protected") {
+    route("/api/protected/EpisodeRatings") {
         post<Unit, Created201Response, EpisodeRatingData>(
                 id("CreateEpisodeRating")
         ) { _, ratingData ->

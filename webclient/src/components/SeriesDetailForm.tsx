@@ -6,6 +6,7 @@ import { RouteComponentProps } from "react-router-dom";
 import * as Yup from "yup";
 import ClientsContext from "../ClientsContext";
 import {
+  ISeriesAdminClient,
     ISeriesClient, ISeriesDetail, UpsertSeriesRequest
 } from "../typings/SeriesAndEpisodesClients";
 
@@ -42,7 +43,7 @@ export default class SeriesDetailForm extends Component<IProps, IState> {
   }
 
   render() {
-    const client: ISeriesClient = this.context.seriesClient;
+    const client: ISeriesAdminClient = this.context.seriesAdminClient;
     return (
       <>
         <h2>{this.props.match.params.id ? "Edit" : "Create"} Series</h2>

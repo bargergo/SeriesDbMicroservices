@@ -12,11 +12,12 @@ import SeriesDetailComponent from "./components/SeriesDetailComponent";
 import SeriesDetailForm from "./components/SeriesDetailForm";
 import SignInComponent from "./components/SignInComponent";
 import { EpisodeRatingsClient, SeriesRatingsClient } from "./typings/RatingsClients";
-import { ImageClient, SeriesClient } from "./typings/SeriesAndEpisodesClients";
+import { ImageClient, SeriesAdminClient, SeriesClient } from "./typings/SeriesAndEpisodesClients";
 
 const App = () => (
   <ClientsContext.Provider value={{
       seriesClient: new SeriesClient(),
+      seriesAdminClient: new SeriesAdminClient(),
       imageClient: new ImageClient(),
       seriesRatingClient: new SeriesRatingsClient(),
       episodeRatingClient: new EpisodeRatingsClient()

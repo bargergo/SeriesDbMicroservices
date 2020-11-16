@@ -46,7 +46,7 @@ export class ImageClient extends ClientBase implements IImageClient {
     }
 
     getImage(id: string | null , cancelToken?: CancelToken | undefined): Promise<FileResponse> {
-        let url_ = this.baseUrl + "/api/Images/public/{id}";
+        let url_ = this.baseUrl + "/api/public/Images/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id));
@@ -108,39 +108,6 @@ export interface ISeriesClient {
      */
     getSeries(id: string | null): Promise<SeriesDetail>;
     /**
-     * @param body (optional) 
-     * @return Success
-     */
-    createSeries(body: UpsertSeriesRequest | undefined): Promise<SeriesDetail>;
-    /**
-     * @param body (optional) 
-     * @return Success
-     */
-    updateSeries(id: string | null, body: UpsertSeriesRequest | undefined): Promise<void>;
-    /**
-     * @return Success
-     */
-    deleteSeries(id: string | null): Promise<void>;
-    /**
-     * @param image (optional) 
-     * @return Success
-     */
-    uploadImage(id: string | null, image: FileParameter | null | undefined): Promise<void>;
-    /**
-     * @param body (optional) 
-     * @return Success
-     */
-    addEpisode(id: string | null, seasonId: number, body: CreateEpisodeRequest | undefined): Promise<void>;
-    /**
-     * @return Success
-     */
-    deleteEpisode(id: string | null, seasonId: number, episodeId: number): Promise<void>;
-    /**
-     * @param body (optional) 
-     * @return Success
-     */
-    updateEpisode(id: string | null, seasonId: number, episodeId: number, body: CreateEpisodeRequest | undefined): Promise<void>;
-    /**
      * @return Success
      */
     getEpisode(id: string | null, seasonId: number, episodeId: number): Promise<EpisodeDetail>;
@@ -161,7 +128,7 @@ export class SeriesClient extends ClientBase implements ISeriesClient {
      * @return Success
      */
     getAllSeries(  cancelToken?: CancelToken | undefined): Promise<SeriesInfo[]> {
-        let url_ = this.baseUrl + "/api/Series/public";
+        let url_ = this.baseUrl + "/api/public/Series";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ = <AxiosRequestConfig>{
@@ -217,7 +184,7 @@ export class SeriesClient extends ClientBase implements ISeriesClient {
      * @return Success
      */
     getSeries(id: string | null , cancelToken?: CancelToken | undefined): Promise<SeriesDetail> {
-        let url_ = this.baseUrl + "/api/Series/public/{id}";
+        let url_ = this.baseUrl + "/api/public/Series/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id));
@@ -275,11 +242,126 @@ export class SeriesClient extends ClientBase implements ISeriesClient {
     }
 
     /**
+     * @return Success
+     */
+    getEpisode(id: string | null, seasonId: number, episodeId: number , cancelToken?: CancelToken | undefined): Promise<EpisodeDetail> {
+        let url_ = this.baseUrl + "/api/public/Series/{id}/Season/{seasonId}/Episode/{episodeId}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        if (seasonId === undefined || seasonId === null)
+            throw new Error("The parameter 'seasonId' must be defined.");
+        url_ = url_.replace("{seasonId}", encodeURIComponent("" + seasonId));
+        if (episodeId === undefined || episodeId === null)
+            throw new Error("The parameter 'episodeId' must be defined.");
+        url_ = url_.replace("{episodeId}", encodeURIComponent("" + episodeId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ = <AxiosRequestConfig>{
+            method: "GET",
+            url: url_,
+            headers: {
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.instance.request(transformedOptions_);
+        }).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processGetEpisode(_response);
+        });
+    }
+
+    protected processGetEpisode(response: AxiosResponse): Promise<EpisodeDetail> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (let k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = EpisodeDetail.fromJS(resultData200);
+            return result200;
+        } else if (status === 404) {
+            const _responseText = response.data;
+            let result404: any = null;
+            let resultData404  = _responseText;
+            result404 = ProblemDetails.fromJS(resultData404);
+            return throwException("Not Found", status, _responseText, _headers, result404);
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<EpisodeDetail>(<any>null);
+    }
+}
+
+export interface ISeriesAdminClient {
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    createSeries(body: UpsertSeriesRequest | undefined): Promise<SeriesDetail>;
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    updateSeries(id: string | null, body: UpsertSeriesRequest | undefined): Promise<void>;
+    /**
+     * @return Success
+     */
+    deleteSeries(id: string | null): Promise<void>;
+    /**
+     * @param image (optional) 
+     * @return Success
+     */
+    uploadImage(id: string | null, image: FileParameter | null | undefined): Promise<void>;
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    addEpisode(id: string | null, seasonId: number, body: CreateEpisodeRequest | undefined): Promise<void>;
+    /**
+     * @return Success
+     */
+    deleteEpisode(id: string | null, seasonId: number, episodeId: number): Promise<void>;
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    updateEpisode(id: string | null, seasonId: number, episodeId: number, body: CreateEpisodeRequest | undefined): Promise<void>;
+}
+
+export class SeriesAdminClient extends ClientBase implements ISeriesAdminClient {
+    private instance: AxiosInstance;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, instance?: AxiosInstance) {
+        super();
+        this.instance = instance ? instance : axios.create();
+        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+    }
+
+    /**
      * @param body (optional) 
      * @return Success
      */
     createSeries(body: UpsertSeriesRequest | undefined , cancelToken?: CancelToken | undefined): Promise<SeriesDetail> {
-        let url_ = this.baseUrl + "/api/Series/admin";
+        let url_ = this.baseUrl + "/api/admin/Series";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(body);
@@ -342,7 +424,7 @@ export class SeriesClient extends ClientBase implements ISeriesClient {
      * @return Success
      */
     updateSeries(id: string | null, body: UpsertSeriesRequest | undefined , cancelToken?: CancelToken | undefined): Promise<void> {
-        let url_ = this.baseUrl + "/api/Series/admin/{id}";
+        let url_ = this.baseUrl + "/api/admin/Series/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id));
@@ -403,7 +485,7 @@ export class SeriesClient extends ClientBase implements ISeriesClient {
      * @return Success
      */
     deleteSeries(id: string | null , cancelToken?: CancelToken | undefined): Promise<void> {
-        let url_ = this.baseUrl + "/api/Series/admin/{id}";
+        let url_ = this.baseUrl + "/api/admin/Series/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id));
@@ -461,7 +543,7 @@ export class SeriesClient extends ClientBase implements ISeriesClient {
      * @return Success
      */
     uploadImage(id: string | null, image: FileParameter | null | undefined , cancelToken?: CancelToken | undefined): Promise<void> {
-        let url_ = this.baseUrl + "/api/Series/admin/{id}/image";
+        let url_ = this.baseUrl + "/api/admin/Series/{id}/image";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id));
@@ -524,7 +606,7 @@ export class SeriesClient extends ClientBase implements ISeriesClient {
      * @return Success
      */
     addEpisode(id: string | null, seasonId: number, body: CreateEpisodeRequest | undefined , cancelToken?: CancelToken | undefined): Promise<void> {
-        let url_ = this.baseUrl + "/api/Series/admin/{id}/Season/{seasonId}";
+        let url_ = this.baseUrl + "/api/admin/Series/{id}/Season/{seasonId}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id));
@@ -588,7 +670,7 @@ export class SeriesClient extends ClientBase implements ISeriesClient {
      * @return Success
      */
     deleteEpisode(id: string | null, seasonId: number, episodeId: number , cancelToken?: CancelToken | undefined): Promise<void> {
-        let url_ = this.baseUrl + "/api/Series/admin/{id}/Season/{seasonId}/Episode/{episodeId}";
+        let url_ = this.baseUrl + "/api/admin/Series/{id}/Season/{seasonId}/Episode/{episodeId}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id));
@@ -646,7 +728,7 @@ export class SeriesClient extends ClientBase implements ISeriesClient {
      * @return Success
      */
     updateEpisode(id: string | null, seasonId: number, episodeId: number, body: CreateEpisodeRequest | undefined , cancelToken?: CancelToken | undefined): Promise<void> {
-        let url_ = this.baseUrl + "/api/Series/admin/{id}/Season/{seasonId}/Episode/{episodeId}";
+        let url_ = this.baseUrl + "/api/admin/Series/{id}/Season/{seasonId}/Episode/{episodeId}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id));
@@ -713,73 +795,6 @@ export class SeriesClient extends ClientBase implements ISeriesClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
         }
         return Promise.resolve<void>(<any>null);
-    }
-
-    /**
-     * @return Success
-     */
-    getEpisode(id: string | null, seasonId: number, episodeId: number , cancelToken?: CancelToken | undefined): Promise<EpisodeDetail> {
-        let url_ = this.baseUrl + "/api/Series/public/{id}/Season/{seasonId}/Episode/{episodeId}";
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
-        if (seasonId === undefined || seasonId === null)
-            throw new Error("The parameter 'seasonId' must be defined.");
-        url_ = url_.replace("{seasonId}", encodeURIComponent("" + seasonId));
-        if (episodeId === undefined || episodeId === null)
-            throw new Error("The parameter 'episodeId' must be defined.");
-        url_ = url_.replace("{episodeId}", encodeURIComponent("" + episodeId));
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ = <AxiosRequestConfig>{
-            method: "GET",
-            url: url_,
-            headers: {
-                "Accept": "text/plain"
-            },
-            cancelToken
-        };
-
-        return this.transformOptions(options_).then(transformedOptions_ => {
-            return this.instance.request(transformedOptions_);
-        }).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.processGetEpisode(_response);
-        });
-    }
-
-    protected processGetEpisode(response: AxiosResponse): Promise<EpisodeDetail> {
-        const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (let k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
-        if (status === 200) {
-            const _responseText = response.data;
-            let result200: any = null;
-            let resultData200  = _responseText;
-            result200 = EpisodeDetail.fromJS(resultData200);
-            return result200;
-        } else if (status === 404) {
-            const _responseText = response.data;
-            let result404: any = null;
-            let resultData404  = _responseText;
-            result404 = ProblemDetails.fromJS(resultData404);
-            return throwException("Not Found", status, _responseText, _headers, result404);
-        } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-        }
-        return Promise.resolve<EpisodeDetail>(<any>null);
     }
 }
 

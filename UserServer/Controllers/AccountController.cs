@@ -17,7 +17,7 @@ using UserServer.Models;
 
 namespace UserServer.Controllers
 {
-    [Route("Account")]
+    [Route("api/Account")]
     [ApiController]
     public class AccountController : ControllerBase
     {

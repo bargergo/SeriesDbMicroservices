@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SeriesAndEpisodes.Controllers
 {
-    [Route("api/Images")]
+    [Route("api/public/Images")]
     [ApiController]
     public class ImageController : ControllerBase
     {
@@ -17,7 +17,7 @@ namespace SeriesAndEpisodes.Controllers
             _fileService = fileService;
         }
 
-        [HttpGet("public/{id:length(24)}", Name = "GetImage")]
+        [HttpGet("{id:length(24)}", Name = "GetImage")]
         [FileResultContentType("image/jpeg")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
