@@ -109,12 +109,16 @@ namespace UserServer.Controllers
         public async Task<IActionResult> AuthenticateWithToken()
         {
             var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userid")?.Value;
+            bool isAdmin = HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value?.Contains(RoleNames.AdministratorRoleName.ToUpper()) ?? false;
             if (userId == null)
                 return Unauthorized();
             try
             {
                 var user = await _userService.FindUserById(Convert.ToInt32(userId));
-                if (user == null)
+                bool isReallyAdmin = user.UserRoles
+                    .Select(ur => ur.Role.NormalizedName)
+                    .Any(r => r == RoleNames.AdministratorRoleName.ToUpper());
+                if (user == null || (isAdmin && !isReallyAdmin))
                     return Unauthorized();
             } catch
             {
