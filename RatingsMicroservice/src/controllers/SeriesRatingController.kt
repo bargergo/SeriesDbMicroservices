@@ -7,8 +7,10 @@ import com.papsign.ktor.openapigen.route.response.respond
 import com.papsign.ktor.openapigen.route.route
 import hu.bme.aut.ratings.dtos.*
 import hu.bme.aut.ratings.model.SeriesRating
+import hu.bme.aut.ratings.models.NotAuthorizedException
 import hu.bme.aut.ratings.services.RabbitService
 import hu.bme.aut.ratings.services.SeriesRatingService
+import hu.bme.aut.ratings.utils.extractToken
 import hu.bme.aut.ratings.utils.id
 import io.ktor.features.NotFoundException
 import kotlinx.coroutines.Dispatchers
@@ -56,9 +58,19 @@ fun NormalOpenAPIRoute.seriesRatings(service: SeriesRatingService) {
 
     route("/api/protected/SeriesRatings") {
 
-        post<Unit, Created201Response, SeriesRatingData>(
+        post<HeaderParam, Created201Response, SeriesRatingData>(
             id("CreateSeriesRating")
-        ) { _, seriesData ->
+        ) { param, seriesData ->
+            if (param.Authorization != null) {
+                val claims = extractToken(param.Authorization)
+                val userId = claims.get("userid")
+                val role = claims.get("http://schemas.microsoft.com/ws/2008/06/identity/claims/role")
+                if (userId != seriesData.userId.toString() && role?.contains("ADMINISTRATOR") == false)
+                    throw NotAuthorizedException("Not authorized")
+            }
+            else {
+                throw NotAuthorizedException("Not authorized")
+            }
             service.insert(seriesData)
             val updatedAverage = service.getAverage(seriesData.seriesId)
             publishSeriesRatingChangedEvent(
@@ -81,6 +93,16 @@ fun NormalOpenAPIRoute.seriesRatings(service: SeriesRatingService) {
             val rating: SeriesRatingInfo? = service.findById(id)?.toSeriesRatingInfo()
             if (rating == null)
                 throw NotFoundException()
+            if (params.Authorization != null) {
+                val claims = extractToken(params.Authorization)
+                val userId = claims.get("userid")
+                val role = claims.get("http://schemas.microsoft.com/ws/2008/06/identity/claims/role")
+                if (userId != rating.userId.toString() && role?.contains("ADMINISTRATOR") == false)
+                    throw NotAuthorizedException("Not authorized")
+            }
+            else {
+                throw NotAuthorizedException("Not authorized")
+            }
             service.update(id, seriesData)
             val updatedAverage = service.getAverage(seriesData.seriesId)
             publishSeriesRatingChangedEvent(
@@ -99,6 +121,16 @@ fun NormalOpenAPIRoute.seriesRatings(service: SeriesRatingService) {
         ) { params ->
             val id = params.id
             val rating: SeriesRatingInfo? = service.findById(id)?.toSeriesRatingInfo()
+            if (params.Authorization != null) {
+                val claims = extractToken(params.Authorization)
+                val userId = claims.get("userid")
+                val role = claims.get("http://schemas.microsoft.com/ws/2008/06/identity/claims/role")
+                if (userId != rating?.userId.toString() && role?.contains("ADMINISTRATOR") == false)
+                    throw NotAuthorizedException("Not authorized")
+            }
+            else {
+                throw NotAuthorizedException("Not authorized")
+            }
             service.delete(id)
             if (rating != null) {
                 val updatedAverage = service.getAverage(rating.seriesId)

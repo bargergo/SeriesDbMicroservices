@@ -13,6 +13,7 @@ import com.zaxxer.hikari.HikariDataSource
 import hu.bme.aut.ratings.controllers.episodeRatings
 import hu.bme.aut.ratings.controllers.seriesRatings
 import hu.bme.aut.ratings.database.DatabaseFactory
+import hu.bme.aut.ratings.models.NotAuthorizedException
 import hu.bme.aut.ratings.services.EpisodeRatingService
 import hu.bme.aut.ratings.services.RabbitService
 import hu.bme.aut.ratings.services.SeriesRatingService
@@ -47,6 +48,9 @@ fun Application.module(testing: Boolean = false) {
         exception<ConstraintViolation> { e ->
             call.respondText(e.localizedMessage,
                 ContentType.Text.Plain, HttpStatusCode.BadRequest)
+        }
+        exception<NotAuthorizedException> { e ->
+            call.respond(HttpStatusCode.Unauthorized)
         }
         exception<Throwable> { e ->
             if (isDev) {
@@ -120,6 +124,6 @@ fun Application.module(testing: Boolean = false) {
     }
 }
 
-val Application.envKind get() = environment.config.property("ktor.environment").getString()
+val Application.envKind get() = getenvCheckNotNull("KTOR_ENV")
 val Application.isDev get() = envKind == "dev"
 val Application.isProd get() = envKind != "dev"

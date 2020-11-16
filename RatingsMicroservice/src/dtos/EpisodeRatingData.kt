@@ -11,6 +11,5 @@ data class EpisodeRatingData(
     val seasonId: Int,
     val episodeId: Int,
     @Clamp(1, 10, "Rating value must be between 1 and 10") val rating: Int,
-    val opinion: String,
-    @HeaderParam("Authorization header") val Authorization: String?
+    val opinion: String
 )

@@ -6,9 +6,11 @@ import com.papsign.ktor.openapigen.route.response.respond
 import com.papsign.ktor.openapigen.route.route
 import hu.bme.aut.ratings.dtos.*
 import hu.bme.aut.ratings.models.EpisodeRating
+import hu.bme.aut.ratings.models.NotAuthorizedException
 import hu.bme.aut.ratings.services.EpisodeRatingService
+import hu.bme.aut.ratings.utils.extractToken
 import hu.bme.aut.ratings.utils.id
-import io.ktor.features.NotFoundException
+import io.ktor.features.*
 
 fun NormalOpenAPIRoute.episodeRatings(service: EpisodeRatingService) {
     route("/api/public/EpisodeRatings") {
@@ -37,7 +39,6 @@ fun NormalOpenAPIRoute.episodeRatings(service: EpisodeRatingService) {
             val id = params.id
             checkNotNull(id) { "The id parameter must be an integer" }
             val rating: EpisodeRatingInfo? = service.findById(id)?.toEpisodeRatingInfo()
-            print(params.Authorization ?: "null")
             if (rating == null)
                 throw NotFoundException()
             else
@@ -76,11 +77,20 @@ fun NormalOpenAPIRoute.episodeRatings(service: EpisodeRatingService) {
     }
 
     route("/api/protected/EpisodeRatings") {
-        post<Unit, Created201Response, EpisodeRatingData>(
+        post<HeaderParam, Created201Response, EpisodeRatingData>(
                 id("CreateEpisodeRating")
-        ) { _, ratingData ->
+        ) { params, ratingData ->
+            if (params.Authorization != null) {
+                val claims = extractToken(params.Authorization)
+                val userId = claims.get("userid")
+                val role = claims.get("http://schemas.microsoft.com/ws/2008/06/identity/claims/role")
+                if (userId != ratingData.userId.toString() && role?.contains("ADMINISTRATOR") == false)
+                    throw NotAuthorizedException("Not authorized")
+            }
+            else {
+                throw NotAuthorizedException("Not authorized")
+            }
             service.insert(ratingData)
-            print(ratingData.Authorization ?: "null")
             respond(Created201Response())
         }
 
@@ -92,8 +102,17 @@ fun NormalOpenAPIRoute.episodeRatings(service: EpisodeRatingService) {
             val rating: EpisodeRatingInfo? = service.findById(id)?.toEpisodeRatingInfo()
             if (rating == null)
                 throw NotFoundException()
+            if (params.Authorization != null) {
+                val claims = extractToken(params.Authorization)
+                val userId = claims.get("userid")
+                val role = claims.get("http://schemas.microsoft.com/ws/2008/06/identity/claims/role")
+                if (userId != rating.userId.toString() && role?.contains("ADMINISTRATOR") == false)
+                    throw NotAuthorizedException("Not authorized")
+            }
+            else {
+                throw NotAuthorizedException("Not authorized")
+            }
             service.update(id, ratingData)
-            print(params.Authorization ?: "null")
             respond(NoContent204Response())
         }
 
@@ -102,8 +121,18 @@ fun NormalOpenAPIRoute.episodeRatings(service: EpisodeRatingService) {
                 id("DeleteEpisodeRating")
         ) { params ->
             val id = params.id
+            val rating: EpisodeRatingInfo? = service.findById(id)?.toEpisodeRatingInfo()
+            if (params.Authorization != null) {
+                val claims = extractToken(params.Authorization)
+                val userId = claims.get("userid")
+                val role = claims.get("http://schemas.microsoft.com/ws/2008/06/identity/claims/role")
+                if (userId != rating?.userId.toString() && role?.contains("ADMINISTRATOR") == false)
+                    throw NotAuthorizedException("Not authorized")
+            }
+            else {
+                throw NotAuthorizedException("Not authorized")
+            }
             service.delete(id)
-            print(params.Authorization ?: "null")
             respond(NoContent204Response())
         }
     }
