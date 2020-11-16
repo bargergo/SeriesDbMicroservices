@@ -2,10 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SeriesAndEpisodes.Services;
 using SeriesAndEpisodes.Utils;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SeriesAndEpisodes.Controllers
@@ -21,7 +17,7 @@ namespace SeriesAndEpisodes.Controllers
             _fileService = fileService;
         }
 
-        [HttpGet("{id:length(24)}", Name = "GetImage")]
+        [HttpGet("public/{id:length(24)}", Name = "GetImage")]
         [FileResultContentType("image/jpeg")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

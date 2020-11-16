@@ -72,7 +72,7 @@ export class SeriesRatingsClient extends ClientBase implements ISeriesRatingsCli
     }
 
     createSeriesRating(body: SeriesRatingData | undefined , cancelToken?: CancelToken | undefined): Promise<Created201Response> {
-        let url_ = this.baseUrl + "/api/SeriesRatings";
+        let url_ = this.baseUrl + "/api/SeriesRatings/public";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(body);
@@ -131,7 +131,7 @@ export class SeriesRatingsClient extends ClientBase implements ISeriesRatingsCli
      * @return OK
      */
     getSeriesRatings(userId: number | undefined, seriesId: string | undefined , cancelToken?: CancelToken | undefined): Promise<SeriesRatingInfo[]> {
-        let url_ = this.baseUrl + "/api/SeriesRatings?";
+        let url_ = this.baseUrl + "/api/SeriesRatings/public?";
         if (userId === null)
             throw new Error("The parameter 'userId' cannot be null.");
         else if (userId !== undefined)
@@ -196,7 +196,7 @@ export class SeriesRatingsClient extends ClientBase implements ISeriesRatingsCli
      * @return OK
      */
     getSeriesRating(id: number , cancelToken?: CancelToken | undefined): Promise<SeriesRatingInfo> {
-        let url_ = this.baseUrl + "/api/SeriesRatings/{id}";
+        let url_ = this.baseUrl + "/api/SeriesRatings/public/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id));
@@ -251,7 +251,7 @@ export class SeriesRatingsClient extends ClientBase implements ISeriesRatingsCli
      * @param id id of the series rating
      */
     deleteSeriesRating(id: number , cancelToken?: CancelToken | undefined): Promise<NoContent204Response> {
-        let url_ = this.baseUrl + "/api/SeriesRatings/{id}";
+        let url_ = this.baseUrl + "/api/SeriesRatings/public/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id));
@@ -307,7 +307,7 @@ export class SeriesRatingsClient extends ClientBase implements ISeriesRatingsCli
      * @param body (optional) 
      */
     updateSeriesRating(id: number, body: SeriesRatingData | undefined , cancelToken?: CancelToken | undefined): Promise<NoContent204Response> {
-        let url_ = this.baseUrl + "/api/SeriesRatings/{id}";
+        let url_ = this.baseUrl + "/api/SeriesRatings/public/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id));
@@ -367,7 +367,7 @@ export class SeriesRatingsClient extends ClientBase implements ISeriesRatingsCli
      * @return OK
      */
     getAverageRatingForSeries(seriesId: string , cancelToken?: CancelToken | undefined): Promise<AverageOfRatingsResponse> {
-        let url_ = this.baseUrl + "/api/SeriesRatings/Series/{seriesId}/Average";
+        let url_ = this.baseUrl + "/api/SeriesRatings/public/Series/{seriesId}/Average";
         if (seriesId === undefined || seriesId === null)
             throw new Error("The parameter 'seriesId' must be defined.");
         url_ = url_.replace("{seriesId}", encodeURIComponent("" + seriesId));
@@ -420,7 +420,6 @@ export class SeriesRatingsClient extends ClientBase implements ISeriesRatingsCli
 }
 
 export interface IEpisodeRatingsClient {
-    createEpisodeRating(body: EpisodeRatingData | undefined): Promise<Created201Response>;
     /**
      * Get Episodes Ratings Endpoint
      * @param userId (optional) id of the user
@@ -434,15 +433,6 @@ export interface IEpisodeRatingsClient {
      * @param id id of the episode rating
      */
     getEpisodeRating(id: number): Promise<EpisodeRatingInfo>;
-    /**
-     * @param id id of the episode rating
-     */
-    deleteEpisodeRating(id: number): Promise<NoContent204Response>;
-    /**
-     * @param id id of the episode rating
-     * @param body (optional) 
-     */
-    updateEpisodeRating(id: number, body: EpisodeRatingData | undefined): Promise<NoContent204Response>;
     /**
      * @param seriesId id of the series
      * @return OK
@@ -461,6 +451,16 @@ export interface IEpisodeRatingsClient {
      * @return OK
      */
     getAverageRatingForEpisode(seriesId: string, seasonId: number, episodeId: number): Promise<AverageOfRatingsResponse>;
+    createEpisodeRating(body: EpisodeRatingData | undefined): Promise<Created201Response>;
+    /**
+     * @param id id of the episode rating
+     */
+    deleteEpisodeRating(id: number): Promise<NoContent204Response>;
+    /**
+     * @param id id of the episode rating
+     * @param body (optional) 
+     */
+    updateEpisodeRating(id: number, body: EpisodeRatingData | undefined): Promise<NoContent204Response>;
 }
 
 export class EpisodeRatingsClient extends ClientBase implements IEpisodeRatingsClient {
@@ -474,59 +474,6 @@ export class EpisodeRatingsClient extends ClientBase implements IEpisodeRatingsC
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
 
-    createEpisodeRating(body: EpisodeRatingData | undefined , cancelToken?: CancelToken | undefined): Promise<Created201Response> {
-        let url_ = this.baseUrl + "/api/EpisodeRatings";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(body);
-
-        let options_ = <AxiosRequestConfig>{
-            data: content_,
-            method: "POST",
-            url: url_,
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-            },
-            cancelToken
-        };
-
-        return this.transformOptions(options_).then(transformedOptions_ => {
-            return this.instance.request(transformedOptions_);
-        }).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.processCreateEpisodeRating(_response);
-        });
-    }
-
-    protected processCreateEpisodeRating(response: AxiosResponse): Promise<Created201Response> {
-        const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (let k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
-        if (status === 201) {
-            const _responseText = response.data;
-            let result201: any = null;
-            let resultData201  = _responseText;
-            result201 = Created201Response.fromJS(resultData201);
-            return result201;
-        } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-        }
-        return Promise.resolve<Created201Response>(<any>null);
-    }
-
     /**
      * Get Episodes Ratings Endpoint
      * @param userId (optional) id of the user
@@ -536,7 +483,7 @@ export class EpisodeRatingsClient extends ClientBase implements IEpisodeRatingsC
      * @return OK
      */
     getEpisodeRatings(userId: number | undefined, seriesId: string | undefined, seasonId: number | undefined, episodeId: number | undefined , cancelToken?: CancelToken | undefined): Promise<EpisodeRatingInfo[]> {
-        let url_ = this.baseUrl + "/api/EpisodeRatings?";
+        let url_ = this.baseUrl + "/api/EpisodeRatings/public?";
         if (userId === null)
             throw new Error("The parameter 'userId' cannot be null.");
         else if (userId !== undefined)
@@ -608,7 +555,7 @@ export class EpisodeRatingsClient extends ClientBase implements IEpisodeRatingsC
      * @param id id of the episode rating
      */
     getEpisodeRating(id: number , cancelToken?: CancelToken | undefined): Promise<EpisodeRatingInfo> {
-        let url_ = this.baseUrl + "/api/EpisodeRatings/{id}";
+        let url_ = this.baseUrl + "/api/EpisodeRatings/public/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id));
@@ -660,126 +607,11 @@ export class EpisodeRatingsClient extends ClientBase implements IEpisodeRatingsC
     }
 
     /**
-     * @param id id of the episode rating
-     */
-    deleteEpisodeRating(id: number , cancelToken?: CancelToken | undefined): Promise<NoContent204Response> {
-        let url_ = this.baseUrl + "/api/EpisodeRatings/{id}";
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ = <AxiosRequestConfig>{
-            method: "DELETE",
-            url: url_,
-            headers: {
-                "Accept": "application/json"
-            },
-            cancelToken
-        };
-
-        return this.transformOptions(options_).then(transformedOptions_ => {
-            return this.instance.request(transformedOptions_);
-        }).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.processDeleteEpisodeRating(_response);
-        });
-    }
-
-    protected processDeleteEpisodeRating(response: AxiosResponse): Promise<NoContent204Response> {
-        const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (let k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
-        if (status === 204) {
-            const _responseText = response.data;
-            let result204: any = null;
-            let resultData204  = _responseText;
-            result204 = NoContent204Response.fromJS(resultData204);
-            return result204;
-        } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-        }
-        return Promise.resolve<NoContent204Response>(<any>null);
-    }
-
-    /**
-     * @param id id of the episode rating
-     * @param body (optional) 
-     */
-    updateEpisodeRating(id: number, body: EpisodeRatingData | undefined , cancelToken?: CancelToken | undefined): Promise<NoContent204Response> {
-        let url_ = this.baseUrl + "/api/EpisodeRatings/{id}";
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(body);
-
-        let options_ = <AxiosRequestConfig>{
-            data: content_,
-            method: "PUT",
-            url: url_,
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-            },
-            cancelToken
-        };
-
-        return this.transformOptions(options_).then(transformedOptions_ => {
-            return this.instance.request(transformedOptions_);
-        }).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.processUpdateEpisodeRating(_response);
-        });
-    }
-
-    protected processUpdateEpisodeRating(response: AxiosResponse): Promise<NoContent204Response> {
-        const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (let k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
-        if (status === 204) {
-            const _responseText = response.data;
-            let result204: any = null;
-            let resultData204  = _responseText;
-            result204 = NoContent204Response.fromJS(resultData204);
-            return result204;
-        } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-        }
-        return Promise.resolve<NoContent204Response>(<any>null);
-    }
-
-    /**
      * @param seriesId id of the series
      * @return OK
      */
     getAverageRatingForSeries2(seriesId: string , cancelToken?: CancelToken | undefined): Promise<AverageOfRatingsResponse> {
-        let url_ = this.baseUrl + "/api/EpisodeRatings/Series/{seriesId}/Average";
+        let url_ = this.baseUrl + "/api/EpisodeRatings/public/Series/{seriesId}/Average";
         if (seriesId === undefined || seriesId === null)
             throw new Error("The parameter 'seriesId' must be defined.");
         url_ = url_.replace("{seriesId}", encodeURIComponent("" + seriesId));
@@ -836,7 +668,7 @@ export class EpisodeRatingsClient extends ClientBase implements IEpisodeRatingsC
      * @return OK
      */
     getAverageRatingForSeason(seriesId: string, seasonId: number , cancelToken?: CancelToken | undefined): Promise<AverageOfRatingsResponse> {
-        let url_ = this.baseUrl + "/api/EpisodeRatings/Series/{seriesId}/Season/{seasonId}/Average";
+        let url_ = this.baseUrl + "/api/EpisodeRatings/public/Series/{seriesId}/Season/{seasonId}/Average";
         if (seriesId === undefined || seriesId === null)
             throw new Error("The parameter 'seriesId' must be defined.");
         url_ = url_.replace("{seriesId}", encodeURIComponent("" + seriesId));
@@ -897,7 +729,7 @@ export class EpisodeRatingsClient extends ClientBase implements IEpisodeRatingsC
      * @return OK
      */
     getAverageRatingForEpisode(seriesId: string, seasonId: number, episodeId: number , cancelToken?: CancelToken | undefined): Promise<AverageOfRatingsResponse> {
-        let url_ = this.baseUrl + "/api/EpisodeRatings/Series/{seriesId}/Season/{seasonId}/Episode/{episodeId}/Average";
+        let url_ = this.baseUrl + "/api/EpisodeRatings/public/Series/{seriesId}/Season/{seasonId}/Episode/{episodeId}/Average";
         if (seriesId === undefined || seriesId === null)
             throw new Error("The parameter 'seriesId' must be defined.");
         url_ = url_.replace("{seriesId}", encodeURIComponent("" + seriesId));
@@ -952,6 +784,174 @@ export class EpisodeRatingsClient extends ClientBase implements IEpisodeRatingsC
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
         }
         return Promise.resolve<AverageOfRatingsResponse>(<any>null);
+    }
+
+    createEpisodeRating(body: EpisodeRatingData | undefined , cancelToken?: CancelToken | undefined): Promise<Created201Response> {
+        let url_ = this.baseUrl + "/api/EpisodeRatings/protected";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ = <AxiosRequestConfig>{
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            cancelToken
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.instance.request(transformedOptions_);
+        }).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processCreateEpisodeRating(_response);
+        });
+    }
+
+    protected processCreateEpisodeRating(response: AxiosResponse): Promise<Created201Response> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (let k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 201) {
+            const _responseText = response.data;
+            let result201: any = null;
+            let resultData201  = _responseText;
+            result201 = Created201Response.fromJS(resultData201);
+            return result201;
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<Created201Response>(<any>null);
+    }
+
+    /**
+     * @param id id of the episode rating
+     */
+    deleteEpisodeRating(id: number , cancelToken?: CancelToken | undefined): Promise<NoContent204Response> {
+        let url_ = this.baseUrl + "/api/EpisodeRatings/protected/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ = <AxiosRequestConfig>{
+            method: "DELETE",
+            url: url_,
+            headers: {
+                "Accept": "application/json"
+            },
+            cancelToken
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.instance.request(transformedOptions_);
+        }).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processDeleteEpisodeRating(_response);
+        });
+    }
+
+    protected processDeleteEpisodeRating(response: AxiosResponse): Promise<NoContent204Response> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (let k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 204) {
+            const _responseText = response.data;
+            let result204: any = null;
+            let resultData204  = _responseText;
+            result204 = NoContent204Response.fromJS(resultData204);
+            return result204;
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<NoContent204Response>(<any>null);
+    }
+
+    /**
+     * @param id id of the episode rating
+     * @param body (optional) 
+     */
+    updateEpisodeRating(id: number, body: EpisodeRatingData | undefined , cancelToken?: CancelToken | undefined): Promise<NoContent204Response> {
+        let url_ = this.baseUrl + "/api/EpisodeRatings/protected/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ = <AxiosRequestConfig>{
+            data: content_,
+            method: "PUT",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            cancelToken
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.instance.request(transformedOptions_);
+        }).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processUpdateEpisodeRating(_response);
+        });
+    }
+
+    protected processUpdateEpisodeRating(response: AxiosResponse): Promise<NoContent204Response> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (let k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 204) {
+            const _responseText = response.data;
+            let result204: any = null;
+            let resultData204  = _responseText;
+            result204 = NoContent204Response.fromJS(resultData204);
+            return result204;
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<NoContent204Response>(<any>null);
     }
 }
 

@@ -15,25 +15,25 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 fun NormalOpenAPIRoute.seriesRatings(service: SeriesRatingService) {
-    route("/api/SeriesRatings") {
+    route("/api/SeriesRatings/public") {
 
         get<GetSeriesRatingsQueryParams, List<SeriesRatingInfo>>(
-            info("Get Episodes Ratings Endpoint", "This is a Get Episodes Ratings Endpoint"),
-            id("GetSeriesRatings"),
-            example = listOf(
-                SeriesRatingInfo(1, 2, "5e9215f27773ca0066637c26", 1, "Not good, not terrible")
-            )
+                info("Get Episodes Ratings Endpoint", "This is a Get Episodes Ratings Endpoint"),
+                id("GetSeriesRatings"),
+                example = listOf(
+                        SeriesRatingInfo(1, 2, "5e9215f27773ca0066637c26", 1, "Not good, not terrible")
+                )
         ) { params ->
             val userId = params.userId
             val seriesId = params.seriesId
             val ratings: List<SeriesRatingInfo> = service.findByUserIdAndSeriesId(userId, seriesId)
-                .map { it.toSeriesRatingInfo() }
+                    .map { it.toSeriesRatingInfo() }
             respond(ratings)
         }
 
         // {id}
         get<SeriesRatingIdParam, SeriesRatingInfo>(
-            id("GetSeriesRating")
+                id("GetSeriesRating")
         ) { params ->
             val id = params.id
             val rating: SeriesRatingInfo? = service.findById(id)?.toSeriesRatingInfo()
@@ -45,13 +45,16 @@ fun NormalOpenAPIRoute.seriesRatings(service: SeriesRatingService) {
 
         // Series/{seriesId}/Average
         get<GetAverageRatingForSeriesParams, AverageOfRatingsResponse>(
-            id("GetAverageRatingForSeries")
+                id("GetAverageRatingForSeries")
         ) { params ->
             val seriesId = params.seriesId
             val result: AverageOfRatingsResponse = service.getAverage(seriesId)
             respond(result)
 
         }
+    }
+    
+    route("/api/SeriesRatings/public") {
 
         post<Unit, Created201Response, SeriesRatingData>(
             id("CreateSeriesRating")

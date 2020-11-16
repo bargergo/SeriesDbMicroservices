@@ -23,12 +23,12 @@ namespace SeriesAndEpisodes.Controllers
             _bus = bus;
         }
 
-        [HttpGet(Name = "GetAllSeries")]
+        [HttpGet("public", Name = "GetAllSeries")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<List<SeriesInfo>>> GetAll() =>
             await _seriesService.GetAsync();
 
-        [HttpGet("{id:length(24)}", Name = "GetSeries")]
+        [HttpGet("public/{id:length(24)}", Name = "GetSeries")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<SeriesDetail>> Get(string id)
@@ -48,7 +48,7 @@ namespace SeriesAndEpisodes.Controllers
             return series;
         }
 
-        [HttpPost(Name = "CreateSeries")]
+        [HttpPost("admin", Name = "CreateSeries")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<SeriesDetail>> Create(UpsertSeriesRequest series)
@@ -59,7 +59,7 @@ namespace SeriesAndEpisodes.Controllers
         }
 
 
-        [HttpPut("{id:length(24)}", Name = "UpdateSeries")]
+        [HttpPut("admin/{id:length(24)}", Name = "UpdateSeries")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Update(string id, UpsertSeriesRequest seriesIn)
@@ -76,7 +76,7 @@ namespace SeriesAndEpisodes.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{id:length(24)}", Name = "DeleteSeries")]
+        [HttpDelete("admin/{id:length(24)}", Name = "DeleteSeries")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteAsync(string id)
@@ -93,7 +93,7 @@ namespace SeriesAndEpisodes.Controllers
             return NoContent();
         }
 
-        [HttpPost("{id:length(24)}/image", Name = "UploadImage")]
+        [HttpPost("admin/{id:length(24)}/image", Name = "UploadImage")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UploadImage(string id, IFormFile image)
@@ -102,7 +102,7 @@ namespace SeriesAndEpisodes.Controllers
             return NoContent();
         }
 
-        [HttpPost("{id:length(24)}/Season/{seasonId:int}", Name = "AddEpisode")]
+        [HttpPost("admin/{id:length(24)}/Season/{seasonId:int}", Name = "AddEpisode")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         public async Task<IActionResult> AddEpisode(string id, int seasonId, CreateEpisodeRequest request)
@@ -116,7 +116,7 @@ namespace SeriesAndEpisodes.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{id:length(24)}/Season/{seasonId:int}/Episode/{episodeId:int}", Name = "DeleteEpisode")]
+        [HttpDelete("admin/{id:length(24)}/Season/{seasonId:int}/Episode/{episodeId:int}", Name = "DeleteEpisode")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> DeleteEpisode(string id, int seasonId, int episodeId)
         {
@@ -124,7 +124,7 @@ namespace SeriesAndEpisodes.Controllers
             return NoContent();
         }
 
-        [HttpPut("{id:length(24)}/Season/{seasonId:int}/Episode/{episodeId:int}", Name = "UpdateEpisode")]
+        [HttpPut("admin/{id:length(24)}/Season/{seasonId:int}/Episode/{episodeId:int}", Name = "UpdateEpisode")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
@@ -147,7 +147,7 @@ namespace SeriesAndEpisodes.Controllers
             return NoContent();
         }
 
-        [HttpGet("{id:length(24)}/Season/{seasonId:int}/Episode/{episodeId:int}", Name = "GetEpisode")]
+        [HttpGet("public/{id:length(24)}/Season/{seasonId:int}/Episode/{episodeId:int}", Name = "GetEpisode")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<EpisodeDetail>> GetEpisode(string id, int seasonId, int episodeId)

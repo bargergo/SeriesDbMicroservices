@@ -25,6 +25,9 @@ export default class Series extends React.Component<IProps, IState> {
   static contextType = ClientsContext;
 
   async componentDidMount() {
+    if (!this.props.data.imageId) {
+      return;
+    }
     const client: IImageClient = this.context.imageClient;
     try {
       const response = await client.getImage(this.props.data.imageId);

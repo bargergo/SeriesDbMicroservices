@@ -11,28 +11,28 @@ import hu.bme.aut.ratings.utils.id
 import io.ktor.features.NotFoundException
 
 fun NormalOpenAPIRoute.episodeRatings(service: EpisodeRatingService) {
-    route("/api/EpisodeRatings") {
+    route("/api/EpisodeRatings/public") {
 
         get<GetEpisodeRatingsQueryParams, List<EpisodeRatingInfo>>(
-            info("Get Episodes Ratings Endpoint", "This is a Get Episodes Ratings Endpoint"),
-            id("GetEpisodeRatings"),
-            example = listOf(
-                EpisodeRatingInfo(1, 2, "5e9215f27773ca0066637c26", 1, 1, 5, "Not good, not terrible")
-            )
+                info("Get Episodes Ratings Endpoint", "This is a Get Episodes Ratings Endpoint"),
+                id("GetEpisodeRatings"),
+                example = listOf(
+                        EpisodeRatingInfo(1, 2, "5e9215f27773ca0066637c26", 1, 1, 5, "Not good, not terrible")
+                )
         ) { params ->
             val userId = params.userId
             val seriesId = params.seriesId
             val seasonId = params.seasonId
             val episodeId = params.episodeId
             val ratings: List<EpisodeRatingInfo> =
-                service.findByUserIdAndSeriesIdAndSeasonIdAndEpisodeId(userId, seriesId, seasonId, episodeId)
-                    .map { it.toEpisodeRatingInfo() }
+                    service.findByUserIdAndSeriesIdAndSeasonIdAndEpisodeId(userId, seriesId, seasonId, episodeId)
+                            .map { it.toEpisodeRatingInfo() }
             respond(ratings)
         }
 
         // {id}
         get<EpisodeRatingIdParam, EpisodeRatingInfo>(
-            id("GetEpisodeRating")
+                id("GetEpisodeRating")
         ) { params ->
             val id = params.id
             checkNotNull(id) { "The id parameter must be an integer" }
@@ -45,7 +45,7 @@ fun NormalOpenAPIRoute.episodeRatings(service: EpisodeRatingService) {
 
         // Series/{seriesId}/Average
         get<GetAverageRatingForSeriesParams, AverageOfRatingsResponse>(
-            id("GetAverageRatingForSeries")
+                id("GetAverageRatingForSeries")
         ) { params ->
             val seriesId = params.seriesId
             val result: AverageOfRatingsResponse = service.getAverageForSeries(seriesId)
@@ -54,7 +54,7 @@ fun NormalOpenAPIRoute.episodeRatings(service: EpisodeRatingService) {
 
         // Series/{seriesId}/Season/{seasonId}/Average
         get<GetAverageRatingForSeasonParams, AverageOfRatingsResponse>(
-            id("GetAverageRatingForSeason")
+                id("GetAverageRatingForSeason")
         ) { params ->
             val seriesId = params.seriesId
             val seasonId = params.seasonId
@@ -64,7 +64,7 @@ fun NormalOpenAPIRoute.episodeRatings(service: EpisodeRatingService) {
 
         // Series/{seriesId}/Season/{seasonId}/Episode/{episodeId}/Average
         get<GetAverageRatingForEpisodeParams, AverageOfRatingsResponse>(
-            id("GetAverageRatingForEpisode")
+                id("GetAverageRatingForEpisode")
         ) { params ->
             val seriesId = params.seriesId
             val seasonId = params.seasonId
@@ -72,9 +72,11 @@ fun NormalOpenAPIRoute.episodeRatings(service: EpisodeRatingService) {
             val result: AverageOfRatingsResponse = service.getAverageForEpisode(seriesId, seasonId, episodeId)
             respond(result)
         }
+    }
 
+    route("/api/EpisodeRatings/protected") {
         post<Unit, Created201Response, EpisodeRatingData>(
-            id("CreateEpisodeRating")
+                id("CreateEpisodeRating")
         ) { _, ratingData ->
             service.insert(ratingData)
             respond(Created201Response())
@@ -82,7 +84,7 @@ fun NormalOpenAPIRoute.episodeRatings(service: EpisodeRatingService) {
 
         // {id}
         put<EpisodeRatingIdParam, NoContent204Response, EpisodeRatingData>(
-            id("UpdateEpisodeRating")
+                id("UpdateEpisodeRating")
         ) { params, ratingData ->
             val id = params.id
             val rating: EpisodeRatingInfo? = service.findById(id)?.toEpisodeRatingInfo()
@@ -94,13 +96,12 @@ fun NormalOpenAPIRoute.episodeRatings(service: EpisodeRatingService) {
 
         // {id}
         delete<EpisodeRatingIdParam, NoContent204Response>(
-            id("DeleteEpisodeRating")
+                id("DeleteEpisodeRating")
         ) { params ->
             val id = params.id
             service.delete(id)
             respond(NoContent204Response())
         }
-
     }
 }
 

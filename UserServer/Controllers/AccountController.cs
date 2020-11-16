@@ -122,5 +122,33 @@ namespace UserServer.Controllers
             }
             return Ok();
         }
+
+        [Authorize(AuthenticationSchemes = "MyJwtScheme")]
+        [HttpGet("AuthenticateAdminWithToken")]
+        public async Task<IActionResult> AuthenticateAdminWithToken()
+        {
+            var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userid")?.Value;
+            var isAdmin = HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value?.Contains(RoleNames.AdministratorRoleName.ToUpper());
+            if (userId == null || isAdmin == null || isAdmin == false)
+                return Unauthorized();
+            try
+            {
+                var user = await _userService.FindUserById(Convert.ToInt32(userId));
+                if (user == null)
+                    return Unauthorized();
+                var userIsAdmin = user.UserRoles
+                    .Select(ur => ur.Role)
+                    .Any(r => r.NormalizedName == RoleNames.AdministratorRoleName.ToUpper());
+                if (!userIsAdmin)
+                {
+                    return Unauthorized();
+                }
+            }
+            catch
+            {
+                return Unauthorized();
+            }
+            return Ok();
+        }
     }
 }
