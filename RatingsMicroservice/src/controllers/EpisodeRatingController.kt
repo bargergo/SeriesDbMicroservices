@@ -37,6 +37,7 @@ fun NormalOpenAPIRoute.episodeRatings(service: EpisodeRatingService) {
             val id = params.id
             checkNotNull(id) { "The id parameter must be an integer" }
             val rating: EpisodeRatingInfo? = service.findById(id)?.toEpisodeRatingInfo()
+            print(params.Authorization ?: "null")
             if (rating == null)
                 throw NotFoundException()
             else
@@ -79,6 +80,7 @@ fun NormalOpenAPIRoute.episodeRatings(service: EpisodeRatingService) {
                 id("CreateEpisodeRating")
         ) { _, ratingData ->
             service.insert(ratingData)
+            print(ratingData.Authorization ?: "null")
             respond(Created201Response())
         }
 
@@ -91,6 +93,7 @@ fun NormalOpenAPIRoute.episodeRatings(service: EpisodeRatingService) {
             if (rating == null)
                 throw NotFoundException()
             service.update(id, ratingData)
+            print(params.Authorization ?: "null")
             respond(NoContent204Response())
         }
 
@@ -100,6 +103,7 @@ fun NormalOpenAPIRoute.episodeRatings(service: EpisodeRatingService) {
         ) { params ->
             val id = params.id
             service.delete(id)
+            print(params.Authorization ?: "null")
             respond(NoContent204Response())
         }
     }
