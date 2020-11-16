@@ -20,7 +20,19 @@ namespace UserServer.Services
 
         public async Task<ApplicationUser> FindUserByEmail(string email)
         {
-            var user = await _userDb.Users.Where(u => u.Email == email).FirstOrDefaultAsync();
+            var user = await _userDb.Users
+                .Include(u => u.UserRoles)
+                .ThenInclude(ur => ur.Role)
+                .Where(u => u.Email == email).FirstOrDefaultAsync();
+            return user;
+        }
+
+        public async Task<ApplicationUser> FindUserById(long id)
+        {
+            var user = await _userDb.Users
+                .Include(u => u.UserRoles)
+                .ThenInclude(ur => ur.Role)
+                .Where(u => u.Id == id).FirstOrDefaultAsync();
             return user;
         }
 
@@ -38,13 +50,13 @@ namespace UserServer.Services
             await _userDb.SaveChangesAsync();
         }
 
-        public async Task UpdateUser(string email, ApplicationUser newUserData)
+        public async Task<ApplicationUser> UpdateUser(string email, ApplicationUser newUserData)
         {
             var user = await FindUserByEmail(email);
             user.Firstname = newUserData.Firstname;
             user.Lastname = newUserData.Lastname;
-            user.UserRoles = newUserData.UserRoles;
             await _userDb.SaveChangesAsync();
+            return user;
         }
     }
 }

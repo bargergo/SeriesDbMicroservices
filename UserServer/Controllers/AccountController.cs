@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -61,6 +62,7 @@ namespace UserServer.Controllers
 
             var claims = new List<Claim>();
             claims.AddRange(HttpContext.User.Claims);
+
             var email = claims.Find(c => c.Type == ClaimTypes.Email)?.Value;
             var firstname = claims.Find(c => c.Type == ClaimTypes.GivenName)?.Value;
             var lastname = claims.Find(c => c.Type == ClaimTypes.Surname)?.Value;
@@ -73,10 +75,14 @@ namespace UserServer.Controllers
             };
             var user = await _userService.FindUserByEmail(email);
             if (user != null)
-                await _userService.UpdateUser(email, userData);
+                userData = await _userService.UpdateUser(email, userData);
             else
                 await _userService.RegisterUser(userData);
-                
+            claims.Add(new Claim("userid", userData.Id.ToString()));
+            var roles = userData.UserRoles
+                .Select(ur => ur.Role.NormalizedName)
+                .ToList();
+            claims.Add(new Claim(ClaimTypes.Role, string.Join(",", roles)));
 
             var secretBytes = Encoding.UTF8.GetBytes(_tokenSettings.Secret);
             var key = new SymmetricSecurityKey(secretBytes);
@@ -100,8 +106,20 @@ namespace UserServer.Controllers
 
         [Authorize(AuthenticationSchemes = "MyJwtScheme")]
         [HttpGet("AuthenticateWithToken")]
-        public IActionResult AuthenticateWithToken()
+        public async Task<IActionResult> AuthenticateWithToken()
         {
+            var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "userid")?.Value;
+            if (userId == null)
+                return Unauthorized();
+            try
+            {
+                var user = await _userService.FindUserById(Convert.ToInt32(userId));
+                if (user == null)
+                    return Unauthorized();
+            } catch
+            {
+                return Unauthorized();
+            }
             return Ok();
         }
     }

@@ -7,6 +7,7 @@ namespace UserServer.Interfaces
     {
         Task RegisterUser(ApplicationUser user);
         Task<ApplicationUser> FindUserByEmail(string email);
-        Task UpdateUser(string email, ApplicationUser newUserData);
+        Task<ApplicationUser> FindUserById(long id);
+        Task<ApplicationUser> UpdateUser(string email, ApplicationUser newUserData);
     }
 }
