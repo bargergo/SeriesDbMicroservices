@@ -47,7 +47,7 @@ export default class SeriesContainer extends Component<RouteComponentProps<IProp
           <Container>
             {this.state.series.map((s) => (
               <Row>
-                <Series key={s.id} data={s} match={this.props.match}/>
+                <Series key={s.id} data={s} path={this.props.match.path}/>
               </Row>
             ))}
           </Container>

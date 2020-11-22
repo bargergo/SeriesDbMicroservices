@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, match } from "react-router-dom";
+import { Link } from "react-router-dom";
 import ClientsContext from "../ClientsContext";
 import { FileResponse, IImageClient, ISeriesInfo } from "../typings/SeriesAndEpisodesClients";
 import "./Series.css";
@@ -10,7 +10,7 @@ interface IState {
 
 interface IProps {
   data: ISeriesInfo;
-  match: match<any>;
+  path: string;
 }
 
 export default class Series extends React.Component<IProps, IState> {
@@ -45,7 +45,7 @@ export default class Series extends React.Component<IProps, IState> {
         alt="cover"
       ></img>) : (<p>loading image...</p>)}
       
-      <Link to={`${this.props.match.path}/${this.props.data.id}`}>
+      <Link to={`${this.props.path}/${this.props.data.id}`}>
         {this.props.data.title} ({this.props.data.firstAired.getFullYear()})
       </Link>
       {this.props.data.description}

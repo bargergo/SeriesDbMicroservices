@@ -15,7 +15,7 @@ it("should render the title", () => {
     };
     const { getByText } = render(
         <MemoryRouter>
-            <Route path="/" component={() => <Series data={series}/>} />
+            <Route path="/" component={() => <Series data={series} path="/"/>} />
         </MemoryRouter>
     );
     expect(
@@ -34,7 +34,7 @@ it("should render the year when it first aired", () => {
     };
     const { getByText } = render(
         <MemoryRouter>
-            <Route path="/" component={() => <Series data={series}/>} />
+            <Route path="/" component={() => <Series data={series} path="/"/>} />
         </MemoryRouter>
     );
     expect(

@@ -13,6 +13,7 @@ import {
   FileParameter,
   ImageClient,
   SeasonDetail,
+  SeriesAdminClient,
   SeriesClient,
   SeriesDetail,
   SeriesInfo,
@@ -109,6 +110,7 @@ it("should render the average rating", async () => {
         imageClient: new ImageClient(),
         seriesRatingClient: new SeriesRatingsClient(),
         episodeRatingClient: new EpisodeRatingsClient(),
+        seriesAdminClient: new SeriesAdminClient()
       }}
     >
       <MemoryRouter initialEntries={["/seriesId234"]}>
