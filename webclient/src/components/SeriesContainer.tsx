@@ -43,7 +43,7 @@ export default class SeriesContainer extends Component<RouteComponentProps<IProp
           <p>
             <em>Loading...</em>
           </p>
-        ) : (
+        ) : this.state.series ? (
           <Container>
             {this.state.series.map((s) => (
               <Row>
@@ -51,6 +51,10 @@ export default class SeriesContainer extends Component<RouteComponentProps<IProp
               </Row>
             ))}
           </Container>
+        ) : (
+          <p>
+            <em>Failed to load.</em>
+          </p>
         )}
       </>
     );

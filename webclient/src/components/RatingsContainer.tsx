@@ -49,8 +49,12 @@ export default class RatingsContainer extends Component<IProps, IState> {
           <p>
             <em>Loading...</em>
           </p>
-        ) : (
+        ) : this.state.ratings ? (
           this.state.ratings.map((s) => <Rating key={s.id} data={s} />)
+        ) : (
+          <p>
+            <em>Failed to load.</em>
+          </p>
         )}
       </>
     );
