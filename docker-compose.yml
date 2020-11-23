@@ -20,6 +20,7 @@ services:
     build:
       context: .
       dockerfile: SeriesAndEpisodes/Dockerfile
+    image: series-and-episodes:dev
     environment:
       SeriesDbSettings__SeriesCollectionName: "Series"
       SeriesDbSettings__ConnectionString: "mongodb://root:rootpassword@mongodb-seriesdb:27017"
@@ -119,6 +120,7 @@ services:
     build:
       context: .
       dockerfile: UserServer/Dockerfile
+    image: user-service:dev
     environment:
         OpenIdConnectSettings__ClientId: "<ClientId>"
         OpenIdConnectSettings__ClientSecret: "<ClientSecret>"

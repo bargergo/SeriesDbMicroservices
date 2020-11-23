@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.21.0 (992df58d8)
+    traefik.enable: "true"
+    traefik.http.middlewares.user-service-admin.forwardauth.address: http://user-service:80/api/Account/AuthenticateAdminWithToken
+    traefik.http.middlewares.user-service.forwardauth.address: http://user-service:80/api/Account/AuthenticateWithToken
+    traefik.http.routers.user-service.entrypoints: web
+    traefik.http.routers.user-service.rule: PathPrefix(`/api/Account`) || PathPrefix(`/signin-oidc`)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: user-service
+  name: user-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: user-service
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.21.0 (992df58d8)
+        traefik.enable: "true"
+        traefik.http.middlewares.user-service-admin.forwardauth.address: http://user-service:80/api/Account/AuthenticateAdminWithToken
+        traefik.http.middlewares.user-service.forwardauth.address: http://user-service:80/api/Account/AuthenticateWithToken
+        traefik.http.routers.user-service.entrypoints: web
+        traefik.http.routers.user-service.rule: PathPrefix(`/api/Account`) || PathPrefix(`/signin-oidc`)
+      labels:
+        io.kompose.service: user-service
+    spec:
+      containers:
+      - env:
+        - name: ConnectionStrings__DbConnection
+          value: Server=user-db;Database=master;User=sa;Password=Your_password123;
+        - name: Environment__IsInDockerCompose
+          value: "True"
+        - name: OpenIdConnectSettings__Authority
+          value: https://accounts.google.com
+        - name: OpenIdConnectSettings__ClientId
+          value: <ClientId>
+        - name: OpenIdConnectSettings__ClientSecret
+          value: <ClientSecret>
+        - name: OpenIdConnectSettings__EndSessionEndpoint
+          value: https://accounts.google.com/Logout
+        - name: OpenIdConnectSettings__SigninRedirectUrl
+          value: http://localhost:80/signin-oidc
+        - name: TokenSettings__Audience
+          value: http://localhost:80
+        - name: TokenSettings__Issuer
+          value: http://localhost:80
+        - name: TokenSettings__Secret
+          value: A_long_enough_secret_text_which_is_not_too_short_unless_there_will_be_an_error
+        image: user-service:dev
+        imagePullPolicy: ""
+        name: user-service
+        ports:
+        - containerPort: 80
+      restartPolicy: Always

@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.21.0 (992df58d8)
+  labels:
+    io.kompose.service: mysql-ratingdb
+  name: mysql-ratingdb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: mysql-ratingdb
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.21.0 (992df58d8)
+      labels:
+        io.kompose.service: mysql-ratingdb
+    spec:
+      containers:
+      - env:
+        - name: MYSQL_DATABASE
+          value: ratings
+        - name: MYSQL_ROOT_PASSWORD
+          value: helloworld
+        image: mysql:8.0.19
+        name: mysql-ratingdb
+        ports:
+        - containerPort: 3306
+        volumeMounts:
+        - mountPath: /var/lib/mysql
+          name: mysql-data
+      restartPolicy: Always
+      volumes:
+      - name: mysql-data
+        persistentVolumeClaim:
+          claimName: mysql-data

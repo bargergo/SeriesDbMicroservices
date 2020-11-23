@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.21.0 (992df58d8)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: message-queue
+  name: message-queue
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: message-queue
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.21.0 (992df58d8)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: message-queue
+    spec:
+      containers:
+      - image: rabbitmq:3.8.3-management
+        name: message-queue
+        ports:
+        - containerPort: 5672
+        - containerPort: 15672
+      hostname: message-queue
+      restartPolicy: Always

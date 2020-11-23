@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.21.0 (992df58d8)
+    traefik.enable: "true"
+    traefik.http.routers.ratings-login.entrypoints: web
+    traefik.http.routers.ratings-login.middlewares: user-service
+    traefik.http.routers.ratings-login.rule: PathPrefix(`/api/protected/SeriesRatings`)
+      || PathPrefix(`/api/protected/EpisodeRatings`)
+    traefik.http.routers.ratings.entrypoints: web
+    traefik.http.routers.ratings.rule: PathPrefix(`/api/public/SeriesRatings`) ||
+      PathPrefix(`/api/public/EpisodeRatings`)
+  labels:
+    io.kompose.service: ratings
+  name: ratings
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: ratings
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.21.0 (992df58d8)
+        traefik.enable: "true"
+        traefik.http.routers.ratings-login.entrypoints: web
+        traefik.http.routers.ratings-login.middlewares: user-service
+        traefik.http.routers.ratings-login.rule: PathPrefix(`/api/protected/SeriesRatings`)
+          || PathPrefix(`/api/protected/EpisodeRatings`)
+        traefik.http.routers.ratings.entrypoints: web
+        traefik.http.routers.ratings.rule: PathPrefix(`/api/public/SeriesRatings`)
+          || PathPrefix(`/api/public/EpisodeRatings`)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: ratings
+    spec:
+      containers:
+      - env:
+        - name: KTOR_ENV
+          value: prod
+        - name: MessageQueueSettings__Hostname
+          value: message-queue
+        - name: MessageQueueSettings__Password
+          value: guest
+        - name: MessageQueueSettings__Username
+          value: guest
+        - name: db__jdbcUrl
+          value: "jdbc:mysql://mysql-ratingdb:3306/ratings"
+        - name: db__password
+          value: helloworld
+        - name: db__username
+          value: root
+        image: ratings:dev
+        name: ratings
+        ports:
+        - containerPort: 8080
+      restartPolicy: Always
