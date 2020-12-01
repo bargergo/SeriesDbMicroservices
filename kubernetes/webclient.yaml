@@ -1,16 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  annotations:
-    traefik.enable: "true"
-    traefik.http.routers.webclient.entrypoints: web
-    traefik.http.routers.webclient.rule: PathPrefix(`/`)
   labels:
     io.kompose.service: webclient
   name: webclient
 spec:
   ports:
-  - name: "5000"
+  - name: http
     port: 5000
     targetPort: 80
   selector:
@@ -19,10 +15,6 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations:
-    traefik.enable: "true"
-    traefik.http.routers.webclient.entrypoints: web
-    traefik.http.routers.webclient.rule: PathPrefix(`/`)
   labels:
     io.kompose.service: webclient
   name: webclient
@@ -33,12 +25,6 @@ spec:
       io.kompose.service: webclient
   template:
     metadata:
-      annotations:
-        kompose.cmd: kompose convert
-        kompose.version: 1.21.0 (992df58d8)
-        traefik.enable: "true"
-        traefik.http.routers.webclient.entrypoints: web
-        traefik.http.routers.webclient.rule: PathPrefix(`/`)
       labels:
         io.kompose.service: webclient
     spec:
@@ -48,3 +34,18 @@ spec:
         ports:
         - containerPort: 80
       restartPolicy: Always
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: webclient
+  labels:
+    io.kompose.service: webclient
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /
+            backend:
+              serviceName: webclient
+              servicePort: http
