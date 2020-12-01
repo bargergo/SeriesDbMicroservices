@@ -37,6 +37,7 @@ kubectl apply -f kubernetes/db
 ```
 ### Start applications
 ```
+docker-compose build
 kubectl apply -f kubernetes/app
 ```
 ### Remove everything
