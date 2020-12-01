@@ -1,21 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  annotations:
-    traefik.enable: "true"
-    traefik.http.routers.ratings-login.entrypoints: web
-    traefik.http.routers.ratings-login.middlewares: user-service
-    traefik.http.routers.ratings-login.rule: PathPrefix(`/api/protected/SeriesRatings`)
-      || PathPrefix(`/api/protected/EpisodeRatings`)
-    traefik.http.routers.ratings.entrypoints: web
-    traefik.http.routers.ratings.rule: PathPrefix(`/api/public/SeriesRatings`) ||
-      PathPrefix(`/api/public/EpisodeRatings`)
   labels:
     io.kompose.service: ratings
   name: ratings
 spec:
   ports:
-  - name: "3002"
+  - name: http
     port: 3002
     targetPort: 8080
   selector:
@@ -24,15 +15,6 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations:
-    traefik.enable: "true"
-    traefik.http.routers.ratings-login.entrypoints: web
-    traefik.http.routers.ratings-login.middlewares: user-service
-    traefik.http.routers.ratings-login.rule: PathPrefix(`/api/protected/SeriesRatings`)
-      || PathPrefix(`/api/protected/EpisodeRatings`)
-    traefik.http.routers.ratings.entrypoints: web
-    traefik.http.routers.ratings.rule: PathPrefix(`/api/public/SeriesRatings`) ||
-      PathPrefix(`/api/public/EpisodeRatings`)
   labels:
     io.kompose.service: ratings
   name: ratings
@@ -43,16 +25,6 @@ spec:
       io.kompose.service: ratings
   template:
     metadata:
-      annotations:
-        traefik.enable: "true"
-        traefik.http.routers.ratings-login.entrypoints: web
-        traefik.http.routers.ratings-login.middlewares: user-service
-        traefik.http.routers.ratings-login.rule: PathPrefix(`/api/protected/SeriesRatings`)
-          || PathPrefix(`/api/protected/EpisodeRatings`)
-        traefik.http.routers.ratings.entrypoints: web
-        traefik.http.routers.ratings.rule: PathPrefix(`/api/public/SeriesRatings`)
-          || PathPrefix(`/api/public/EpisodeRatings`)
-      creationTimestamp: null
       labels:
         io.kompose.service: ratings
     spec:
@@ -77,3 +49,30 @@ spec:
         ports:
         - containerPort: 8080
       restartPolicy: Always
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ratings
+  labels:
+    io.kompose.service: ratings
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /api/public/EpisodeRatings
+            backend:
+              serviceName: ratings
+              servicePort: http
+          - path: /api/public/SeriesRatings
+            backend:
+              serviceName: ratings
+              servicePort: http
+          - path: /api/protected/EpisodeRatings
+            backend:
+              serviceName: ratings
+              servicePort: http
+          - path: /api/protected/SeriesRatings
+            backend:
+              serviceName: ratings
+              servicePort: http

@@ -1,21 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  annotations:
-    traefik.enable: "true"
-    traefik.http.routers.series-and-episodes-admin.entrypoints: web
-    traefik.http.routers.series-and-episodes-admin.middlewares: user-service-admin
-    traefik.http.routers.series-and-episodes-admin.rule: PathPrefix(`/api/admin/Series`)
-      || PathPrefix(`/api/admin/Images`)
-    traefik.http.routers.series-and-episodes.entrypoints: web
-    traefik.http.routers.series-and-episodes.rule: PathPrefix(`/api/public/Series`)
-      || PathPrefix(`/api/public/Images`)
   labels:
     io.kompose.service: series-and-episodes
   name: series-and-episodes
 spec:
   ports:
-  - name: "3001"
+  - name: http
     port: 3001
     targetPort: 80
   selector:
@@ -24,15 +15,6 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations:
-    traefik.enable: "true"
-    traefik.http.routers.series-and-episodes-admin.entrypoints: web
-    traefik.http.routers.series-and-episodes-admin.middlewares: user-service-admin
-    traefik.http.routers.series-and-episodes-admin.rule: PathPrefix(`/api/admin/Series`)
-      || PathPrefix(`/api/admin/Images`)
-    traefik.http.routers.series-and-episodes.entrypoints: web
-    traefik.http.routers.series-and-episodes.rule: PathPrefix(`/api/public/Series`)
-      || PathPrefix(`/api/public/Images`)
   labels:
     io.kompose.service: series-and-episodes
   name: series-and-episodes
@@ -43,15 +25,6 @@ spec:
       io.kompose.service: series-and-episodes
   template:
     metadata:
-      annotations:
-        traefik.enable: "true"
-        traefik.http.routers.series-and-episodes-admin.entrypoints: web
-        traefik.http.routers.series-and-episodes-admin.middlewares: user-service-admin
-        traefik.http.routers.series-and-episodes-admin.rule: PathPrefix(`/api/admin/Series`)
-          || PathPrefix(`/api/admin/Images`)
-        traefik.http.routers.series-and-episodes.entrypoints: web
-        traefik.http.routers.series-and-episodes.rule: PathPrefix(`/api/public/Series`)
-          || PathPrefix(`/api/public/Images`)
       labels:
         io.kompose.service: series-and-episodes
     spec:
@@ -80,3 +53,30 @@ spec:
         ports:
         - containerPort: 80
       restartPolicy: Always
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: series-and-episodes
+  labels:
+    io.kompose.service: series-and-episodes
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /api/admin/Series
+            backend:
+              serviceName: series-and-episodes
+              servicePort: http
+          - path: /api/admin/Images
+            backend:
+              serviceName: series-and-episodes
+              servicePort: http
+          - path: /api/public/Series
+            backend:
+              serviceName: series-and-episodes
+              servicePort: http
+          - path: /api/public/Images
+            backend:
+              serviceName: series-and-episodes
+              servicePort: http
