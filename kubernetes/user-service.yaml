@@ -43,7 +43,7 @@ spec:
         - name: OpenIdConnectSettings__EndSessionEndpoint
           value: https://accounts.google.com/Logout
         - name: OpenIdConnectSettings__SigninRedirectUrl
-          value: http://localhost:80/signin-oidc
+          value: http://localhost:8000/signin-oidc
         - name: TokenSettings__Audience
           value: http://localhost:80
         - name: TokenSettings__Issuer
