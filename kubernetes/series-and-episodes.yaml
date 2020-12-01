@@ -2,8 +2,6 @@ apiVersion: v1
 kind: Service
 metadata:
   annotations:
-    kompose.cmd: kompose convert
-    kompose.version: 1.21.0 (992df58d8)
     traefik.enable: "true"
     traefik.http.routers.series-and-episodes-admin.entrypoints: web
     traefik.http.routers.series-and-episodes-admin.middlewares: user-service-admin
@@ -27,8 +25,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
-    kompose.cmd: kompose convert
-    kompose.version: 1.21.0 (992df58d8)
     traefik.enable: "true"
     traefik.http.routers.series-and-episodes-admin.entrypoints: web
     traefik.http.routers.series-and-episodes-admin.middlewares: user-service-admin
@@ -48,8 +44,6 @@ spec:
   template:
     metadata:
       annotations:
-        kompose.cmd: kompose convert
-        kompose.version: 1.21.0 (992df58d8)
         traefik.enable: "true"
         traefik.http.routers.series-and-episodes-admin.entrypoints: web
         traefik.http.routers.series-and-episodes-admin.middlewares: user-service-admin
