@@ -1,3 +1,28 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.21.0 (992df58d8)
+    traefik.enable: "true"
+    traefik.http.routers.ratings-login.entrypoints: web
+    traefik.http.routers.ratings-login.middlewares: user-service
+    traefik.http.routers.ratings-login.rule: PathPrefix(`/api/protected/SeriesRatings`)
+      || PathPrefix(`/api/protected/EpisodeRatings`)
+    traefik.http.routers.ratings.entrypoints: web
+    traefik.http.routers.ratings.rule: PathPrefix(`/api/public/SeriesRatings`) ||
+      PathPrefix(`/api/public/EpisodeRatings`)
+  labels:
+    io.kompose.service: ratings
+  name: ratings
+spec:
+  ports:
+  - name: "3002"
+    port: 3002
+    targetPort: 8080
+  selector:
+    io.kompose.service: ratings
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
