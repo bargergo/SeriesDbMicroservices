@@ -57,7 +57,7 @@ spec:
         - containerPort: 80
       restartPolicy: Always
 ---
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: user-service
@@ -68,10 +68,32 @@ spec:
     - http:
         paths:
           - path: /api/Account
+            pathType: Prefix
             backend:
-              serviceName: user-service
-              servicePort: http
+              service: 
+                name: user-service
+                port:
+                  name: http
           - path: /signin-oidc
+            pathType: Prefix
             backend:
-              serviceName: user-service
-              servicePort: http
+              service: 
+                name: user-service
+                port:
+                  name: http
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: test-auth
+spec:
+  forwardAuth:
+    address: http://user-service/api/Account/AuthenticateWithToken
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: test-auth-admin
+spec:
+  forwardAuth:
+    address: http://user-service/api/Account/AuthenticateAdminWithToken

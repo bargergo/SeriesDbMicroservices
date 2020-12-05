@@ -50,7 +50,7 @@ spec:
         - containerPort: 8080
       restartPolicy: Always
 ---
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: ratings
@@ -61,18 +61,30 @@ spec:
     - http:
         paths:
           - path: /api/public/EpisodeRatings
+            pathType: Prefix
             backend:
-              serviceName: ratings
-              servicePort: http
+              service: 
+                name: ratings
+                port:
+                  name: http
           - path: /api/public/SeriesRatings
+            pathType: Prefix
             backend:
-              serviceName: ratings
-              servicePort: http
+              service: 
+                name: ratings
+                port:
+                  name: http
           - path: /api/protected/EpisodeRatings
+            pathType: Prefix
             backend:
-              serviceName: ratings
-              servicePort: http
+              service: 
+                name: ratings
+                port:
+                  name: http
           - path: /api/protected/SeriesRatings
+            pathType: Prefix
             backend:
-              serviceName: ratings
-              servicePort: http
+              service: 
+                name: ratings
+                port:
+                  name: http

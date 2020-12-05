@@ -54,7 +54,7 @@ spec:
         - containerPort: 80
       restartPolicy: Always
 ---
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: series-and-episodes
@@ -65,18 +65,30 @@ spec:
     - http:
         paths:
           - path: /api/admin/Series
+            pathType: Prefix
             backend:
-              serviceName: series-and-episodes
-              servicePort: http
+              service: 
+                name: series-and-episodes
+                port:
+                  name: http
           - path: /api/admin/Images
+            pathType: Prefix
             backend:
-              serviceName: series-and-episodes
-              servicePort: http
+              service: 
+                name: series-and-episodes
+                port:
+                  name: http
           - path: /api/public/Series
+            pathType: Prefix
             backend:
-              serviceName: series-and-episodes
-              servicePort: http
+              service: 
+                name: series-and-episodes
+                port:
+                  name: http
           - path: /api/public/Images
+            pathType: Prefix
             backend:
-              serviceName: series-and-episodes
-              servicePort: http
+              service: 
+                name: series-and-episodes
+                port:
+                  name: http
