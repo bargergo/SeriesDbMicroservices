@@ -54,9 +54,6 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: ratings
-  annotations:
-    traefik.ingress.kubernetes.io/router.entrypoints: web
-    traefik.ingress.kubernetes.io/router.middlewares: default-test-auth@kubernetescrd
   labels:
     io.kompose.service: ratings
 spec:
@@ -77,6 +74,20 @@ spec:
                 name: ratings
                 port:
                   name: http
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ratings-protected
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+    traefik.ingress.kubernetes.io/router.middlewares: default-test-auth@kubernetescrd
+  labels:
+    io.kompose.service: ratings
+spec:
+  rules:
+    - http:
+        paths:
           - path: /api/protected/EpisodeRatings
             pathType: Prefix
             backend:
