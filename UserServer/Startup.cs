@@ -41,13 +41,6 @@ namespace UserServer
 
             services.AddControllers();
 
-            /*services.Configure<ForwardedHeadersOptions>(options =>
-            {
-                options.ForwardedHeaders = ForwardedHeaders.All;
-                options.KnownNetworks.Clear();
-                options.KnownProxies.Clear();
-            });*/
-
             services.AddAuthentication(options =>
             {
                 options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;  //"MyJwtScheme"; //JwtBearerDefaults.AuthenticationScheme; //
@@ -91,42 +84,18 @@ namespace UserServer
                         context.ProtocolMessage.RedirectUri = signinRedirectUrl;
                         return Task.CompletedTask;
                     };
-                    options.Events.OnUserInformationReceived = userInfo =>
-                    {
-                        // Can view User information in the debugger
-                        return Task.CompletedTask;
-                    };
                 });
 
             services.AddAuthorization();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, UserDbContext dataContext)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
-
-            //app.UseForwardedHeaders();
-
-            /*app.Use(async (context, next) =>
-            {
-                // Get the original Uri
-                context.Request.Headers.TryGetValue("X-Forwarded-Uri", out var originalUri);
-                if (originalUri.Count != 0)
-                {
-                    var returnUrl = new QueryString("?returnUrl=" + originalUri);
-                    context.Request.QueryString = returnUrl;
-                }
-
-                // Call the next delegate/middleware in the pipeline
-                await next();
-            });*/
-
-            if (Configuration["Environment:IsInDockerCompose"] == "True")
-                dataContext.Database.Migrate();
 
             app.UseRouting();
 
