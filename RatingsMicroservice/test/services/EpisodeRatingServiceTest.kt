@@ -74,13 +74,12 @@ class EpisodeRatingServiceTest {
         // Act
         runBlocking {
             episodeRatingService.insert(EpisodeRatingData(
-                    userId = 12,
                     seriesId = "asd",
                     seasonId = 2,
                     episodeId = 3,
                     rating = 2,
                     opinion = "asd"
-            ))
+            ), 12)
         }
 
         // Assert
@@ -152,7 +151,6 @@ class EpisodeRatingServiceTest {
         runBlocking {
             episodeRatingService.update(idToUpdate,
                     EpisodeRatingData(
-                            3,
                             "data.seriesId",
                             2,
                             3,
@@ -168,7 +166,6 @@ class EpisodeRatingServiceTest {
                     .select {EpisodeRatings.id eq idToUpdate}
                     .single().toEpisodeRating()
         }
-        Assertions.assertEquals(3, updatedEpisodeRating.userId)
         Assertions.assertEquals(10, updatedEpisodeRating.rating)
         Assertions.assertEquals("It's a good show", updatedEpisodeRating.opinion)
 
