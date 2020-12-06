@@ -51,7 +51,6 @@ spec:
         - name: TokenSettings__Secret
           value: A_long_enough_secret_text_which_is_not_too_short_unless_there_will_be_an_error
         image: user-service:dev
-        imagePullPolicy: ""
         name: user-service
         ports:
         - containerPort: 80
@@ -88,7 +87,7 @@ metadata:
   name: test-auth
 spec:
   forwardAuth:
-    address: http://user-service/api/Account/AuthenticateWithToken
+    address: http://user-service:3003/api/Account/AuthenticateWithToken
 ---
 apiVersion: traefik.containo.us/v1alpha1
 kind: Middleware
@@ -96,4 +95,4 @@ metadata:
   name: test-auth-admin
 spec:
   forwardAuth:
-    address: http://user-service/api/Account/AuthenticateAdminWithToken
+    address: http://user-service:3003/api/Account/AuthenticateAdminWithToken

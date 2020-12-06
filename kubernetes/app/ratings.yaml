@@ -54,6 +54,9 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: ratings
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+    traefik.ingress.kubernetes.io/router.middlewares: default-test-auth@kubernetescrd
   labels:
     io.kompose.service: ratings
 spec:
