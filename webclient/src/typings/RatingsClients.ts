@@ -1031,7 +1031,6 @@ export class EpisodeRatingData implements IEpisodeRatingData {
     rating!: number;
     seasonId!: number;
     seriesId!: string;
-    userId!: number;
 
     constructor(data?: IEpisodeRatingData) {
         if (data) {
@@ -1049,7 +1048,6 @@ export class EpisodeRatingData implements IEpisodeRatingData {
             this.rating = _data["rating"];
             this.seasonId = _data["seasonId"];
             this.seriesId = _data["seriesId"];
-            this.userId = _data["userId"];
         }
     }
 
@@ -1067,7 +1065,6 @@ export class EpisodeRatingData implements IEpisodeRatingData {
         data["rating"] = this.rating;
         data["seasonId"] = this.seasonId;
         data["seriesId"] = this.seriesId;
-        data["userId"] = this.userId;
         return data; 
     }
 }
@@ -1078,7 +1075,6 @@ export interface IEpisodeRatingData {
     rating: number;
     seasonId: number;
     seriesId: string;
-    userId: number;
 }
 
 export class EpisodeRatingInfo implements IEpisodeRatingInfo {
@@ -1175,7 +1171,6 @@ export class SeriesRatingData implements ISeriesRatingData {
     opinion!: string;
     rating!: number;
     seriesId!: string;
-    userId!: number;
 
     constructor(data?: ISeriesRatingData) {
         if (data) {
@@ -1191,7 +1186,6 @@ export class SeriesRatingData implements ISeriesRatingData {
             this.opinion = _data["opinion"];
             this.rating = _data["rating"];
             this.seriesId = _data["seriesId"];
-            this.userId = _data["userId"];
         }
     }
 
@@ -1207,7 +1201,6 @@ export class SeriesRatingData implements ISeriesRatingData {
         data["opinion"] = this.opinion;
         data["rating"] = this.rating;
         data["seriesId"] = this.seriesId;
-        data["userId"] = this.userId;
         return data; 
     }
 }
@@ -1216,7 +1209,6 @@ export interface ISeriesRatingData {
     opinion: string;
     rating: number;
     seriesId: string;
-    userId: number;
 }
 
 export class SeriesRatingInfo implements ISeriesRatingInfo {

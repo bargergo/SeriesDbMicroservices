@@ -40,9 +40,9 @@ class SeriesRatingService {
 
 
 
-    suspend fun insert(data: SeriesRatingData) = dbQuery {
+    suspend fun insert(data: SeriesRatingData, userId: Int) = dbQuery {
         SeriesRatings.insert {
-            it[userId] = data.userId
+            it[SeriesRatings.userId] = userId
             it[seriesId] = data.seriesId
             it[rating] = data.rating
             it[opinion] = data.opinion
@@ -51,7 +51,6 @@ class SeriesRatingService {
 
     suspend fun update(id: Int, data: SeriesRatingData) = dbQuery {
         SeriesRatings.update({ SeriesRatings.id eq id }) {
-            it[userId] = data.userId
             it[seriesId] = data.seriesId
             it[rating] = data.rating
             it[opinion] = data.opinion

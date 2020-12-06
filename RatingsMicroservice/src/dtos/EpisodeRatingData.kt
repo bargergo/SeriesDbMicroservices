@@ -6,7 +6,6 @@ import com.papsign.ktor.openapigen.annotations.type.string.length.Length
 import com.papsign.ktor.openapigen.annotations.type.string.pattern.RegularExpression
 
 data class EpisodeRatingData(
-    val userId: Int,
     @Length(24, 24, "Wrong seriesId") @RegularExpression("^[a-zA-Z0-9]*$", "Wrong seriesId") val seriesId: String,
     val seasonId: Int,
     val episodeId: Int,

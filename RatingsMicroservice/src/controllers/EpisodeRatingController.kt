@@ -84,14 +84,13 @@ fun NormalOpenAPIRoute.episodeRatings(service: EpisodeRatingService) {
                 val claims = extractToken(params.Authorization)
                 val userId = claims.get("userid")
                 val role = claims.get("http://schemas.microsoft.com/ws/2008/06/identity/claims/role")
-                if (userId != ratingData.userId.toString() && role?.contains("ADMINISTRATOR") == false)
+                if (userId == null)
                     throw NotAuthorizedException("Not authorized")
-            }
-            else {
+                service.insert(ratingData, Integer.parseInt(userId))
+                respond(Created201Response())
+            } else {
                 throw NotAuthorizedException("Not authorized")
             }
-            service.insert(ratingData)
-            respond(Created201Response())
         }
 
         // {id}
@@ -106,7 +105,7 @@ fun NormalOpenAPIRoute.episodeRatings(service: EpisodeRatingService) {
                 val claims = extractToken(params.Authorization)
                 val userId = claims.get("userid")
                 val role = claims.get("http://schemas.microsoft.com/ws/2008/06/identity/claims/role")
-                if (userId != rating.userId.toString() && role?.contains("ADMINISTRATOR") == false)
+                if (userId != rating.userId.toString() && role?.contains("ADMINISTRATOR") != true)
                     throw NotAuthorizedException("Not authorized")
             }
             else {

@@ -64,25 +64,21 @@ fun NormalOpenAPIRoute.seriesRatings(service: SeriesRatingService) {
             if (param.Authorization != null) {
                 val claims = extractToken(param.Authorization)
                 val userId = claims.get("userid")
-                val role = claims.get("http://schemas.microsoft.com/ws/2008/06/identity/claims/role")
-                if (userId != seriesData.userId.toString() && role?.contains("ADMINISTRATOR") == false)
+                if (userId == null)
                     throw NotAuthorizedException("Not authorized")
-            }
-            else {
+                service.insert(seriesData, Integer.parseInt(userId))
+                val updatedAverage = service.getAverage(seriesData.seriesId)
+                publishSeriesRatingChangedEvent(
+                        SeriesRatingChangedEvent(
+                                seriesData.seriesId,
+                                updatedAverage.count,
+                                updatedAverage.average
+                        )
+                )
+                respond(Created201Response())
+            } else {
                 throw NotAuthorizedException("Not authorized")
             }
-            service.insert(seriesData)
-            val updatedAverage = service.getAverage(seriesData.seriesId)
-            publishSeriesRatingChangedEvent(
-                SeriesRatingChangedEvent(
-                    seriesData.seriesId,
-                    updatedAverage.count,
-                    updatedAverage.average
-                )
-            )
-            respond(Created201Response())
-
-
         }
 
         // {id}
@@ -97,7 +93,7 @@ fun NormalOpenAPIRoute.seriesRatings(service: SeriesRatingService) {
                 val claims = extractToken(params.Authorization)
                 val userId = claims.get("userid")
                 val role = claims.get("http://schemas.microsoft.com/ws/2008/06/identity/claims/role")
-                if (userId != rating.userId.toString() && role?.contains("ADMINISTRATOR") == false)
+                if (userId != rating.userId.toString() && role?.contains("ADMINISTRATOR") != true)
                     throw NotAuthorizedException("Not authorized")
             }
             else {

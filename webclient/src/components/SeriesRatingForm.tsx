@@ -33,15 +33,13 @@ const SeriesRatingForm = (props: {
           rating: Yup.number()
             .min(1, "Must be at least 1")
             .max(10, "Must be less or equal to 10")
-            .required("Required"),
-          userId: Yup.number().required("Required"),
+            .required("Required")
         })}
         onSubmit={async (values, { setSubmitting }) => {
           const request = new SeriesRatingData({
             opinion: values.opinion,
             rating: values.rating!!,
-            seriesId: props.seriesId,
-            userId: values.userId!!,
+            seriesId: props.seriesId
           });
           try {
             const response = await _client.createSeriesRating(request);
@@ -72,16 +70,6 @@ const SeriesRatingForm = (props: {
                 isInvalid={touched.rating && errors.rating}
               />
               <Feedback type="invalid">{errors.rating}</Feedback>
-            </FormGroup>
-            <FormGroup controlId="userId">
-              <FormLabel>User ID</FormLabel>
-              <Field
-                as={FormControl}
-                type="number"
-                name="userId"
-                isInvalid={touched.userId && errors.userId}
-              />
-              <Feedback type="invalid">{errors.userId}</Feedback>
             </FormGroup>
             <Button variant="primary" type="submit" disabled={isSubmitting}>
               Submit
