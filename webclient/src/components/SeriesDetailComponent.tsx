@@ -3,6 +3,8 @@ import { Col, Container, Row, Table } from "react-bootstrap";
 import { Link, RouteComponentProps } from "react-router-dom";
 import ClientsContext from "../ClientsContext";
 import {
+  FileResponse,
+  IImageClient,
     ISeriesClient,
     ISeriesDetail
 } from "../typings/SeriesAndEpisodesClients";
@@ -17,6 +19,7 @@ interface IProps extends RouteComponentProps<IRouteProps> {
 
 interface IState {
   series: ISeriesDetail | null;
+  image: FileResponse | null;
 }
 
 export default class SeriesDetailComponent extends Component<IProps, IState> {
@@ -24,6 +27,7 @@ export default class SeriesDetailComponent extends Component<IProps, IState> {
     super(props);
     this.state = {
       series: null,
+      image: null
     };
   }
 
@@ -31,11 +35,14 @@ export default class SeriesDetailComponent extends Component<IProps, IState> {
 
   async componentDidMount() {
     const client: ISeriesClient = this.context.seriesClient;
+    const imageClient: IImageClient = this.context.imageClient;
     try {
       const response = await client.getSeries(this.props.match.params.id);
       this.setState({
         series: response,
       });
+      const imageResponse = await imageClient.getImage(response.imageId);
+      this.setState(() => ({image: imageResponse}));
     } catch (err) {
       alert(err);
     }
@@ -56,10 +63,10 @@ export default class SeriesDetailComponent extends Component<IProps, IState> {
             </Row>
             <Row>
               <Col>
-                <img
-                  src={`/api/Images/${this.state.series.imageId}`}
-                  alt="cover"
-                ></img>
+                  {!!this.state.image ? (<img
+                    src={URL.createObjectURL(this.state.image.data)}
+                    alt="cover"
+                  ></img>) : (<p>loading image...</p>)}
               </Col>
             </Row>
             <Row>
