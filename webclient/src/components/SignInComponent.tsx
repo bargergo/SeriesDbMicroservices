@@ -47,6 +47,22 @@ export default class SignInComponent extends React.Component<IProps, IState> {
         this.setState(() => ({accessToken: accessToken}));
       }
 
+    signOut() {
+        this.setState(() => ({accessToken: ""}));
+        localStorage.removeItem("access_token");
+        let seriesClient: SeriesClient = this.context.seriesClient;
+        let seriesAdminClient: SeriesAdminClient = this.context.seriesAdminClient;
+        let imageClient: ImageClient = this.context.imageClient;
+        let seriesRatingClient: SeriesRatingsClient = this.context.seriesRatingClient;
+        let episodeRatingClient: EpisodeRatingsClient = this.context.episodeRatingClient;
+        seriesClient.token = null;
+        seriesAdminClient.token = null;
+        imageClient.token = null;
+        seriesRatingClient.token = null;
+        episodeRatingClient.token = null;
+        // TODO redirect to backend signout to remove cookie
+    }
+
     render() {
         return (
             <div className="main-content">
@@ -59,6 +75,7 @@ export default class SignInComponent extends React.Component<IProps, IState> {
                 courses.
             </p>
             <a href={`/api/Account/Authenticate?returnUrl=${this.props.location.pathname}`}>Sign in</a>
+            <button onClick={() => this.signOut()}>Sign out</button>
             <p>
                 access_token: {this.state.accessToken ? this.state.accessToken : ''}
             </p>
