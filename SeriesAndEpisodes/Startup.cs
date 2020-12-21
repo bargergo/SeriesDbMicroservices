@@ -1,6 +1,5 @@
 using AutoMapper;
 using MassTransit;
-using MassTransit.Util;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -73,7 +72,7 @@ namespace SeriesAndEpisodes
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime lifetime)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -94,10 +93,6 @@ namespace SeriesAndEpisodes
             {
                 endpoints.MapControllers();
             });
-
-            var bus = app.ApplicationServices.GetService<IBusControl>();
-            var busHandle = TaskUtil.Await(() => bus.StartAsync());
-            lifetime.ApplicationStopping.Register(() => busHandle.Stop());
         }
     }
 }
