@@ -98,9 +98,11 @@ fun Application.module(testing: Boolean = false) {
 
     DatabaseFactory.init(hikari())
     RabbitService
-        .dummyExchangeAndQueue()
-        .updateSeriesRatingExchangeAndQueue()
-        .startListening()
+            .configure()
+            .tryToConnect()
+            .dummyExchangeAndQueue()
+            .updateSeriesRatingExchangeAndQueue()
+            .startListening()
 
     install(Routing) {
         routing {

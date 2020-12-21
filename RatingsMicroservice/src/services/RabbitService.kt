@@ -6,30 +6,35 @@ import java.net.ConnectException
 
 
 object RabbitService {
-    val connectionFactory: ConnectionFactory
+    var connectionFactory = ConnectionFactory()
     lateinit var connection: Connection
-    init {
-        connectionFactory = ConnectionFactory().apply {
+
+    fun configure(): RabbitService {
+        connectionFactory.apply {
             host = getenvCheckNotNull("MessageQueueSettings__Hostname")
             port = 5672
             virtualHost = "/"
             username = getenvCheckNotNull("MessageQueueSettings__Username")
             password = getenvCheckNotNull("MessageQueueSettings__Password")
         }
-
+        return this
     }
 
-    fun tryToConnect() {
-        try {
-            connection = connectionFactory.newConnection()
-        } catch (e: ConnectException) {
-            Thread.sleep(5000)
-            tryToConnect()
+    fun tryToConnect(): RabbitService {
+        while (true) {
+            try {
+                connection = connectionFactory.newConnection()
+                break
+            } catch (e: ConnectException) {
+                println(e.localizedMessage)
+                println("Waiting for message queue...")
+                Thread.sleep(2000)
+            }
         }
+        return this
     }
 
     fun dummyExchangeAndQueue(): RabbitService {
-        tryToConnect()
         val channel = connection.createChannel()
 
         channel.exchangeDeclare("SeriesAndEpisodes.MessageQueue:IDummyMessage", "fanout", true)
