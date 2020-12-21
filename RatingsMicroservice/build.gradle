@@ -56,3 +56,16 @@ dependencies {
 shadowJar {
     archiveFileName = "${project.name}-all.jar"
 }
+
+allprojects {
+    tasks.register("downloadDependencies", Copy) { Copy copy ->
+        copy.into project.layout.buildDirectory.dir("dependencies")
+        copy.from {
+            configurations.matching { Configuration c ->
+                c.isCanBeResolved()
+            }.collect { Configuration c ->
+                c.resolve()
+            }.flatten().unique()
+        }
+    }
+}
