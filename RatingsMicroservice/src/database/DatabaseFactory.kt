@@ -13,12 +13,24 @@ object DatabaseFactory {
 
     fun init(hikariDataSource: HikariDataSource) {
         Database.connect(hikariDataSource)
-        transaction {
-            SchemaUtils.createMissingTablesAndColumns(
-                SeriesRatings,
-                EpisodeRatings
-            )
-        }
+                .also {
+                    while (true) {
+                        try {
+                            transaction {
+                                SchemaUtils.createMissingTablesAndColumns(
+                                        SeriesRatings,
+                                        EpisodeRatings
+                                )
+                            }
+                            break
+                        } catch (e: Throwable) {
+                            println(e.localizedMessage)
+                            println("Waiting for db...")
+
+                            Thread.sleep(1000)
+                        }
+                    }
+                }
     }
 
     suspend fun <T> dbQuery(block: () -> T): T =
