@@ -31,7 +31,7 @@ namespace SeriesAndEpisodes.Controllers
         }
 
 
-        [HttpPut("{id:length(24)}", Name = "UpdateSeries")]
+        [HttpPut("{id:regex(^[[0-9a-fA-F]]{{24}}$)}", Name = "UpdateSeries")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Update(string id, UpsertSeriesRequest seriesIn)
@@ -48,7 +48,7 @@ namespace SeriesAndEpisodes.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{id:length(24)}", Name = "DeleteSeries")]
+        [HttpDelete("{id:regex(^[[0-9a-fA-F]]{{24}}$)}", Name = "DeleteSeries")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteAsync(string id)
@@ -65,7 +65,7 @@ namespace SeriesAndEpisodes.Controllers
             return NoContent();
         }
 
-        [HttpPost("{id:length(24)}/image", Name = "UploadImage")]
+        [HttpPost("{id:regex(^[[0-9a-fA-F]]{{24}}$)}/image", Name = "UploadImage")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UploadImage(string id, IFormFile image)
@@ -74,7 +74,7 @@ namespace SeriesAndEpisodes.Controllers
             return NoContent();
         }
 
-        [HttpPost("{id:length(24)}/Season/{seasonId:int}", Name = "AddEpisode")]
+        [HttpPost("{id:regex(^[[0-9a-fA-F]]{{24}}$)}/Season/{seasonId:int}", Name = "AddEpisode")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         public async Task<IActionResult> AddEpisode(string id, int seasonId, CreateEpisodeRequest request)
@@ -88,7 +88,7 @@ namespace SeriesAndEpisodes.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{id:length(24)}/Season/{seasonId:int}/Episode/{episodeId:int}", Name = "DeleteEpisode")]
+        [HttpDelete("{id:regex(^[[0-9a-fA-F]]{{24}}$)}/Season/{seasonId:int}/Episode/{episodeId:int}", Name = "DeleteEpisode")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> DeleteEpisode(string id, int seasonId, int episodeId)
         {
@@ -96,7 +96,7 @@ namespace SeriesAndEpisodes.Controllers
             return NoContent();
         }
 
-        [HttpPut("{id:length(24)}/Season/{seasonId:int}/Episode/{episodeId:int}", Name = "UpdateEpisode")]
+        [HttpPut("{id:regex(^[[0-9a-fA-F]]{{24}}$)}/Season/{seasonId:int}/Episode/{episodeId:int}", Name = "UpdateEpisode")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]

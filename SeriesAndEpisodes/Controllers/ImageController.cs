@@ -17,7 +17,7 @@ namespace SeriesAndEpisodes.Controllers
             _fileService = fileService;
         }
 
-        [HttpGet("{id:length(24)}", Name = "GetImage")]
+        [HttpGet("{id:regex(^[[0-9a-fA-F]]{{24}}$)}", Name = "GetImage")]
         [FileResultContentType("image/jpeg")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

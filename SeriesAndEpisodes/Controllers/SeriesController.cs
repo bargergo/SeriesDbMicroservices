@@ -27,7 +27,7 @@ namespace SeriesAndEpisodes.Controllers
         public async Task<ActionResult<List<SeriesInfo>>> GetAll() =>
             await _seriesService.GetAsync();
 
-        [HttpGet("{id:length(24)}", Name = "GetSeries")]
+        [HttpGet("{id:regex(^[[0-9a-fA-F]]{{24}}$)}", Name = "GetSeries")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<SeriesDetail>> Get(string id)
@@ -47,7 +47,7 @@ namespace SeriesAndEpisodes.Controllers
             return series;
         }
 
-        [HttpGet("{id:length(24)}/Season/{seasonId:int}/Episode/{episodeId:int}", Name = "GetEpisode")]
+        [HttpGet("{id:regex(^[[0-9a-fA-F]]{{24}}$)}/Season/{seasonId:int}/Episode/{episodeId:int}", Name = "GetEpisode")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<EpisodeDetail>> GetEpisode(string id, int seasonId, int episodeId)
