@@ -39,7 +39,7 @@ namespace SeriesAndEpisodes.Controllers
                 return NotFound();
             }
 
-            await _bus.Publish(new DummyMessage
+            await _bus.Publish<IDummyMessage>(new DummyMessage
             {
                 DummyString = id
             });
