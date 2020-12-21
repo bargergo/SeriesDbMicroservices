@@ -9,9 +9,9 @@ import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 
-object DatabaseFactory {
+object DatabaseConnection {
 
-    fun init(hikariDataSource: HikariDataSource) {
+    fun connect(hikariDataSource: HikariDataSource) {
         Database.connect(hikariDataSource)
                 .also {
                     while (true) {

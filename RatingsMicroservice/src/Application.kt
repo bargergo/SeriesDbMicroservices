@@ -1,6 +1,7 @@
 package hu.bme.aut.ratings
 
-import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.SerializationFeature
 import com.papsign.ktor.openapigen.OpenAPIGen
 import com.papsign.ktor.openapigen.annotations.type.common.ConstraintViolation
 import com.papsign.ktor.openapigen.openAPIGen
@@ -12,9 +13,10 @@ import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import hu.bme.aut.ratings.controllers.episodeRatings
 import hu.bme.aut.ratings.controllers.seriesRatings
-import hu.bme.aut.ratings.database.DatabaseFactory
+import hu.bme.aut.ratings.database.DatabaseConnection
 import hu.bme.aut.ratings.models.NotAuthorizedException
 import hu.bme.aut.ratings.services.EpisodeRatingService
+import hu.bme.aut.ratings.services.MessageQueueConfig
 import hu.bme.aut.ratings.services.RabbitService
 import hu.bme.aut.ratings.services.SeriesRatingService
 import hu.bme.aut.ratings.utils.getenvCheckNotNull
@@ -26,6 +28,8 @@ import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import org.slf4j.event.Level
+import utils.HikariDbConfig
+import utils.RabbitMQConfig
 import utils.SwaggerTag
 import kotlin.reflect.KType
 
@@ -39,6 +43,13 @@ fun Application.module(testing: Boolean = false) {
     install(CallLogging) {
         level = Level.INFO
         filter { call -> call.request.path().startsWith("/") }
+    }
+
+    install(ContentNegotiation) {
+        jackson {
+            enable(SerializationFeature.INDENT_OUTPUT)
+            disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+        }
     }
 
     install(StatusPages) {
@@ -80,48 +91,37 @@ fun Application.module(testing: Boolean = false) {
         })
     }
 
+    install(HikariDbConfig) {
+        hikariDataSource = hikariDatasource
+    }
 
-    install(ContentNegotiation) {
-        jackson {
-            setSerializationInclusion(JsonInclude.Include.NON_NULL)
+    install(RabbitMQConfig) {
+        val config = messageQueueConfig
+        hostName = config.hostName
+        userName = config.userName
+        password = config.password
+        queues = listOf(
+            RabbitMQConfig.QueueConfig("DummyQueue", "SeriesAndEpisodes.MessageQueue:IDummyMessage"),
+            RabbitMQConfig.QueueConfig("SeriesRatingUpdateQueue", "SeriesAndEpisodes.MessageQueue:ISeriesRatingChangedEvent")
+        )
+    }
+
+    apiRouting {
+        tag(SwaggerTag("SeriesRatings")) {
+            seriesRatings(SeriesRatingService())
+        }
+        tag(SwaggerTag("EpisodeRatings")) {
+            episodeRatings(EpisodeRatingService())
         }
     }
 
-    fun hikari(): HikariDataSource {
-        val config = HikariConfig("/hikari.properties")
-        config.jdbcUrl = getenvCheckNotNull("db__jdbcUrl")
-        config.username = getenvCheckNotNull("db__username")
-        config.password = getenvCheckNotNull("db__password")
-        config.validate()
-        return HikariDataSource(config)
-    }
-
-    DatabaseFactory.init(hikari())
-    RabbitService
-            .configure()
-            .tryToConnect()
-            .dummyExchangeAndQueue()
-            .updateSeriesRatingExchangeAndQueue()
-            .startListening()
-
-    install(Routing) {
-        routing {
-            get("/swagger/v1/swagger.json") {
-                call.respond(this@module.openAPIGen.api)
-            }
-
-            get("/") {
-                call.respondRedirect("/swagger-ui/index.html?url=/swagger/v1/swagger.json", true)
-            }
+    routing {
+        get("/openapi.json") {
+            call.respond(this@module.openAPIGen.api)
         }
 
-        apiRouting {
-            tag(SwaggerTag("SeriesRatings")) {
-                seriesRatings(SeriesRatingService())
-            }
-            tag(SwaggerTag("EpisodeRatings")) {
-                episodeRatings(EpisodeRatingService())
-            }
+        get("/") {
+            call.respondRedirect("/swagger-ui/index.html?url=/openapi.json", true)
         }
     }
 }
@@ -129,3 +129,20 @@ fun Application.module(testing: Boolean = false) {
 val Application.envKind get() = getenvCheckNotNull("KTOR_ENV")
 val Application.isDev get() = envKind == "dev"
 val Application.isProd get() = envKind != "dev"
+
+val Application.hikariDatasource get(): HikariDataSource {
+    val config = HikariConfig("/hikari.properties")
+    config.jdbcUrl = getenvCheckNotNull("db__jdbcUrl")
+    config.username = getenvCheckNotNull("db__username")
+    config.password = getenvCheckNotNull("db__password")
+    config.validate()
+    return HikariDataSource(config)
+}
+
+val Application.messageQueueConfig get(): MessageQueueConfig {
+    return MessageQueueConfig(
+        getenvCheckNotNull("MessageQueueSettings__Hostname"),
+        getenvCheckNotNull("MessageQueueSettings__Username"),
+        getenvCheckNotNull("MessageQueueSettings__Password")
+    )
+}

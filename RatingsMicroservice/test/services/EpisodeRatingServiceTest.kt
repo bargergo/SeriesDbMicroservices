@@ -2,7 +2,7 @@ package hu.bme.aut.ratings.services
 
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
-import hu.bme.aut.ratings.database.DatabaseFactory
+import hu.bme.aut.ratings.database.DatabaseConnection
 import hu.bme.aut.ratings.dtos.EpisodeRatingData
 import hu.bme.aut.ratings.models.EpisodeRating
 import hu.bme.aut.ratings.models.EpisodeRatings
@@ -36,7 +36,7 @@ class EpisodeRatingServiceTest {
         @BeforeClass
         @JvmStatic
         internal fun beforeAll() {
-            DatabaseFactory.init(hikari())
+            DatabaseConnection.connect(hikari())
         }
 
 

@@ -38,7 +38,7 @@ spec:
           value: ratings
         - name: MYSQL_ROOT_PASSWORD
           value: helloworld
-        image: mysql:8.0.19
+        image: mysql:8.0.22
         name: mysql-ratingdb
         ports:
         - containerPort: 3306

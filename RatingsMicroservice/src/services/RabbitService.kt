@@ -8,16 +8,28 @@ import java.net.ConnectException
 object RabbitService {
     var connectionFactory = ConnectionFactory()
     lateinit var connection: Connection
+    lateinit var host: String
 
-    fun configure(): RabbitService {
+    fun configure(config: MessageQueueConfig): RabbitService {
+        host = config.hostName
         connectionFactory.apply {
-            host = getenvCheckNotNull("MessageQueueSettings__Hostname")
+            host = config.hostName
             port = 5672
             virtualHost = "/"
-            username = getenvCheckNotNull("MessageQueueSettings__Username")
-            password = getenvCheckNotNull("MessageQueueSettings__Password")
+            username = config.userName
+            password = config.password
         }
         return this
+    }
+
+    fun createExchangeAndQueue(queueName: String, exchangeName: String) {
+        val channel = connection.createChannel()
+
+        channel.exchangeDeclare(exchangeName, "fanout", true)
+        val queueNameToUse = channel.queueDeclare(queueName, true, false, false, emptyMap()).queue
+        channel.queueBind(queueNameToUse, exchangeName, "routingKey")
+
+        channel.close()
     }
 
     fun tryToConnect(): RabbitService {
@@ -31,28 +43,6 @@ object RabbitService {
                 Thread.sleep(2000)
             }
         }
-        return this
-    }
-
-    fun dummyExchangeAndQueue(): RabbitService {
-        val channel = connection.createChannel()
-
-        channel.exchangeDeclare("SeriesAndEpisodes.MessageQueue:IDummyMessage", "fanout", true)
-        val queueName = channel.queueDeclare("DummyQueue", true, false, false, emptyMap()).queue
-        channel.queueBind(queueName, "SeriesAndEpisodes.MessageQueue:IDummyMessage", "routingKey")
-
-        channel.close()
-        return this
-    }
-
-    fun updateSeriesRatingExchangeAndQueue(): RabbitService {
-        val channel = connection.createChannel()
-
-        channel.exchangeDeclare("SeriesAndEpisodes.MessageQueue:ISeriesRatingChangedEvent", "fanout", true)
-        val queueName = channel.queueDeclare("SeriesRatingUpdateQueue", true, false, false, emptyMap()).queue
-        channel.queueBind(queueName, "SeriesAndEpisodes.MessageQueue:ISeriesRatingChangedEvent", "routingKey")
-
-        channel.close()
         return this
     }
 
@@ -70,3 +60,9 @@ object RabbitService {
         cancelCallback)
     }
 }
+
+data class MessageQueueConfig(
+    val hostName: String,
+    val userName: String,
+    val password: String
+)

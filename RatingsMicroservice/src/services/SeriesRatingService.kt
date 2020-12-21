@@ -1,6 +1,6 @@
 package hu.bme.aut.ratings.services
 
-import hu.bme.aut.ratings.database.DatabaseFactory.dbQuery
+import hu.bme.aut.ratings.database.DatabaseConnection.dbQuery
 import hu.bme.aut.ratings.dtos.AverageOfRatingsResponse
 import hu.bme.aut.ratings.dtos.SeriesRatingData
 import hu.bme.aut.ratings.model.SeriesRating
