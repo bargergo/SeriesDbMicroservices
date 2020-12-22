@@ -44,7 +44,7 @@ jobs:
     - name: Grant execute permission for gradlew
       run: cd RatingsMicroservice && chmod +x gradlew
     - name: Download dependencies
-      run: cd RatingsMicroservice && ./gradlew downloadDependencies -d
+      run: cd RatingsMicroservice && ./gradlew downloadDependencies -i
     - name: Build with Gradle
       run: cd RatingsMicroservice && ./gradlew build -x test 
     - name: Test
