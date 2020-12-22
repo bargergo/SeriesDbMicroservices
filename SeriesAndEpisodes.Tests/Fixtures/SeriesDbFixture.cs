@@ -7,6 +7,7 @@ namespace SeriesAndEpisodes.Tests.Fixtures
     public class SeriesDbFixture : IDisposable
     {
         public ISeriesDbSettings DbContextSettings { get; }
+        public IFileSettings FileSettings { get; }
 
         public SeriesDbFixture()
         {
@@ -21,6 +22,10 @@ namespace SeriesAndEpisodes.Tests.Fixtures
                 SeriesCollectionName = "Series",
                 ConnectionString = connectionString,
                 DatabaseName = dbName
+            };
+            FileSettings = new FileSettings
+            {
+                MaxSizeInMegabytes = 5
             };
             DbContext = new SeriesDbContext(DbContextSettings);
         }

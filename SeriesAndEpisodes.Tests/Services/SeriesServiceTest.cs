@@ -18,7 +18,7 @@ namespace SeriesAndEpisodes.Tests.Services
         public SeriesServiceTest(SeriesDbFixture fixture)
         {
             _fixture = fixture;
-            var fileService = new FileService(_fixture.DbContext);
+            var fileService = new FileService(_fixture.DbContext, _fixture.FileSettings);
             var config = new MapperConfiguration(opts =>
                 opts.AddProfile(new WebApiProfile())
             );
