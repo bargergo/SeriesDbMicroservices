@@ -19,7 +19,8 @@ fun NormalOpenAPIRoute.episodeRatings(service: EpisodeRatingService) {
                 info("Get Episodes Ratings Endpoint", "This is a Get Episodes Ratings Endpoint"),
                 id("GetEpisodeRatings"),
                 example = listOf(
-                        EpisodeRatingInfo(1, 2, "5e9215f27773ca0066637c26", 1, 1, 5, "Not good, not terrible")
+                        EpisodeRatingInfo(1, 2, "5e9215f27773ca0066637c26", 1, 1, 5, "Not good, not terrible"),
+                        EpisodeRatingInfo(2, 1, "5e9215f27773ca0066637c29", 2, 6, 10, "Great episode of a great series!")
                 )
         ) { params ->
             val userId = params.userId
@@ -34,7 +35,8 @@ fun NormalOpenAPIRoute.episodeRatings(service: EpisodeRatingService) {
 
         // {id}
         get<EpisodeRatingIdParam, EpisodeRatingInfo>(
-                id("GetEpisodeRating")
+                id("GetEpisodeRating"),
+                example = EpisodeRatingInfo(1, 2, "5e9215f27773ca0066637c26", 1, 1, 5, "Not good, not terrible")
         ) { params ->
             val id = params.id
             checkNotNull(id) { "The id parameter must be an integer" }
@@ -47,7 +49,8 @@ fun NormalOpenAPIRoute.episodeRatings(service: EpisodeRatingService) {
 
         // Series/{seriesId}/Average
         get<GetAverageRatingForSeriesParams, AverageOfRatingsResponse>(
-                id("GetAverageRatingForSeries")
+                id("GetAverageRatingForSeries"),
+                example = AverageOfRatingsResponse(5.5f, 10)
         ) { params ->
             val seriesId = params.seriesId
             val result: AverageOfRatingsResponse = service.getAverageForSeries(seriesId)
@@ -56,7 +59,8 @@ fun NormalOpenAPIRoute.episodeRatings(service: EpisodeRatingService) {
 
         // Series/{seriesId}/Season/{seasonId}/Average
         get<GetAverageRatingForSeasonParams, AverageOfRatingsResponse>(
-                id("GetAverageRatingForSeason")
+                id("GetAverageRatingForSeason"),
+                example = AverageOfRatingsResponse(7.5f, 12)
         ) { params ->
             val seriesId = params.seriesId
             val seasonId = params.seasonId
@@ -66,7 +70,8 @@ fun NormalOpenAPIRoute.episodeRatings(service: EpisodeRatingService) {
 
         // Series/{seriesId}/Season/{seasonId}/Episode/{episodeId}/Average
         get<GetAverageRatingForEpisodeParams, AverageOfRatingsResponse>(
-                id("GetAverageRatingForEpisode")
+                id("GetAverageRatingForEpisode"),
+                example = AverageOfRatingsResponse(5.5f, 2)
         ) { params ->
             val seriesId = params.seriesId
             val seasonId = params.seasonId
@@ -78,7 +83,9 @@ fun NormalOpenAPIRoute.episodeRatings(service: EpisodeRatingService) {
 
     route("/api/protected/EpisodeRatings") {
         post<HeaderParam, Created201Response, EpisodeRatingData>(
-                id("CreateEpisodeRating")
+                id("CreateEpisodeRating"),
+                exampleRequest = EpisodeRatingData("5e9215f27773ca0066637c26", 1, 1, 8, "Textual rating"),
+                exampleResponse = Created201Response()
         ) { params, ratingData ->
             if (params.Authorization != null) {
                 val claims = extractToken(params.Authorization)
@@ -95,7 +102,9 @@ fun NormalOpenAPIRoute.episodeRatings(service: EpisodeRatingService) {
 
         // {id}
         put<EpisodeRatingIdParam, NoContent204Response, EpisodeRatingData>(
-                id("UpdateEpisodeRating")
+                id("UpdateEpisodeRating"),
+                exampleRequest = EpisodeRatingData("5e9215f27773ca0066637c26", 1, 1, 8, "Textual rating"),
+                exampleResponse = NoContent204Response()
         ) { params, ratingData ->
             val id = params.id
             val rating: EpisodeRatingInfo? = service.findById(id)?.toEpisodeRatingInfo()
@@ -117,7 +126,8 @@ fun NormalOpenAPIRoute.episodeRatings(service: EpisodeRatingService) {
 
         // {id}
         delete<EpisodeRatingIdParam, NoContent204Response>(
-                id("DeleteEpisodeRating")
+                id("DeleteEpisodeRating"),
+                example = NoContent204Response()
         ) { params ->
             val id = params.id
             val rating: EpisodeRatingInfo? = service.findById(id)?.toEpisodeRatingInfo()

@@ -20,11 +20,12 @@ fun NormalOpenAPIRoute.seriesRatings(service: SeriesRatingService) {
     route("/api/public/SeriesRatings") {
 
         get<GetSeriesRatingsQueryParams, List<SeriesRatingInfo>>(
-                info("Get Episodes Ratings Endpoint", "This is a Get Episodes Ratings Endpoint"),
-                id("GetSeriesRatings"),
-                example = listOf(
-                        SeriesRatingInfo(1, 2, "5e9215f27773ca0066637c26", 1, "Not good, not terrible")
-                )
+            info("Get Episodes Ratings Endpoint", "This is a Get Episodes Ratings Endpoint"),
+            id("GetSeriesRatings"),
+            example = listOf(
+                    SeriesRatingInfo(1, 2, "5e9215f27773ca0066637c26", 5, "Not good, not terrible"),
+                    SeriesRatingInfo(2, 1, "5e9215f27773ca0066637c29", 9, "Great show!")
+            )
         ) { params ->
             val userId = params.userId
             val seriesId = params.seriesId
@@ -35,7 +36,8 @@ fun NormalOpenAPIRoute.seriesRatings(service: SeriesRatingService) {
 
         // {id}
         get<SeriesRatingIdParam, SeriesRatingInfo>(
-                id("GetSeriesRating")
+                id("GetSeriesRating"),
+                example = SeriesRatingInfo(2, 1, "5e9215f27773ca0066637c29", 9, "Great show!")
         ) { params ->
             val id = params.id
             val rating: SeriesRatingInfo? = service.findById(id)?.toSeriesRatingInfo()
@@ -47,7 +49,8 @@ fun NormalOpenAPIRoute.seriesRatings(service: SeriesRatingService) {
 
         // Series/{seriesId}/Average
         get<GetAverageRatingForSeriesParams, AverageOfRatingsResponse>(
-                id("GetAverageRatingForSeries")
+            id("GetAverageRatingForSeries"),
+            example = AverageOfRatingsResponse(5.5f, 6)
         ) { params ->
             val seriesId = params.seriesId
             val result: AverageOfRatingsResponse = service.getAverage(seriesId)
@@ -59,7 +62,9 @@ fun NormalOpenAPIRoute.seriesRatings(service: SeriesRatingService) {
     route("/api/protected/SeriesRatings") {
 
         post<HeaderParam, Created201Response, SeriesRatingData>(
-            id("CreateSeriesRating")
+            id("CreateSeriesRating"),
+            exampleRequest = SeriesRatingData("5e9215f27773ca0066637c29", 9, "Great show!"),
+            exampleResponse = Created201Response()
         ) { param, seriesData ->
             if (param.Authorization != null) {
                 val claims = extractToken(param.Authorization)
@@ -83,7 +88,9 @@ fun NormalOpenAPIRoute.seriesRatings(service: SeriesRatingService) {
 
         // {id}
         put<SeriesRatingIdParam, NoContent204Response, SeriesRatingData>(
-            id("UpdateSeriesRating")
+            id("UpdateSeriesRating"),
+            exampleRequest = SeriesRatingData("5e9215f27773ca0066637c29", 9, "Great show!"),
+            exampleResponse = NoContent204Response()
         ) { params, seriesData ->
             val id = params.id
             val rating: SeriesRatingInfo? = service.findById(id)?.toSeriesRatingInfo()
@@ -113,7 +120,8 @@ fun NormalOpenAPIRoute.seriesRatings(service: SeriesRatingService) {
 
         // {id}
         delete<SeriesRatingIdParam, NoContent204Response>(
-            id("DeleteSeriesRating")
+            id("DeleteSeriesRating"),
+            example = NoContent204Response()
         ) { params ->
             val id = params.id
             val rating: SeriesRatingInfo? = service.findById(id)?.toSeriesRatingInfo()
