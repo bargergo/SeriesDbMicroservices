@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace SeriesAndEpisodes.Controllers
+namespace SeriesAndEpisodes.Exceptions
 {
     [Serializable]
     internal class FileDoesntExistException : Exception

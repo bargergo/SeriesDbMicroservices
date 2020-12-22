@@ -55,6 +55,11 @@ namespace SeriesAndEpisodes
             services.AddSingleton<ISeriesDbSettings>(sp =>
                 sp.GetRequiredService<IOptions<SeriesDbSettings>>().Value);
 
+            services.Configure<FileSettings>(
+                Configuration.GetSection(nameof(FileSettings)));
+            services.AddSingleton<IFileSettings>(sp =>
+                sp.GetRequiredService<IOptions<FileSettings>>().Value);
+
             services.AddSingleton<SeriesDbContext>();
 
             services.AddSingleton<SeriesService>();
