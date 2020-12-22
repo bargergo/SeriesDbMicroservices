@@ -13,13 +13,10 @@ import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import hu.bme.aut.ratings.controllers.episodeRatings
 import hu.bme.aut.ratings.controllers.seriesRatings
-import hu.bme.aut.ratings.database.DatabaseConnection
 import hu.bme.aut.ratings.models.NotAuthorizedException
 import hu.bme.aut.ratings.services.EpisodeRatingService
 import hu.bme.aut.ratings.services.MessageQueueConfig
-import hu.bme.aut.ratings.services.RabbitService
 import hu.bme.aut.ratings.services.SeriesRatingService
-import hu.bme.aut.ratings.utils.getenvCheckNotNull
 import io.ktor.application.*
 import io.ktor.features.*
 import io.ktor.http.*
@@ -41,7 +38,7 @@ fun Application.module(testing: Boolean = false) {
 
     install(DefaultHeaders)
     install(CallLogging) {
-        level = Level.INFO
+        level = logLevel
         filter { call -> call.request.path().startsWith("/") }
     }
 
@@ -53,25 +50,27 @@ fun Application.module(testing: Boolean = false) {
     }
 
     install(StatusPages) {
-        exception<NotFoundException> { e ->
-            call.respond(HttpStatusCode.NotFound)
-        }
-        exception<ConstraintViolation> { e ->
-            call.respondText(e.localizedMessage,
-                ContentType.Text.Plain, HttpStatusCode.BadRequest)
-        }
-        exception<NotAuthorizedException> { e ->
-            call.respond(HttpStatusCode.Unauthorized)
-        }
-        exception<Throwable> { e ->
-            if (isDev) {
-                call.respondText(e.localizedMessage,
-                    ContentType.Text.Plain, HttpStatusCode.InternalServerError)
-            } else {
+        if (isDev) {
+            exception<Throwable> { e ->
                 call.respondText("An unexpected server error occured",
-                    ContentType.Text.Plain, HttpStatusCode.InternalServerError)
+                        ContentType.Text.Plain, HttpStatusCode.InternalServerError)
             }
+        } else {
+            exception<NotFoundException> { e ->
+                call.respond(HttpStatusCode.NotFound)
+            }
+            exception<ConstraintViolation> { e ->
+                call.respondText(e.localizedMessage,
+                        ContentType.Text.Plain, HttpStatusCode.BadRequest)
+            }
+            exception<NotAuthorizedException> { e ->
+                call.respond(HttpStatusCode.Unauthorized)
+            }
+            exception<Throwable> { e ->
+                call.respondText(e.localizedMessage,
+                        ContentType.Text.Plain, HttpStatusCode.InternalServerError)
 
+            }
         }
     }
 
@@ -126,23 +125,36 @@ fun Application.module(testing: Boolean = false) {
     }
 }
 
-val Application.envKind get() = getenvCheckNotNull("KTOR_ENV")
-val Application.isDev get() = envKind == "dev"
-val Application.isProd get() = envKind != "dev"
+val Application.isDev get(): Boolean {
+    val envKind = environment.config.property("ktor.deployment.environment").getString()
+    return envKind == "dev"
+}
+
+val Application.logLevel get(): Level {
+    val logLevelConfig = environment.config.property("ktor.deployment.loglevel").getString()
+    return when (logLevelConfig) {
+        "INFO" -> Level.INFO
+        "DEBUG" -> Level.DEBUG
+        "WARN" -> Level.WARN
+        "ERROR" -> Level.ERROR
+        "TRACE" -> Level.TRACE
+        else -> Level.INFO
+    }
+}
 
 val Application.hikariDatasource get(): HikariDataSource {
     val config = HikariConfig("/hikari.properties")
-    config.jdbcUrl = getenvCheckNotNull("db__jdbcUrl")
-    config.username = getenvCheckNotNull("db__username")
-    config.password = getenvCheckNotNull("db__password")
+    config.jdbcUrl = environment.config.property("ktor.db.jdbcUrl").getString()
+    config.username = environment.config.property("ktor.db.username").getString()
+    config.password = environment.config.property("ktor.db.password").getString()
     config.validate()
     return HikariDataSource(config)
 }
 
 val Application.messageQueueConfig get(): MessageQueueConfig {
     return MessageQueueConfig(
-        getenvCheckNotNull("MessageQueueSettings__Hostname"),
-        getenvCheckNotNull("MessageQueueSettings__Username"),
-        getenvCheckNotNull("MessageQueueSettings__Password")
+        environment.config.property("ktor.message-queue.hostname").getString(),
+        environment.config.property("ktor.message-queue.username").getString(),
+        environment.config.property("ktor.message-queue.password").getString()
     )
 }

@@ -32,11 +32,13 @@ spec:
       - env:
         - name: KTOR_ENV
           value: prod
-        - name: MessageQueueSettings__Hostname
+        - name: LOG_LEVEL
+          value: INFO
+        - name: message-queue__hostname
           value: message-queue
-        - name: MessageQueueSettings__Password
+        - name: message-queue__username
           value: guest
-        - name: MessageQueueSettings__Username
+        - name: message-queue__password
           value: guest
         - name: db__jdbcUrl
           value: "jdbc:mysql://mysql-ratingdb:3306/ratings"

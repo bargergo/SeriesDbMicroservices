@@ -1,7 +1,6 @@
 package hu.bme.aut.ratings.services
 
 import com.rabbitmq.client.*
-import hu.bme.aut.ratings.utils.getenvCheckNotNull
 import java.net.ConnectException
 
 

@@ -60,12 +60,13 @@ services:
     container_name: "ratings"
     environment:
       KTOR_ENV: prod
+      LOG_LEVEL: INFO
       db__jdbcUrl: jdbc:mysql://mysql-ratingdb:3306/ratings
       db__username: root
       db__password: helloworld
-      MessageQueueSettings__Hostname: "message-queue"
-      MessageQueueSettings__Username: "guest"
-      MessageQueueSettings__Password: "guest"
+      message-queue__hostname: "message-queue"
+      message-queue__username: "guest"
+      message-queue__password: "guest"
     ports:
       - "3002:8080"
     depends_on:
