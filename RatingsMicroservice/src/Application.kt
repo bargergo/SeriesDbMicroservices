@@ -52,9 +52,11 @@ fun Application.module(testing: Boolean = false) {
     install(StatusPages) {
         if (isDev) {
             exception<Throwable> { e ->
-                call.respondText("An unexpected server error occured",
+                call.respondText(e.localizedMessage,
                         ContentType.Text.Plain, HttpStatusCode.InternalServerError)
+
             }
+
         } else {
             exception<NotFoundException> { e ->
                 call.respond(HttpStatusCode.NotFound)
@@ -67,9 +69,8 @@ fun Application.module(testing: Boolean = false) {
                 call.respond(HttpStatusCode.Unauthorized)
             }
             exception<Throwable> { e ->
-                call.respondText(e.localizedMessage,
+                call.respondText("An unexpected server error occured",
                         ContentType.Text.Plain, HttpStatusCode.InternalServerError)
-
             }
         }
     }

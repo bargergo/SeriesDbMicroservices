@@ -7,3 +7,4 @@ services:
   ratings:
     environment:
       KTOR_ENV: dev
+      LOG_LEVEL: DEBUG
