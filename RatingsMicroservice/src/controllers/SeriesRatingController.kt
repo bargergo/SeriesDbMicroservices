@@ -12,9 +12,7 @@ import hu.bme.aut.ratings.services.RabbitService
 import hu.bme.aut.ratings.services.SeriesRatingService
 import hu.bme.aut.ratings.utils.extractToken
 import hu.bme.aut.ratings.utils.id
-import io.ktor.features.NotFoundException
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import io.ktor.features.*
 
 fun NormalOpenAPIRoute.seriesRatings(service: SeriesRatingService) {
     route("/api/public/SeriesRatings") {
@@ -167,7 +165,7 @@ data class MassTransitCompatibleMessage(
     val messageType: List<String>
 )
 
-suspend fun publishSeriesRatingChangedEvent(event: SeriesRatingChangedEvent) {
+fun publishSeriesRatingChangedEvent(event: SeriesRatingChangedEvent) {
     val mapper = ObjectMapper()
     val message = MassTransitCompatibleMessage(
         "rabbitmq://message-queue/SeriesRatingUpdateQueue",
@@ -176,9 +174,7 @@ suspend fun publishSeriesRatingChangedEvent(event: SeriesRatingChangedEvent) {
         arrayListOf("urn:message:SeriesAndEpisodes.MessageQueue:SeriesRatingChangedEvent",
             "urn:message:SeriesAndEpisodes.MessageQueue:ISeriesRatingChangedEvent")
     )
-    withContext(Dispatchers.IO) {
-        val channel = RabbitService.connection.createChannel()
-        channel.basicPublish("SeriesRatingUpdateQueue", "routingKey", null, mapper.writeValueAsBytes(message))
-        channel.close()
-    }
+    val channel = RabbitService.connection.createChannel()
+    channel.basicPublish("SeriesRatingUpdateQueue", "routingKey", null, mapper.writeValueAsBytes(message))
+    channel.close()
 }
