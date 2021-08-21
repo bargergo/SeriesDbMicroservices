@@ -10,7 +10,7 @@ docker run --name mongodb-seriesdb-test --env MONGO_INITDB_ROOT_USERNAME=root --
 ```
 ### MySQL
 ```
-docker run --name mysql-ratingdb-test --env MYSQL_ROOT_PASSWORD=helloworld --env MYSQL_DATABASE=ratings --publish 3306:3306 --rm mysql:8.0.19
+docker run --name mysql-hibernate-demo --env MYSQL_ROOT_PASSWORD=helloworld --env MYSQL_DATABASE=hb_student_tracker --publish 3306:3306 --rm mysql:8.0.26
 ```
 ## Start in Kubernetes
 ### Start Traefik
